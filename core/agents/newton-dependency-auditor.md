@@ -1,6 +1,6 @@
 ---
-name: aet-dependency-auditor
-description: AET Tier 5 gate. Runs automatically whenever an implementer adds a new package — checks license compatibility and known vulnerabilities.
+name: newton-dependency-auditor
+description: Newton Tier 5 gate. Runs automatically whenever an implementer adds a new package — checks license compatibility and known vulnerabilities.
 tools: Bash
 model: sonnet
 ---

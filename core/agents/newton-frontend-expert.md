@@ -1,6 +1,6 @@
 ---
-name: aet-frontend-expert
-description: AET Tier 4 expert. Advises the architect on UI architecture, state management, and component patterns. Reports to the architect only.
+name: newton-frontend-expert
+description: Newton Tier 4 expert. Advises the architect on UI architecture, state management, and component patterns. Reports to the architect only.
 tools: Read, Grep
 model: sonnet
 ---

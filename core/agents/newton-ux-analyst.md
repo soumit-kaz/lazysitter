@@ -1,6 +1,6 @@
 ---
-name: aet-ux-analyst
-description: AET Tier 4 expert. Advises the architect on usability and human-facing tradeoffs. Reports to the architect only.
+name: newton-ux-analyst
+description: Newton Tier 4 expert. Advises the architect on usability and human-facing tradeoffs. Reports to the architect only.
 tools: Read
 model: sonnet
 ---

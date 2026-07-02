@@ -4,7 +4,7 @@ const path = require('path');
 const { readFile, listFiles } = require('./util');
 const fm = require('./frontmatter');
 
-// Resolve the AET roster from the package's core/ directory into a normalized
+// Resolve the Newton roster from the package's core/ directory into a normalized
 // per-agent view that both adapters consume.
 function loadRoster(coreDir) {
   const roster = JSON.parse(readFile(path.join(coreDir, 'roster.json')));

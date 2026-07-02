@@ -1,6 +1,6 @@
 ---
-name: aet-integration-checker
-description: AET Tier 7. Runs the full suite against the current devBase plus any other concurrently-merging features — catches cross-feature breakage that per-feature review can't see. Sandboxed.
+name: newton-integration-checker
+description: Newton Tier 7. Runs the full suite against the current devBase plus any other concurrently-merging features — catches cross-feature breakage that per-feature review can't see. Sandboxed.
 tools: Bash
 model: sonnet
 ---

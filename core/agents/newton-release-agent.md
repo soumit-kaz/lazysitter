@@ -1,6 +1,6 @@
 ---
-name: aet-release-agent
-description: AET Tier 8 release. Rebases onto current devBase, enforces the merge gate, and performs staged/canary rollout where infra supports it. Never force-merges.
+name: newton-release-agent
+description: Newton Tier 8 release. Rebases onto current devBase, enforces the merge gate, and performs staged/canary rollout where infra supports it. Never force-merges.
 tools: Bash
 model: sonnet
 ---

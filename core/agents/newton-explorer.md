@@ -1,6 +1,6 @@
 ---
-name: aet-explorer
-description: AET Tier 2 research. Builds ONE shared context pack (conventions, relevant files, existing patterns) that every downstream agent reuses. Nobody re-explores independently.
+name: newton-explorer
+description: Newton Tier 2 research. Builds ONE shared context pack (conventions, relevant files, existing patterns) that every downstream agent reuses. Nobody re-explores independently.
 tools: Read, Grep, Glob
 model: haiku
 ---

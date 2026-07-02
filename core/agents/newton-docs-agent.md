@@ -1,6 +1,6 @@
 ---
-name: aet-docs-agent
-description: AET Tier 8. Updates README / changelog / API docs as a byproduct of the merged feature.
+name: newton-docs-agent
+description: Newton Tier 8. Updates README / changelog / API docs as a byproduct of the merged feature.
 tools: Read, Write
 model: haiku
 ---

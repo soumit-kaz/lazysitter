@@ -1,4 +1,4 @@
-# Autonomous Engineering Team (AET)
+# Autonomous Engineering Team (Newton)
 
 A 24-agent autonomous feature pipeline, implemented as Claude Code subagents + one orchestrator command. Built from the "Autonomous Engineering Team — Full Design" spec.
 
@@ -11,7 +11,7 @@ One **orchestrator** (the main Claude session, Opus) drives a pipeline of **23 s
 Run the slash command with a plain-language feature request:
 
 ```
-/aet Add CSV export to the analytics dashboard
+/newton Add CSV export to the analytics dashboard
 ```
 
 Options:
@@ -28,13 +28,13 @@ The orchestrator will:
 3. Pause **only** if the budget cap is about to be exceeded.
 4. Give you a skimmable final report + a full audit trail.
 
-**Kill switch:** create the file `.claude/aet/KILL` at any time. The orchestrator checks for it before each tier and halts immediately. Delete it to re-enable.
+**Kill switch:** create the file `.claude/newton/KILL` at any time. The orchestrator checks for it before each tier and halts immediately. Delete it to re-enable.
 
 **Recommended first run:** `--dry-run` on a small feature, so you can see intake → triage → context pack → spec → plan without any code being written.
 
 ## Where things land
 
-Every run writes to `.claude/aet/runs/<feature-slug>/`:
+Every run writes to `.claude/newton/runs/<feature-slug>/`:
 - `audit.log` — one terse line per event (agent, event, verdict). Cheap to skim, fully reconstructable.
 - `REQUIREMENT.md`, `TRIAGE.md`, `CONTEXT-PACK.md`, `ACCEPTANCE-CRITERIA.md`, `PLAN.md`, `DECISIONS.md`
 - One report file per verification agent.
@@ -43,15 +43,15 @@ Every run writes to `.claude/aet/runs/<feature-slug>/`:
 
 | Tier | Agents | Model |
 |------|--------|-------|
-| 0 Orchestration | orchestrator (the `/aet` command, main session) | Opus |
-| 1 Intake | `aet-business-analyst`, `aet-triage` | Sonnet, Haiku |
-| 2 Research | `aet-explorer` | Haiku |
-| 3 Spec | `aet-spec-writer` | Sonnet |
-| 4 Design | `aet-architect`, `aet-database-expert`, `aet-infra-expert`, `aet-frontend-expert`, `aet-security-expert`, `aet-ux-analyst`, `aet-devils-advocate` | Opus / Sonnet |
-| 5 Build | `aet-backend-implementer`, `aet-frontend-implementer`, `aet-dependency-auditor` | Sonnet |
-| 6 Verification | `aet-test-author`, `aet-test-runner`, `aet-code-reviewer`, `aet-red-team`, `aet-security-auditor`, `aet-secrets-scanner` | Sonnet / Opus / Haiku |
-| 7 Integration & Intent | `aet-integration-checker`, `aet-closing-loop-auditor` | Sonnet, Opus |
-| 8 Release & Recovery | `aet-release-agent`, `aet-monitor-agent`, `aet-rollback-agent`, `aet-docs-agent` | Sonnet / Haiku |
+| 0 Orchestration | orchestrator (the `/newton` command, main session) | Opus |
+| 1 Intake | `newton-business-analyst`, `newton-triage` | Sonnet, Haiku |
+| 2 Research | `newton-explorer` | Haiku |
+| 3 Spec | `newton-spec-writer` | Sonnet |
+| 4 Design | `newton-architect`, `newton-database-expert`, `newton-infra-expert`, `newton-frontend-expert`, `newton-security-expert`, `newton-ux-analyst`, `newton-devils-advocate` | Opus / Sonnet |
+| 5 Build | `newton-backend-implementer`, `newton-frontend-implementer`, `newton-dependency-auditor` | Sonnet |
+| 6 Verification | `newton-test-author`, `newton-test-runner`, `newton-code-reviewer`, `newton-red-team`, `newton-security-auditor`, `newton-secrets-scanner` | Sonnet / Opus / Haiku |
+| 7 Integration & Intent | `newton-integration-checker`, `newton-closing-loop-auditor` | Sonnet, Opus |
+| 8 Release & Recovery | `newton-release-agent`, `newton-monitor-agent`, `newton-rollback-agent`, `newton-docs-agent` | Sonnet / Haiku |
 
 Most features wake 6–10 of them; `triage` and the never-skip list decide which.
 
@@ -71,6 +71,6 @@ Almost everything maps 1:1: model tiers → the `model:` field, tool restriction
 
 ## Requirements & notes
 
-- Model tiers assume your plan can run Opus/Sonnet/Haiku subagents. If a tier isn't available, edit the `model:` field in the relevant `.claude/agents/aet-*.md` file.
+- Model tiers assume your plan can run Opus/Sonnet/Haiku subagents. If a tier isn't available, edit the `model:` field in the relevant `.claude/agents/newton-*.md` file.
 - Bash-capable agents are instructed to stay read-only/sandboxed; only `release-agent` and `rollback-agent` mutate git, and only at the gate. Review your Claude Code permission settings before the first `--auto` run.
 - "devBase" in the spec = your integration branch. The `release-agent`/`integration-checker` rebase onto and validate against the current one.

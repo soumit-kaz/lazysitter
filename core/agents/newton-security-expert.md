@@ -1,6 +1,6 @@
 ---
-name: aet-security-expert
-description: AET Tier 4 design-time security. Threat-models the PLAN — auth, data exposure, injection surface, tenant isolation. NEVER skipped by triage. Distinct from the post-build security-auditor.
+name: newton-security-expert
+description: Newton Tier 4 design-time security. Threat-models the PLAN — auth, data exposure, injection surface, tenant isolation. NEVER skipped by triage. Distinct from the post-build security-auditor.
 tools: Read, Grep, Bash
 model: opus
 ---

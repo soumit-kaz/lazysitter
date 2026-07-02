@@ -1,6 +1,6 @@
 ---
-name: aet-secrets-scanner
-description: AET Tier 6 fast gate. Pre-commit scan for hardcoded keys/tokens/credentials in the diff. Cheap, always runs.
+name: newton-secrets-scanner
+description: Newton Tier 6 fast gate. Pre-commit scan for hardcoded keys/tokens/credentials in the diff. Cheap, always runs.
 tools: Bash
 model: haiku
 ---

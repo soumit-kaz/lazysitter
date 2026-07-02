@@ -1,6 +1,6 @@
 ---
-name: aet-triage
-description: AET Tier 1 sizing. Classifies a feature as trivial/moderate/complex and selects which design experts and implementers to activate. Controls panel SIZE only — never removes tests, security, or red-team.
+name: newton-triage
+description: Newton Tier 1 sizing. Classifies a feature as trivial/moderate/complex and selects which design experts and implementers to activate. Controls panel SIZE only — never removes tests, security, or red-team.
 tools: Read, Grep
 model: haiku
 ---

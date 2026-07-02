@@ -1,6 +1,6 @@
 ---
-name: aet-frontend-implementer
-description: AET Tier 5 build. Writes UI code strictly against the approved plan. Runs in a sandboxed Bash environment.
+name: newton-frontend-implementer
+description: Newton Tier 5 build. Writes UI code strictly against the approved plan. Runs in a sandboxed Bash environment.
 tools: Read, Write, Edit, Bash
 model: sonnet
 ---

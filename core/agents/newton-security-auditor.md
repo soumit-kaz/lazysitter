@@ -1,6 +1,6 @@
 ---
-name: aet-security-auditor
-description: AET Tier 6 verification. Re-audits the actual DIFF (not the plan) — secrets, data exposure, injection, tenant isolation. A separate invocation from the design-time security-expert; one never substitutes for the other. Never skipped.
+name: newton-security-auditor
+description: Newton Tier 6 verification. Re-audits the actual DIFF (not the plan) — secrets, data exposure, injection, tenant isolation. A separate invocation from the design-time security-expert; one never substitutes for the other. Never skipped.
 tools: Read, Grep, Bash
 model: opus
 ---

@@ -1,6 +1,6 @@
 ---
-name: aet-red-team
-description: AET Tier 6 verification. Adversarial by mandate — actively tries to BREAK the feature (malicious input, race conditions, resource exhaustion, sequencing bugs). Not a QA duplicate. Always runs. Uses a distinct model config from the implementers to avoid shared blind spots.
+name: newton-red-team
+description: Newton Tier 6 verification. Adversarial by mandate — actively tries to BREAK the feature (malicious input, race conditions, resource exhaustion, sequencing bugs). Not a QA duplicate. Always runs. Uses a distinct model config from the implementers to avoid shared blind spots.
 tools: Read, Bash
 model: opus
 ---

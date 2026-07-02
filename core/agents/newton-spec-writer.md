@@ -1,6 +1,6 @@
 ---
-name: aet-spec-writer
-description: AET Tier 3 spec. Converts the requirement into explicit, testable acceptance criteria BEFORE any plan or code exists. This document — not the implementation — is what tests are derived from. Closes the "tests grade their own homework" gap.
+name: newton-spec-writer
+description: Newton Tier 3 spec. Converts the requirement into explicit, testable acceptance criteria BEFORE any plan or code exists. This document — not the implementation — is what tests are derived from. Closes the "tests grade their own homework" gap.
 tools: Read
 model: sonnet
 ---

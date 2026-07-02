@@ -72,7 +72,7 @@ function main() {
 }
 
 function manifestFor(dir) {
-  const p = path.join(path.resolve(dir || process.cwd()), '.aet', 'manifest.json');
+  const p = path.join(path.resolve(dir || process.cwd()), '.newton', 'manifest.json');
   return exists(p) ? JSON.parse(readFile(p)) : null;
 }
 
@@ -80,7 +80,7 @@ function listRoster() {
   const { loadRoster } = require('../src/roster');
   const { agents } = loadRoster(path.join(PKG_ROOT, 'core'));
   log.info('');
-  log.info(`${c.bold('AET roster')} — ${agents.length} agents`);
+  log.info(`${c.bold('Newton roster')} — ${agents.length} agents`);
   log.info('');
   log.info(`  ${'agent'.padEnd(26)} ${'tier'.padEnd(6)} ${'codex sandbox'.padEnd(16)} approval`);
   log.info(`  ${'-'.repeat(26)} ${'-'.repeat(6)} ${'-'.repeat(16)} ${'-'.repeat(10)}`);
@@ -95,15 +95,15 @@ function listRoster() {
 
 function help() {
   log.info(`
-${c.bold('aet')} — install the Autonomous Engineering Team into a project (Claude Code + Codex)
+${c.bold('newton')} — install the Autonomous Engineering Team into a project (Claude Code + Codex)
 
 ${c.bold('Usage')}
-  npx @newton/aet <command> [dir] [flags]
+  npx newton <command> [dir] [flags]
 
 ${c.bold('Commands')}
-  init [dir]        Install AET into a project (default). Auto-detects Claude/Codex.
+  init [dir]        Install Newton into a project (default). Auto-detects Claude/Codex.
   update [dir]      Refresh managed files; keeps your models.env / config edits.
-  uninstall [dir]   Remove AET. Add --purge to also delete your config.
+  uninstall [dir]   Remove Newton. Add --purge to also delete your config.
   doctor [dir]      Verify the install, tool availability, and model tiering.
   list              Print the agent roster with tiers and sandboxes.
   help · version
@@ -111,14 +111,14 @@ ${c.bold('Commands')}
 ${c.bold('Flags')}
   --claude          Install only the Claude Code adapter.
   --codex           Install only the Codex adapter.
-  --purge           (uninstall) also remove user config (models.env, aet.config.json).
+  --purge           (uninstall) also remove user config (models.env, newton.config.json).
   --force           Overwrite without prompting.
 
 ${c.bold('Examples')}
-  npx @newton/aet init                 ${c.dim('# both adapters, into the current repo')}
-  npx @newton/aet init . --codex       ${c.dim('# Codex only')}
-  npx @newton/aet doctor
-  npx @newton/aet uninstall --purge
+  npx newton init                 ${c.dim('# both adapters, into the current repo')}
+  npx newton init . --codex       ${c.dim('# Codex only')}
+  npx newton doctor
+  npx newton uninstall --purge
 `);
 }
 

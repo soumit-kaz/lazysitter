@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { ensureDir, exists, readFile, sha256, log, c } = require('./util');
 
-const AET_BEGIN = '<!-- AET:BEGIN';
-const AET_END = 'AET:END -->';
+const NEWTON_BEGIN = '<!-- NEWTON:BEGIN';
+const NEWTON_END = 'NEWTON:END -->';
 
 // Shared install context passed to each adapter. Owns file writing, the
 // preserve-vs-managed distinction, AGENTS.md block merging, and manifest tracking.
@@ -23,7 +23,7 @@ class InstallCtx {
     return path.join(this.targetRoot, rel);
   }
 
-  // Write a file AET fully owns (overwritten on update, removed on uninstall).
+  // Write a file Newton fully owns (overwritten on update, removed on uninstall).
   write(rel, content, { exec = false } = {}) {
     const abs = this.abs(rel);
     ensureDir(path.dirname(abs));
@@ -57,17 +57,17 @@ class InstallCtx {
     log.ok(`  ${rel}`);
   }
 
-  // Insert or replace the AET block inside a doc file (AGENTS.md), preserving the rest.
+  // Insert or replace the Newton block inside a doc file (AGENTS.md), preserving the rest.
   mergeMarkedBlock(rel, block) {
     const abs = this.abs(rel);
     const existedBefore = exists(abs);
     let current = existedBefore ? readFile(abs) : '';
 
-    const beginIdx = current.indexOf(AET_BEGIN);
-    const endIdx = current.indexOf(AET_END);
+    const beginIdx = current.indexOf(NEWTON_BEGIN);
+    const endIdx = current.indexOf(NEWTON_END);
     if (beginIdx !== -1 && endIdx !== -1) {
       const before = current.slice(0, beginIdx);
-      const after = current.slice(endIdx + AET_END.length);
+      const after = current.slice(endIdx + NEWTON_END.length);
       current = `${before}${block.trim()}${after}`;
     } else {
       const sep = current && !current.endsWith('\n') ? '\n\n' : current ? '\n' : '';
@@ -76,11 +76,11 @@ class InstallCtx {
     ensureDir(path.dirname(abs));
     fs.writeFileSync(abs, current);
     this.manifest.agentsMd = { path: rel.replace(/\\/g, '/'), createdByAet: !existedBefore };
-    log.ok(`  ${rel} ${existedBefore ? '(AET block merged)' : '(created)'}`);
+    log.ok(`  ${rel} ${existedBefore ? '(Newton block merged)' : '(created)'}`);
   }
 
   writeManifest(version, tools) {
-    const manifestRel = '.aet/manifest.json';
+    const manifestRel = '.newton/manifest.json';
     const data = {
       aetVersion: version,
       installedAt: this.opts.now || new Date().toISOString(),
@@ -96,4 +96,4 @@ class InstallCtx {
   }
 }
 
-module.exports = { InstallCtx, AET_BEGIN, AET_END };
+module.exports = { InstallCtx, NEWTON_BEGIN, NEWTON_END };

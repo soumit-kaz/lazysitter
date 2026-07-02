@@ -1,6 +1,6 @@
 ---
-name: aet-monitor-agent
-description: AET Tier 8 recovery. Watches post-merge signals (errors, failed deploys) for a defined window and reports regression signals to the orchestrator.
+name: newton-monitor-agent
+description: Newton Tier 8 recovery. Watches post-merge signals (errors, failed deploys) for a defined window and reports regression signals to the orchestrator.
 tools: Bash
 model: sonnet
 ---

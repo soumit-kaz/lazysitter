@@ -1,6 +1,6 @@
 ---
-name: aet-infra-expert
-description: AET Tier 4 expert. Advises the architect on deployment, scaling, CI/CD, and environment concerns. Reports to the architect only.
+name: newton-infra-expert
+description: Newton Tier 4 expert. Advises the architect on deployment, scaling, CI/CD, and environment concerns. Reports to the architect only.
 tools: Read, Bash
 model: sonnet
 ---

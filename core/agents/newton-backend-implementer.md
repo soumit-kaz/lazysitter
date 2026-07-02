@@ -1,6 +1,6 @@
 ---
-name: aet-backend-implementer
-description: AET Tier 5 build. Writes server/data-layer code strictly against the approved plan. Runs in a sandboxed Bash environment.
+name: newton-backend-implementer
+description: Newton Tier 5 build. Writes server/data-layer code strictly against the approved plan. Runs in a sandboxed Bash environment.
 tools: Read, Write, Edit, Bash
 model: sonnet
 ---

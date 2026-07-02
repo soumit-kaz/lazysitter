@@ -12,8 +12,8 @@ function installClaude(ctx, data) {
     ctx.copy(path.join(ctx.coreDir, 'agents', agent.file), `.claude/agents/${agent.file}`);
   }
 
-  ctx.copy(path.join(ctx.coreDir, 'orchestrator.claude.md'), '.claude/commands/aet.md');
-  ctx.copy(path.join(ctx.templatesDir, 'AET-README.md'), '.claude/aet/README.md');
+  ctx.copy(path.join(ctx.coreDir, 'orchestrator.claude.md'), '.claude/commands/newton.md');
+  ctx.copy(path.join(ctx.templatesDir, 'Newton-README.md'), '.claude/newton/README.md');
 }
 
 module.exports = { installClaude };

@@ -10,7 +10,7 @@ function resolveTargetRoot(dirArg) {
     log.warn(
       `Installing into ${c.bold(root)}, but the git root is ${c.bold(gitRoot)}.`
     );
-    log.warn(`  Pass that path if you meant the repo root: ${c.dim('aet init ' + gitRoot)}`);
+    log.warn(`  Pass that path if you meant the repo root: ${c.dim('newton init ' + gitRoot)}`);
   }
   return root;
 }

@@ -1,6 +1,6 @@
 ---
-name: aet-code-reviewer
-description: AET Tier 6 verification. Diffs the implementation against the approved plan; runs lint/typecheck/build; flags drift from the approved design.
+name: newton-code-reviewer
+description: Newton Tier 6 verification. Diffs the implementation against the approved plan; runs lint/typecheck/build; flags drift from the approved design.
 tools: Read, Grep, Bash
 model: sonnet
 ---

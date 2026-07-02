@@ -1,6 +1,6 @@
 ---
-name: aet-database-expert
-description: AET Tier 4 expert. Advises the architect on schema, migrations, query performance, and data integrity. Reports to the architect only — never to other experts.
+name: newton-database-expert
+description: Newton Tier 4 expert. Advises the architect on schema, migrations, query performance, and data integrity. Reports to the architect only — never to other experts.
 tools: Read, Grep, Bash
 model: sonnet
 ---

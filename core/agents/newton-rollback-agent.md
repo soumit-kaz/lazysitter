@@ -1,6 +1,6 @@
 ---
-name: aet-rollback-agent
-description: AET Tier 8 recovery. Triggered by monitor-agent on a regression signal. Has standing revert authority within the monitoring window — no extra approval needed.
+name: newton-rollback-agent
+description: Newton Tier 8 recovery. Triggered by monitor-agent on a regression signal. Has standing revert authority within the monitoring window — no extra approval needed.
 tools: Bash
 model: sonnet
 ---

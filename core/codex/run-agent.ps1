@@ -1,12 +1,12 @@
 <#
-AET agent runner (Codex adapter) — PowerShell.
-Launches ONE context-isolated `codex exec` for a single AET agent.
+Newton agent runner (Codex adapter) — PowerShell.
+Launches ONE context-isolated `codex exec` for a single Newton agent.
 
 Usage: pwsh run-agent.ps1 <agent-name> <inputs-file> <output-file>
 
 Env:
-  AET_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
-  AET_DRY_PRINT=1  print the resolved codex command instead of running it
+  Newton_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
+  Newton_DRY_PRINT=1  print the resolved codex command instead of running it
 #>
 param(
   [Parameter(Mandatory = $true)][string]$Agent,
@@ -19,9 +19,9 @@ $dir  = Split-Path -Parent $MyInvocation.MyCommand.Path
 $role = Join-Path $dir "agents/$Agent.md"
 $meta = Join-Path $dir "agents/$Agent.meta"
 
-if (-not (Test-Path $role)) { Write-Error "aet: unknown agent '$Agent' (no $role)"; exit 2 }
-if (-not (Test-Path $meta)) { Write-Error "aet: missing meta for '$Agent' ($meta)"; exit 2 }
-if (-not (Test-Path $InputsFile)) { Write-Error "aet: inputs file not found: $InputsFile"; exit 2 }
+if (-not (Test-Path $role)) { Write-Error "newton: unknown agent '$Agent' (no $role)"; exit 2 }
+if (-not (Test-Path $meta)) { Write-Error "newton: missing meta for '$Agent' ($meta)"; exit 2 }
+if (-not (Test-Path $InputsFile)) { Write-Error "newton: inputs file not found: $InputsFile"; exit 2 }
 
 # Parse KEY=VALUE lines from a file into a hashtable.
 function Read-EnvFile($path) {
@@ -53,7 +53,7 @@ if ($distinct -eq '1') {
   $model = if ($models['MODEL_HIGH_ALT']) { $models['MODEL_HIGH_ALT'] } else { $models['MODEL_HIGH'] }
 }
 
-if ($approval -eq 'on-request' -and $env:AET_AUTO_GIT -eq '1') { $approval = 'never' }
+if ($approval -eq 'on-request' -and $env:Newton_AUTO_GIT -eq '1') { $approval = 'never' }
 
 $argsList = @('exec', '--sandbox', $sandbox, '--ask-for-approval', $approval,
               '--skip-git-repo-check', '--output-last-message', $OutputFile)
@@ -61,7 +61,7 @@ if ($model) { $argsList += @('--model', $model) }
 
 $prompt = (Get-Content $role -Raw) + "`n`n---`n`n# YOUR TASK INPUTS`n`n" + (Get-Content $InputsFile -Raw)
 
-if ($env:AET_DRY_PRINT -eq '1') {
+if ($env:Newton_DRY_PRINT -eq '1') {
   Write-Output ("codex " + ($argsList -join ' ') + " -")
   exit 0
 }

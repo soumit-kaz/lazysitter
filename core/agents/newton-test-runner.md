@@ -1,6 +1,6 @@
 ---
-name: aet-test-runner
-description: AET Tier 6 verification. Runs test-author's FROZEN tests against the implementation. Cannot edit tests or code — execution and reporting only. Sandboxed.
+name: newton-test-runner
+description: Newton Tier 6 verification. Runs test-author's FROZEN tests against the implementation. Cannot edit tests or code — execution and reporting only. Sandboxed.
 tools: Bash
 model: sonnet
 ---

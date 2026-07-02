@@ -1,6 +1,6 @@
 ---
-name: aet-closing-loop-auditor
-description: AET Tier 7 intent gate. Re-reads the ORIGINAL business input (not the plan) against the final diff and decision log. Flags intent drift before merge. Catches "built the plan correctly, but the plan drifted from the ask."
+name: newton-closing-loop-auditor
+description: Newton Tier 7 intent gate. Re-reads the ORIGINAL business input (not the plan) against the final diff and decision log. Flags intent drift before merge. Catches "built the plan correctly, but the plan drifted from the ask."
 tools: Read
 model: opus
 ---

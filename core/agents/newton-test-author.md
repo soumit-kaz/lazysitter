@@ -1,6 +1,6 @@
 ---
-name: aet-test-author
-description: AET Tier 6 verification. Writes tests SOLELY from spec-writer's acceptance criteria — blind to the implementation. Structurally separated from the build lineage. Tests are frozen before any implementation is revealed.
+name: newton-test-author
+description: Newton Tier 6 verification. Writes tests SOLELY from spec-writer's acceptance criteria — blind to the implementation. Structurally separated from the build lineage. Tests are frozen before any implementation is revealed.
 tools: Read, Write
 model: sonnet
 ---
