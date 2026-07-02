@@ -1,0 +1,36 @@
+{
+  "name": "@newton/aet",
+  "version": "1.0.0",
+  "description": "Autonomous Engineering Team — a 26-agent autonomous feature pipeline installable into any project, for Claude Code and Codex.",
+  "bin": {
+    "aet": "bin/aet.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "core/",
+    "templates/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/smoke.js",
+    "aet": "node bin/aet.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "claude-code",
+    "codex",
+    "autonomous",
+    "orchestration",
+    "multi-agent",
+    "engineering"
+  ],
+  "license": "MIT",
+  "type": "commonjs"
+}

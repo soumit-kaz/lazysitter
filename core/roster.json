@@ -1,0 +1,56 @@
+{
+  "$schema": "./roster.schema.json",
+  "version": "1.0.0",
+  "description": "Authoritative AET roster. Single source of truth for both the Claude Code and Codex adapters. The installer derives per-tool output from this file plus core/agents/*.md. Do not hand-edit installed copies; edit here and re-run `aet update`.",
+  "tiers": {
+    "high": "Most capable model. Deep design, adversarial reasoning, intent judgement.",
+    "high_alt": "A DISTINCT high-capability model from `high`, used for red-team so it does not share the implementers' / architect's blind spots. Falls back to `high` if unset.",
+    "mid": "Balanced model. Most build and verification work.",
+    "low": "Fast, cheap model. Mechanical scans and narrow classification."
+  },
+  "modelTierByLogical": {
+    "opus": "high",
+    "sonnet": "mid",
+    "haiku": "low"
+  },
+  "neverSkip": [
+    "aet-spec-writer",
+    "aet-test-author",
+    "aet-test-runner",
+    "aet-code-reviewer",
+    "aet-security-expert",
+    "aet-security-auditor",
+    "aet-red-team",
+    "aet-devils-advocate",
+    "aet-secrets-scanner",
+    "aet-closing-loop-auditor"
+  ],
+  "agents": {
+    "aet-business-analyst":     { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-triage":               { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-explorer":             { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-spec-writer":          { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-architect":            { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-database-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-infra-expert":         { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-frontend-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-security-expert":      { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-ux-analyst":           { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-devils-advocate":      { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-backend-implementer":  { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-frontend-implementer": { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-dependency-auditor":   { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "May need network for CVE/registry lookups; enable network in the codex sandbox config if required." },
+    "aet-test-author":          { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes tests only. Spawned in parallel with implementers so it is structurally blind to implementation." },
+    "aet-test-runner":          { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-code-reviewer":        { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-red-team":             { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "distinctModel": true, "note": "Uses the `high_alt` model slot to avoid shared blind spots with the build lineage." },
+    "aet-security-auditor":     { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-secrets-scanner":      { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-integration-checker":  { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-closing-loop-auditor": { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "aet-release-agent":        { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "on-request", "note": "Mutates git at the merge gate. Requires approval unless autoApproveGit is set." },
+    "aet-monitor-agent":        { "tier": "low",  "codexSandbox": "workspace-write", "codexApproval": "never" },
+    "aet-rollback-agent":       { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "on-request", "note": "Standing revert authority in the monitoring window. Mutates git." },
+    "aet-docs-agent":           { "tier": "low",  "codexSandbox": "workspace-write", "codexApproval": "never" }
+  }
+}
