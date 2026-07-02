@@ -1,0 +1,5 @@
+{
+  "budget": 400000,
+  "autoApproveGit": false,
+  "monitorWindowMinutes": 30
+}

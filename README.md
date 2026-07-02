@@ -21,39 +21,44 @@ holds structurally on both runtimes.
 
 ## Install (per-project, not global)
 
-From the root of the project you want Newton in:
+Newton installs **into your own project** — nothing global is written. From the root of the
+repo you want it in, run:
 
 ```bash
-npx newton init
+npx github:soumit-kaz/newton init
 ```
 
-It auto-detects whether the project uses Claude Code, Codex, or both, and installs only what
-fits. No global state is written — everything lands inside the target repo and is tracked in
+`npx` clones the repo and runs the installer straight from GitHub — no npm account and nothing
+published to a registry required. It auto-detects whether your project uses Claude Code, Codex,
+or both, and installs only what fits. Everything lands inside your repo and is recorded in
 `.newton/manifest.json`.
 
-```bash
-npx newton init . --codex     # Codex adapter only
-npx newton init . --claude    # Claude Code adapter only
-npx newton doctor             # verify the install + tooling + model tiering
-npx newton list               # print the agent roster
-npx newton update             # refresh agents/scripts, keep your config edits
-npx newton uninstall          # remove Newton (--purge also deletes your config)
-```
-
-**Not published to npm yet?** Install straight from GitHub — `npx` clones and runs it, no
-registry account needed. Replace `<owner>/newton` with the actual repo:
+**Install just one adapter:**
 
 ```bash
-npx github:<owner>/newton init             # both adapters, into the current repo
-npx github:<owner>/newton init . --codex   # Codex adapter only
-npx github:<owner>/newton doctor           # verify the install
+npx github:soumit-kaz/newton init . --claude   # Claude Code adapter only
+npx github:soumit-kaz/newton init . --codex    # Codex adapter only
 ```
 
-Or run it straight from a local clone:
+**Other commands** (same `github:soumit-kaz/newton` prefix):
 
 ```bash
-git clone https://github.com/<owner>/newton && node newton/bin/newton.js init /path/to/your/project
+npx github:soumit-kaz/newton doctor       # verify the install + tooling + model tiering
+npx github:soumit-kaz/newton list         # print the agent roster
+npx github:soumit-kaz/newton update       # refresh agents/scripts, keep your config edits
+npx github:soumit-kaz/newton uninstall    # remove Newton (--purge also deletes your config)
 ```
+
+**Prefer a local clone?**
+
+```bash
+git clone https://github.com/soumit-kaz/newton
+node newton/bin/newton.js init /path/to/your/project
+```
+
+> **Note — the short `npx newton init` form does not work yet.** It only resolves once the
+> package is published to the npm registry, which it is not. Until then, always use the
+> `npx github:soumit-kaz/newton …` form shown above.
 
 Requires **Node ≥ 16** to run the installer. The pipeline itself needs the Claude Code CLI
 and/or the Codex CLI at run time.
