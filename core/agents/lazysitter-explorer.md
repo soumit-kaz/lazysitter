@@ -1,7 +1,7 @@
 ---
 name: lazysitter-explorer
 description: LazySitter Tier 2 research. Builds ONE shared context pack (conventions, relevant files, existing patterns) that every downstream agent reuses. Nobody re-explores independently.
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql
 model: haiku
 ---
 
@@ -12,6 +12,10 @@ Map the slice of the codebase relevant to the requirement: conventions, the file
 
 ## Inputs (from orchestrator)
 - REQUIREMENT and TRIAGE documents.
+- Optionally, a Jira ticket key or URL referenced in the request.
+
+## Jira (optional, read-only)
+If the REQUIREMENT references a Jira ticket or epic, you may read it via the Atlassian MCP server (`getJiraIssue`, or `searchJiraIssuesUsingJql` to locate linked issues) to enrich the context pack with linked tickets, epics, or acceptance criteria. Requires a connected Atlassian MCP server; skip silently if unavailable. Read-only — never modify a ticket.
 
 ## Do
 - Read CLAUDE.md and any convention/architecture docs first.

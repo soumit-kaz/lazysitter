@@ -16,6 +16,7 @@ npx github:soumit-kaz/lazysitter init
 - **Unbiased verification.** Tests are authored from the spec by an agent that never sees the implementation — so passing tests actually mean something.
 - **Built-in adversarial review.** A dedicated red-team and a "devil's advocate" agent actively try to break every feature and challenge every design decision.
 - **Automated security & secrets scanning** on the real diff — not just the plan.
+- **Reads your Jira tickets.** Point it at a ticket key or URL and the intake, research, and intent-audit agents pull the ticket via the Atlassian MCP server (read-only) — every other agent stays ticket-blind by design.
 - **Runs in your repo, nothing global.** Everything installs into your project and is recorded in an audit trail you can inspect.
 - **Two runtimes, one experience.** Use Claude Code's native subagents or OpenAI Codex — same pipeline, same guarantees.
 

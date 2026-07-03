@@ -10,7 +10,7 @@
 #   <output-file>  receives the agent's final report (via codex --output-last-message)
 #
 # Env:
-#   LazySitter_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
+#   LAZYSITTER_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
 #   LazySitter_DRY_PRINT=1  print the resolved codex command instead of running it
 set -euo pipefail
 
@@ -47,7 +47,7 @@ if [ "${DISTINCT_MODEL:-0}" = "1" ]; then
 fi
 
 # Headless auto-merge: git-mutating agents can't answer an interactive approval.
-if [ "$APPROVAL" = "on-request" ] && [ "${LazySitter_AUTO_GIT:-0}" = "1" ]; then
+if [ "$APPROVAL" = "on-request" ] && [ "${LAZYSITTER_AUTO_GIT:-0}" = "1" ]; then
   APPROVAL="never"
 fi
 

@@ -5,7 +5,7 @@ Launches ONE context-isolated `codex exec` for a single LazySitter agent.
 Usage: pwsh run-agent.ps1 <agent-name> <inputs-file> <output-file>
 
 Env:
-  LazySitter_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
+  LAZYSITTER_AUTO_GIT=1   downgrade on-request approval to `never` (headless auto-merge)
   LazySitter_DRY_PRINT=1  print the resolved codex command instead of running it
 #>
 param(
@@ -53,7 +53,7 @@ if ($distinct -eq '1') {
   $model = if ($models['MODEL_HIGH_ALT']) { $models['MODEL_HIGH_ALT'] } else { $models['MODEL_HIGH'] }
 }
 
-if ($approval -eq 'on-request' -and $env:LazySitter_AUTO_GIT -eq '1') { $approval = 'never' }
+if ($approval -eq 'on-request' -and $env:LAZYSITTER_AUTO_GIT -eq '1') { $approval = 'never' }
 
 $argsList = @('exec', '--sandbox', $sandbox, '--ask-for-approval', $approval,
               '--skip-git-repo-check', '--output-last-message', $OutputFile)

@@ -64,7 +64,7 @@ MODEL_LOW=""         # triage, explorer, secrets-scanner, ...
 
 - `budget` — token ceiling; the orchestrator pauses before exceeding it.
 - `autoApproveGit` — for fully headless auto-merge, set `true`; the orchestrator then exports
-  `LazySitter_AUTO_GIT=1`, which downgrades release/rollback approval from `on-request` to `never`
+  `LAZYSITTER_AUTO_GIT=1`, which downgrades release/rollback approval from `on-request` to `never`
   (they still run confined to `workspace-write`).
 
 ## Sandbox & network notes
@@ -74,3 +74,15 @@ MODEL_LOW=""         # triage, explorer, secrets-scanner, ...
 - `dependency-auditor` may need network access for CVE/registry lookups. If your Codex sandbox
   blocks network under `workspace-write`, enable it for that agent in your Codex config.
 - Nothing here uses `--dangerously-bypass-approvals-and-sandbox` / `--yolo`. Keep it that way.
+
+## Jira tickets (optional)
+
+Three agents — `business-analyst`, `explorer`, and `closing-loop-auditor` — will read a Jira
+ticket when your request references one (a key like `PROJ-123` or a Jira URL), treating its
+description and acceptance criteria as ground-truth intent. Every other agent stays Jira-blind
+by design. Access is read-only (`getJiraIssue`, `searchJiraIssuesUsingJql`) — the pipeline
+never edits or transitions a ticket.
+
+To enable it, register the [Atlassian MCP server](https://www.atlassian.com/platform/remote-mcp-server)
+in your Codex MCP config so those agents' `codex exec` processes can reach it. With no Atlassian
+MCP server configured, the agents work from the request text and nothing breaks.

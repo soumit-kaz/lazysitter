@@ -33,6 +33,19 @@ already native Claude Code format.
 
 Artifacts land in `.claude/lazysitter/runs/<slug>/`. Kill switch: create `.claude/lazysitter/KILL`.
 
+## Jira tickets (optional)
+
+Three agents — `lazysitter-business-analyst`, `lazysitter-explorer`, and
+`lazysitter-closing-loop-auditor` — can read Jira tickets when your request references one
+(a key like `PROJ-123` or a Jira URL). They call the Atlassian MCP server read-only
+(`getJiraIssue`, `searchJiraIssuesUsingJql`); every other agent stays Jira-blind by design.
+
+To enable it, connect the [Atlassian MCP server](https://www.atlassian.com/platform/remote-mcp-server)
+to Claude Code under the server name `atlassian` (so the tools resolve as
+`mcp__atlassian__*`). If you register it under a different name, update the `tools:` lines in
+those three agent files to match. With no Atlassian MCP server connected, the agents simply
+work from the request text — nothing breaks.
+
 ## Changing models
 
 Edit the `model:` field in the relevant `.claude/agents/lazysitter-*.md`, or change `core/` and run

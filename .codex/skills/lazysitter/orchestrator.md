@@ -35,7 +35,7 @@ Feature request comes from the user's message. If none was given, ask for it onc
 ## Autonomy limits
 - **Budget cap:** read `lazysitter.config.json` → `budget` (token ceiling, default 400000). Track rough token spend across agent runs. Before each tier, if you project the next tier will exceed the cap, **PAUSE** and ask the user whether to continue. Runaway spend is a safety condition, not a business question — it is the ONE downstream reason you may interrupt the user.
 - **Kill switch:** before each tier, check for the file `.codex/lazysitter/KILL`. If it exists, halt immediately, write a final audit entry, and stop. Tell the user the kill switch was tripped.
-- **Git mutation:** only `lazysitter-release-agent` and `lazysitter-rollback-agent` mutate git, and only at/after the gate. They run with `--ask-for-approval on-request` unless `lazysitter.config.json` → `autoApproveGit` is true. For fully headless auto-merge, set `LazySitter_AUTO_GIT=1` in the environment before spawning them (the orchestrator does this automatically when `--auto` is combined with `autoApproveGit`).
+- **Git mutation:** only `lazysitter-release-agent` and `lazysitter-rollback-agent` mutate git, and only at/after the gate. They run with `--ask-for-approval on-request` unless `lazysitter.config.json` → `autoApproveGit` is true. For fully headless auto-merge, set `LAZYSITTER_AUTO_GIT=1` in the environment before spawning them (the orchestrator does this automatically when `--auto` is combined with `autoApproveGit`).
 - **`--dry-run`:** run intake → plan only; do not build, merge, or write code. Stop after Tier 4 and report.
 - **`--auto`:** proceed through the merge gate and post-merge rollback autonomously. Without it, HOLD at the merge gate and summarize for the user.
 
