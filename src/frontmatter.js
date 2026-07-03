@@ -1,6 +1,6 @@
 'use strict';
 
-// Minimal YAML-frontmatter splitter for Newton agent files. Handles only the flat
+// Minimal YAML-frontmatter splitter for Newronaut agent files. Handles only the flat
 // `key: value` frontmatter the agent files use (name, description, tools, model) —
 // intentionally NOT a general YAML parser (no deps). Returns { data, body }.
 function parse(raw) {

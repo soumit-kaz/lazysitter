@@ -12,7 +12,7 @@ function install(pkgRoot, opts) {
   const version = JSON.parse(readFile(path.join(pkgRoot, 'package.json'))).version;
   const targetRoot = resolveTargetRoot(opts.dir);
   const tools = resolveTools(opts, targetRoot);
-  const mode = exists(path.join(targetRoot, '.newton', 'manifest.json')) ? 'update' : 'install';
+  const mode = exists(path.join(targetRoot, '.newronaut', 'manifest.json')) ? 'update' : 'install';
 
   log.info('');
   log.info(`${c.bold('Autonomous Engineering Team')} ${c.dim('v' + version)}`);
@@ -33,21 +33,21 @@ function install(pkgRoot, opts) {
 
 function printNextSteps(tools, agentCount) {
   log.info('');
-  log.ok(`${c.bold('Newton installed')} — ${agentCount} agents across the pipeline.`);
+  log.ok(`${c.bold('Newronaut installed')} — ${agentCount} agents across the pipeline.`);
   log.info('');
   log.info(c.bold('Next steps:'));
   if (tools.includes('claude')) {
-    log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/newton <feature request>')} in your project.`);
-    log.info(`               e.g. ${c.dim('/newton Add CSV export to the analytics dashboard --dry-run')}`);
+    log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/newronaut <feature request>')} in your project.`);
+    log.info(`               e.g. ${c.dim('/newronaut Add CSV export to the analytics dashboard --dry-run')}`);
   }
   if (tools.includes('codex')) {
-    log.info(`  ${c.cyan('Codex')}        open ${c.bold('codex')} and say "run Newton on <feature>".`);
-    log.info(`               Set model slugs in ${c.dim('.codex/skills/newton/models.env')} first`);
+    log.info(`  ${c.cyan('Codex')}        open ${c.bold('codex')} and say "run Newronaut on <feature>".`);
+    log.info(`               Set model slugs in ${c.dim('.codex/skills/newronaut/models.env')} first`);
     log.info(`               (esp. MODEL_HIGH_ALT for a distinct red-team model).`);
   }
   log.info('');
-  log.info(`  Kill switch: create ${c.dim('.claude/newton/KILL')} or ${c.dim('.codex/newton/KILL')} to halt.`);
-  log.info(`  Uninstall:   ${c.dim('npx newton uninstall')}`);
+  log.info(`  Kill switch: create ${c.dim('.claude/newronaut/KILL')} or ${c.dim('.codex/newronaut/KILL')} to halt.`);
+  log.info(`  Uninstall:   ${c.dim('npx newronaut uninstall')}`);
   log.info('');
 }
 

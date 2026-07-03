@@ -1,9 +1,9 @@
 {
-  "name": "newton",
+  "name": "newronaut",
   "version": "1.0.0",
   "description": "Autonomous Engineering Team — a 26-agent autonomous feature pipeline installable into any project, for Claude Code and Codex.",
   "bin": {
-    "newton": "bin/newton.js"
+    "newronaut": "bin/newronaut.js"
   },
   "files": [
     "bin/",
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "node test/smoke.js",
-    "newton": "node bin/newton.js"
+    "newronaut": "node bin/newronaut.js"
   },
   "engines": {
     "node": ">=16"
