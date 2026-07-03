@@ -1,18 +1,18 @@
-# Newronaut — Autonomous AI Engineering Team for Claude Code & Codex
+# Provenforge — Autonomous AI Engineering Team for Claude Code & Codex
 
-**Newronaut is an open-source, multi-agent AI coding pipeline that turns a plain-language feature request into shipped, independently-verified code.** It installs a 26-agent autonomous engineering team into your own repository and runs the whole software workflow — intake → spec → design → build → automated code review → testing → release — with one hard guarantee: **no agent checks its own work, and tests are written from the spec, blind to the code.**
+**Provenforge is an open-source, multi-agent AI coding pipeline that turns a plain-language feature request into shipped, independently-verified code.** It installs a 26-agent autonomous engineering team into your own repository and runs the whole software workflow — intake → spec → design → build → automated code review → testing → release — with one hard guarantee: **no agent checks its own work, and tests are written from the spec, blind to the code.**
 
 Works with **[Claude Code](https://claude.com/claude-code)** and **OpenAI Codex** out of the box.
 
 ```bash
-npx github:soumit-kaz/newronaut init
+npx github:soumit-kaz/provenforge init
 ```
 
 ---
 
-## Why Newronaut
+## Why Provenforge
 
-- **Autonomous, end-to-end.** Describe a feature in one sentence; Newronaut runs the full engineering pipeline and hands you reviewed, tested, merge-ready code.
+- **Autonomous, end-to-end.** Describe a feature in one sentence; Provenforge runs the full engineering pipeline and hands you reviewed, tested, merge-ready code.
 - **Unbiased verification.** Tests are authored from the spec by an agent that never sees the implementation — so passing tests actually mean something.
 - **Built-in adversarial review.** A dedicated red-team and a "devil's advocate" agent actively try to break every feature and challenge every design decision.
 - **Automated security & secrets scanning** on the real diff — not just the plan.
@@ -21,49 +21,49 @@ npx github:soumit-kaz/newronaut init
 
 ## Install
 
-From the root of the project you want Newronaut in:
+From the root of the project you want Provenforge in:
 
 ```bash
-npx github:soumit-kaz/newronaut init
+npx github:soumit-kaz/provenforge init
 ```
 
 It auto-detects whether your project uses Claude Code, Codex, or both, and installs only what fits. Install a single adapter:
 
 ```bash
-npx github:soumit-kaz/newronaut init . --claude   # Claude Code only
-npx github:soumit-kaz/newronaut init . --codex    # Codex only
+npx github:soumit-kaz/provenforge init . --claude   # Claude Code only
+npx github:soumit-kaz/provenforge init . --codex    # Codex only
 ```
 
 Prefer a local clone?
 
 ```bash
-git clone https://github.com/soumit-kaz/newronaut
-node newronaut/bin/newronaut.js init /path/to/your/project
+git clone https://github.com/soumit-kaz/provenforge
+node provenforge/bin/provenforge.js init /path/to/your/project
 ```
 
 **Requirements:** Node.js ≥ 16 for the installer, plus the Claude Code CLI and/or the OpenAI Codex CLI at run time.
 
-> The short `npx newronaut init` form works only once the package is published to npm. Until then, use the `npx github:soumit-kaz/newronaut …` form above.
+> The short `npx provenforge init` form works only once the package is published to npm. Until then, use the `npx github:soumit-kaz/provenforge …` form above.
 
 ## Quick start
 
 **Claude Code** — run the orchestrator command in your project:
 
 ```text
-/newronaut Add CSV export to the analytics dashboard --dry-run
+/provenforge Add CSV export to the analytics dashboard --dry-run
 ```
 
 Flags: `--dry-run` (stop after the plan), `--budget <tokens>` (default 400000), `--auto` (run through merge with auto-rollback — the default).
 
 **Codex** — open `codex` in the project and say:
 
-> run Newronaut on: add CSV export to the analytics dashboard, dry run
+> run Provenforge on: add CSV export to the analytics dashboard, dry run
 
-**Kill switch:** create `.claude/newronaut/KILL` or `.codex/newronaut/KILL` to stop before the next stage. Every run writes a full audit trail under `newronaut/runs/<feature>/`.
+**Kill switch:** create `.claude/provenforge/KILL` or `.codex/provenforge/KILL` to stop before the next stage. Every run writes a full audit trail under `provenforge/runs/<feature>/`.
 
 ## The 26 agents
 
-Newronaut is a team of 26 specialized agents across 8 tiers. Triage wakes 6–10 of them per feature, but the verification, security, and adversarial agents are **never skipped**.
+Provenforge is a team of 26 specialized agents across 8 tiers. Triage wakes 6–10 of them per feature, but the verification, security, and adversarial agents are **never skipped**.
 
 | Tier | Agents |
 |------|--------|
@@ -76,26 +76,26 @@ Newronaut is a team of 26 specialized agents across 8 tiers. Triage wakes 6–10
 | 7 · Integration | integration-checker, closing-loop-auditor |
 | 8 · Release | release-agent, monitor-agent, rollback-agent, docs-agent |
 
-Newronaut merges only when tests **pass**, security is **clean**, review is **clean**, integration is **clean**, and the result matches your **original request** — all at once, never force-merged. Run `npx github:soumit-kaz/newronaut list` for the full roster.
+Provenforge merges only when tests **pass**, security is **clean**, review is **clean**, integration is **clean**, and the result matches your **original request** — all at once, never force-merged. Run `npx github:soumit-kaz/provenforge list` for the full roster.
 
 ## Commands
 
 ```bash
-npx github:soumit-kaz/newronaut doctor      # verify install, tooling, and model config
-npx github:soumit-kaz/newronaut list        # print the agent roster
-npx github:soumit-kaz/newronaut update      # refresh agents, keep your config edits
-npx github:soumit-kaz/newronaut uninstall   # remove Newronaut
+npx github:soumit-kaz/provenforge doctor      # verify install, tooling, and model config
+npx github:soumit-kaz/provenforge list        # print the agent roster
+npx github:soumit-kaz/provenforge update      # refresh agents, keep your config edits
+npx github:soumit-kaz/provenforge uninstall   # remove Provenforge
 ```
 
 ## Documentation
 
-- [docs/CLAUDE.md](docs/CLAUDE.md) — using Newronaut with Claude Code
-- [docs/CODEX.md](docs/CODEX.md) — using Newronaut with OpenAI Codex
+- [docs/CLAUDE.md](docs/CLAUDE.md) — using Provenforge with Claude Code
+- [docs/CODEX.md](docs/CODEX.md) — using Provenforge with OpenAI Codex
 - [docs/CUSTOMIZING.md](docs/CUSTOMIZING.md) — change models, tiers, and sandboxes
 
 ## Contributing
 
-Issues and pull requests are welcome. Open one at [github.com/soumit-kaz/newronaut](https://github.com/soumit-kaz/newronaut/issues).
+Issues and pull requests are welcome. Open one at [github.com/soumit-kaz/provenforge](https://github.com/soumit-kaz/provenforge/issues).
 
 ## License
 

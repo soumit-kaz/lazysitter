@@ -1,0 +1,354 @@
+{
+  "aetVersion": "1.0.0",
+  "installedAt": "2026-07-02T20:38:37.695Z",
+  "tools": [
+    "claude",
+    "codex"
+  ],
+  "managed": [
+    {
+      "path": ".claude/agents/provenforge-architect.md",
+      "sha256": "7191f430e7642b3c30ff153bc6cb3672a77ac21e5ae458c33333a90dea8bb2d3"
+    },
+    {
+      "path": ".claude/agents/provenforge-backend-implementer.md",
+      "sha256": "1b1cd04dfd7d7c51f24fb25778218ea03d8783466a24fa8471b3c9e8edaa989e"
+    },
+    {
+      "path": ".claude/agents/provenforge-business-analyst.md",
+      "sha256": "cadbdd40cdd24e9cd50de941b06dee000f65d625b572f9175883a1a31b2d82a1"
+    },
+    {
+      "path": ".claude/agents/provenforge-closing-loop-auditor.md",
+      "sha256": "13e3f519b392cb17a1d943af6f0715ac2f5df795e4c0cc1823e36d3a0c358a05"
+    },
+    {
+      "path": ".claude/agents/provenforge-code-reviewer.md",
+      "sha256": "a03c11d282950852de077692bd940742fe29c179272010f98bec2a94f7a5607f"
+    },
+    {
+      "path": ".claude/agents/provenforge-database-expert.md",
+      "sha256": "02a3d1de2f5e2f2e8aef60baffdcea993eead101ae8c6210d7abe3f6bb60caf4"
+    },
+    {
+      "path": ".claude/agents/provenforge-dependency-auditor.md",
+      "sha256": "2a181b9dcc57979ef91c899f47e7c716cc5abe838795aee04380860c6dcdfdfd"
+    },
+    {
+      "path": ".claude/agents/provenforge-devils-advocate.md",
+      "sha256": "7d7f092468be1954c0b879a7910d8abbadbbb309d6e240f212f9f6be86b411d9"
+    },
+    {
+      "path": ".claude/agents/provenforge-docs-agent.md",
+      "sha256": "07913fa5672a0f921bd8f0076c3fdc4cd6ec30410959119f321e7d3fae2e367c"
+    },
+    {
+      "path": ".claude/agents/provenforge-explorer.md",
+      "sha256": "7bbad7176963bba2c657d18f8cf97b78b4dcf1cf8b27029049d0fb3e44c32887"
+    },
+    {
+      "path": ".claude/agents/provenforge-frontend-expert.md",
+      "sha256": "b01c45fccc4c1bd7169b491da14bf1e5550aa89ecefd695889de13a35fd4ef62"
+    },
+    {
+      "path": ".claude/agents/provenforge-frontend-implementer.md",
+      "sha256": "cd63b06558d6b593cccb6ff4a29b9327dd316f9ef583c592a0d661bed94c34d3"
+    },
+    {
+      "path": ".claude/agents/provenforge-infra-expert.md",
+      "sha256": "30ec8cb3ccd1c8c5259096c366007bb8d733dd309b5799020c51e5837730ee3b"
+    },
+    {
+      "path": ".claude/agents/provenforge-integration-checker.md",
+      "sha256": "3c0efa82b30f7dac31734bd7b23218dfc8a78e22fed2f0cc559f97e6c2de603f"
+    },
+    {
+      "path": ".claude/agents/provenforge-monitor-agent.md",
+      "sha256": "452422b96ec61468e558b029c2ca9d820c13e0c56062e6dd2ec4c51b9ab0c0ee"
+    },
+    {
+      "path": ".claude/agents/provenforge-red-team.md",
+      "sha256": "e3176e4569e0994d59bb252a54f64de5965f4f36cff64a71dfd8196a31789c2d"
+    },
+    {
+      "path": ".claude/agents/provenforge-release-agent.md",
+      "sha256": "4b0f1199a87b3390c27d3f96456de929db06ad31744ffe997ebf2f2f592d3708"
+    },
+    {
+      "path": ".claude/agents/provenforge-rollback-agent.md",
+      "sha256": "9d9d8f45fd1c2a46a889c4fd8f6c5b42d41eabf9fb42f0505c6da7341d260e4c"
+    },
+    {
+      "path": ".claude/agents/provenforge-secrets-scanner.md",
+      "sha256": "d178fdd6455df51dd753c2409aae62b1451a49ab2125eb9719e58698d3eb8a8f"
+    },
+    {
+      "path": ".claude/agents/provenforge-security-auditor.md",
+      "sha256": "e343135f5de1d44fdfe86865a0acab4404845662d87c70d8e1c3f468c8697703"
+    },
+    {
+      "path": ".claude/agents/provenforge-security-expert.md",
+      "sha256": "ed26dfa1ebf710c81c96a9e0ce4e88160d4bf34a0f85a5de1872151a00beab83"
+    },
+    {
+      "path": ".claude/agents/provenforge-spec-writer.md",
+      "sha256": "f5cb849fcd4f0af2ee0eb480a9ead2475d4a889fabde1979e588c5625d137349"
+    },
+    {
+      "path": ".claude/agents/provenforge-test-author.md",
+      "sha256": "835e2995fa28658779cd77418a70945815ff33c6ba27052539b472fb9c43053e"
+    },
+    {
+      "path": ".claude/agents/provenforge-test-runner.md",
+      "sha256": "fe9b3e20591177095c8cb9832a62effdad135cd4f7eced2c4547dff5db11b072"
+    },
+    {
+      "path": ".claude/agents/provenforge-triage.md",
+      "sha256": "3fa1ced8a0ee76ac73bd1fb778283a9b8d2febc66fab520f1c21062571246ae5"
+    },
+    {
+      "path": ".claude/agents/provenforge-ux-analyst.md",
+      "sha256": "a5eb19cacb188c3ee9ec399a40d1d6c35e4ba4c3748091758265458078f7d52c"
+    },
+    {
+      "path": ".claude/commands/provenforge.md",
+      "sha256": "16b0a25a73a566b926b0ae706d03f36589a13da862dee38170aece3c0a2f4361"
+    },
+    {
+      "path": ".claude/provenforge/README.md",
+      "sha256": "7b1f5fd65fdf40387c2606c796e96e54d1de6b36f5277b67830eba8a06f37656"
+    },
+    {
+      "path": ".codex/skills/provenforge/SKILL.md",
+      "sha256": "2736a9cde1828f05e934ada36cbf89537d911f16744beb8ee2fe03cf095916d0"
+    },
+    {
+      "path": ".codex/skills/provenforge/orchestrator.md",
+      "sha256": "b23ec53296c7e00e70d46c05f475a4910931f89f1dc2c3af4e8ad583400f62a3"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-architect.md",
+      "sha256": "3215145c3652fd0fdfe9a550435a62a4b6956262030016d73493ab1b8969d1e9"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-architect.meta",
+      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-backend-implementer.md",
+      "sha256": "d8dc02dced0949731d631e4a30d3f327aa6caa85cdaeec4bb95ecfefb9ec926b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-backend-implementer.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-business-analyst.md",
+      "sha256": "a8cdde295bc9b519093a9edc47a16d2885eb1f6411abff47d3467f19c238424d"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-business-analyst.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-closing-loop-auditor.md",
+      "sha256": "1241ff030004b37ed4c90caeec16e5707d7449770199393f98ea38ef8d5d9abb"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-closing-loop-auditor.meta",
+      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-code-reviewer.md",
+      "sha256": "c735f4511bdb0b40b106361d67779eeb021ba0466976d07d47bd6df6e9065a1a"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-code-reviewer.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-database-expert.md",
+      "sha256": "47ca7de1fe6c101208f0c75973e40eded007e1b9da22d5e53fefe1758e498022"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-database-expert.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-dependency-auditor.md",
+      "sha256": "1354ea36cd83e0d43546a328c95ef40531304017e972c16507dab868f846bad0"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-dependency-auditor.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-devils-advocate.md",
+      "sha256": "986d0e077f37677d0d02fcf918ea7dd20e2a9965b742c4b3f9ebb79b162ddacb"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-devils-advocate.meta",
+      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-docs-agent.md",
+      "sha256": "d5929ebb8e3df587b1e1abeedc34b9b30d15023fcb33b17fcca24f93ae4c5c56"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-docs-agent.meta",
+      "sha256": "7a453a7ad15ff7447ec6ac54259e4cb0c61a135ac57234077aab34e4ac91c27c"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-explorer.md",
+      "sha256": "d0c33ba89e6e09357220221217f4c0b92f0bfd29ab992148de58c40e01b5205e"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-explorer.meta",
+      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-frontend-expert.md",
+      "sha256": "37f0e95ad112259043e9f3a3890c2513135d325095d41340df87799de6dbe075"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-frontend-expert.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-frontend-implementer.md",
+      "sha256": "355b0d85d82d640aadc46c251b0eea75f3b86465e5d767c38f280b1ca30337f8"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-frontend-implementer.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-infra-expert.md",
+      "sha256": "e6e12e5dc062150fd4c706019d14945c95b25c9eab242846e5d341ef7d441f92"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-infra-expert.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-integration-checker.md",
+      "sha256": "260e64ff13e50e718772392dd10acdda8371ffd72401c628850d223e3ef569ec"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-integration-checker.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-monitor-agent.md",
+      "sha256": "2240daba5f7955f2b3cecf32d81f113b9a2e74767d6b53fe7fdf3d4d19e8ea56"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-monitor-agent.meta",
+      "sha256": "7a453a7ad15ff7447ec6ac54259e4cb0c61a135ac57234077aab34e4ac91c27c"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-red-team.md",
+      "sha256": "0539959f871feca1fa2e383211b39787acc601edda4692979a765e6dc90f0a9b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-red-team.meta",
+      "sha256": "4e6e0a0415f29d93e8bc7cbbc2251a46ecefc640b60fa18948082b7450afb4bf"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-release-agent.md",
+      "sha256": "ba5b5c0f0e076479125534a463f7eebfb8bd6fd35928d09d76d09d0b78a6c979"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-release-agent.meta",
+      "sha256": "ca40c772d2e8e833c433f2c2f45ac210eaa8ed32661a268ff1c78a524c8e075f"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-rollback-agent.md",
+      "sha256": "7f91fbc3ae7aa122e7fddc0daf533e3880d3570943ab5ca3d716dd48083cf6ad"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-rollback-agent.meta",
+      "sha256": "ca40c772d2e8e833c433f2c2f45ac210eaa8ed32661a268ff1c78a524c8e075f"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-secrets-scanner.md",
+      "sha256": "2101836748c7dd8b356f04013d747d329a748c81334965dd6e20d82c443aef83"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-secrets-scanner.meta",
+      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-security-auditor.md",
+      "sha256": "66692405de39cbc29bb59a24380a62af0cea4712de59701407e1519d43284be6"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-security-auditor.meta",
+      "sha256": "c2f1d78d1905ebd54f53559d607bf7a6dd4a3a7cb4f75b17456dd83fa2f6651f"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-security-expert.md",
+      "sha256": "6d09c158f249e567dc40e91096bf54ef7b55b43c5fb72ac4215585eb40178768"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-security-expert.meta",
+      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-spec-writer.md",
+      "sha256": "3d11d95e7d37e54f43875697de88f5dc665a2735a79609047f4ac95b9dd38fed"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-spec-writer.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-test-author.md",
+      "sha256": "29346e759df799929bad0b703b39b774ad65e9f4b2db4a42ef933d6d86631463"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-test-author.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-test-runner.md",
+      "sha256": "23253067860809aecbdf95663f9ca23d208d46fe90013d9d9707b51d2098a08a"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-test-runner.meta",
+      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-triage.md",
+      "sha256": "fd7d42d5c260f41b6d290790c8edb8ea54f97dfcfcc9887382497aa76474cb29"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-triage.meta",
+      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-ux-analyst.md",
+      "sha256": "9db00f2bb1f063d0a894b560ab7dbc8426f54e5e960ed7e67106a4c31c428a08"
+    },
+    {
+      "path": ".codex/skills/provenforge/agents/provenforge-ux-analyst.meta",
+      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+    },
+    {
+      "path": ".codex/skills/provenforge/run-agent.sh",
+      "sha256": "51f9274c0cf3fe02167451462a6e7a607d86e61c6808ea2229517cd878358da7"
+    },
+    {
+      "path": ".codex/skills/provenforge/run-agent.ps1",
+      "sha256": "d3b8a752f5b1597746d0ed93011cb8f8bf0d29778f21bc8d72aad1f61d999cd0"
+    }
+  ],
+  "preserve": [
+    ".codex/skills/provenforge/models.env",
+    ".codex/skills/provenforge/provenforge.config.json"
+  ],
+  "agentsMd": {
+    "path": "AGENTS.md",
+    "createdByAet": true
+  }
+}

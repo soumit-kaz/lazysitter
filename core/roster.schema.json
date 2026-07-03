@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://newronaut.dev/schemas/roster.schema.json",
-  "title": "Newronaut roster",
-  "description": "Authoritative Newronaut roster consumed by the installer to render the Claude Code and Codex adapters.",
+  "$id": "https://provenforge.dev/schemas/roster.schema.json",
+  "title": "Provenforge roster",
+  "description": "Authoritative Provenforge roster consumed by the installer to render the Claude Code and Codex adapters.",
   "type": "object",
   "required": ["version", "tiers", "modelTierByLogical", "neverSkip", "agents"],
   "additionalProperties": true,

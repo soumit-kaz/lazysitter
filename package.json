@@ -1,9 +1,9 @@
 {
-  "name": "newronaut",
+  "name": "provenforge",
   "version": "1.0.0",
   "description": "Autonomous Engineering Team — a 26-agent autonomous feature pipeline installable into any project, for Claude Code and Codex.",
   "bin": {
-    "newronaut": "bin/newronaut.js"
+    "provenforge": "bin/provenforge.js"
   },
   "files": [
     "bin/",
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "node test/smoke.js",
-    "newronaut": "node bin/newronaut.js"
+    "provenforge": "node bin/provenforge.js"
   },
   "engines": {
     "node": ">=16"
