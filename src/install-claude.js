@@ -12,8 +12,8 @@ function installClaude(ctx, data) {
     ctx.copy(path.join(ctx.coreDir, 'agents', agent.file), `.claude/agents/${agent.file}`);
   }
 
-  ctx.copy(path.join(ctx.coreDir, 'orchestrator.claude.md'), '.claude/commands/provenforge.md');
-  ctx.copy(path.join(ctx.templatesDir, 'Provenforge-README.md'), '.claude/provenforge/README.md');
+  ctx.copy(path.join(ctx.coreDir, 'orchestrator.claude.md'), '.claude/commands/lsi.md');
+  ctx.copy(path.join(ctx.templatesDir, 'LazySitter-README.md'), '.claude/lazysitter/README.md');
 }
 
 module.exports = { installClaude };

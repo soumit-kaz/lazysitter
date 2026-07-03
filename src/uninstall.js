@@ -3,20 +3,20 @@
 const fs = require('fs');
 const path = require('path');
 const { log, c, exists, readFile } = require('./util');
-const { PROVENFORGE_BEGIN, PROVENFORGE_END } = require('./context');
+const { LAZYSITTER_BEGIN, LAZYSITTER_END } = require('./context');
 
 function uninstall(pkgRoot, opts) {
   const targetRoot = path.resolve(opts.dir || process.cwd());
-  const manifestPath = path.join(targetRoot, '.provenforge', 'manifest.json');
+  const manifestPath = path.join(targetRoot, '.lazysitter', 'manifest.json');
   if (!exists(manifestPath)) {
-    log.err(`No Provenforge install found in ${targetRoot} (missing .provenforge/manifest.json).`);
+    log.err(`No LazySitter install found in ${targetRoot} (missing .lazysitter/manifest.json).`);
     process.exitCode = 1;
     return;
   }
   const manifest = JSON.parse(readFile(manifestPath));
 
   log.info('');
-  log.info(`${c.bold('Removing Provenforge')} from ${c.bold(targetRoot)}`);
+  log.info(`${c.bold('Removing LazySitter')} from ${c.bold(targetRoot)}`);
   log.info('');
 
   const dirs = new Set();
@@ -45,13 +45,13 @@ function uninstall(pkgRoot, opts) {
 
   if (manifest.agentsMd) stripAgentsMd(targetRoot, manifest.agentsMd);
 
-  // Remove the manifest and any now-empty Provenforge directories.
+  // Remove the manifest and any now-empty LazySitter directories.
   fs.rmSync(manifestPath);
   dirs.add(path.dirname(manifestPath));
   removeEmptyDirsUpward(dirs, targetRoot);
 
   log.info('');
-  log.ok(`${c.bold('Provenforge removed.')}`);
+  log.ok(`${c.bold('LazySitter removed.')}`);
   log.info('');
 }
 
@@ -59,17 +59,17 @@ function stripAgentsMd(targetRoot, info) {
   const abs = path.join(targetRoot, info.path);
   if (!exists(abs)) return;
   let text = readFile(abs);
-  const b = text.indexOf(PROVENFORGE_BEGIN);
-  const e = text.indexOf(PROVENFORGE_END);
+  const b = text.indexOf(LAZYSITTER_BEGIN);
+  const e = text.indexOf(LAZYSITTER_END);
   if (b !== -1 && e !== -1) {
-    text = (text.slice(0, b) + text.slice(e + PROVENFORGE_END.length)).replace(/\n{3,}/g, '\n\n').trimStart();
+    text = (text.slice(0, b) + text.slice(e + LAZYSITTER_END.length)).replace(/\n{3,}/g, '\n\n').trimStart();
   }
   if (info.createdByAet && text.trim() === '') {
     fs.rmSync(abs);
     log.ok(`  removed ${info.path}`);
   } else {
     fs.writeFileSync(abs, text.endsWith('\n') ? text : text + '\n');
-    log.ok(`  stripped Provenforge block from ${info.path}`);
+    log.ok(`  stripped LazySitter block from ${info.path}`);
   }
 }
 

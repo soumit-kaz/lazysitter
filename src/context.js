@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { ensureDir, exists, readFile, sha256, log, c } = require('./util');
 
-const PROVENFORGE_BEGIN = '<!-- PROVENFORGE:BEGIN';
-const PROVENFORGE_END = 'PROVENFORGE:END -->';
+const LAZYSITTER_BEGIN = '<!-- LAZYSITTER:BEGIN';
+const LAZYSITTER_END = 'LAZYSITTER:END -->';
 
 // Shared install context passed to each adapter. Owns file writing, the
 // preserve-vs-managed distinction, AGENTS.md block merging, and manifest tracking.
@@ -23,7 +23,7 @@ class InstallCtx {
     return path.join(this.targetRoot, rel);
   }
 
-  // Write a file Provenforge fully owns (overwritten on update, removed on uninstall).
+  // Write a file LazySitter fully owns (overwritten on update, removed on uninstall).
   write(rel, content, { exec = false } = {}) {
     const abs = this.abs(rel);
     ensureDir(path.dirname(abs));
@@ -57,17 +57,17 @@ class InstallCtx {
     log.ok(`  ${rel}`);
   }
 
-  // Insert or replace the Provenforge block inside a doc file (AGENTS.md), preserving the rest.
+  // Insert or replace the LazySitter block inside a doc file (AGENTS.md), preserving the rest.
   mergeMarkedBlock(rel, block) {
     const abs = this.abs(rel);
     const existedBefore = exists(abs);
     let current = existedBefore ? readFile(abs) : '';
 
-    const beginIdx = current.indexOf(PROVENFORGE_BEGIN);
-    const endIdx = current.indexOf(PROVENFORGE_END);
+    const beginIdx = current.indexOf(LAZYSITTER_BEGIN);
+    const endIdx = current.indexOf(LAZYSITTER_END);
     if (beginIdx !== -1 && endIdx !== -1) {
       const before = current.slice(0, beginIdx);
-      const after = current.slice(endIdx + PROVENFORGE_END.length);
+      const after = current.slice(endIdx + LAZYSITTER_END.length);
       current = `${before}${block.trim()}${after}`;
     } else {
       const sep = current && !current.endsWith('\n') ? '\n\n' : current ? '\n' : '';
@@ -76,11 +76,11 @@ class InstallCtx {
     ensureDir(path.dirname(abs));
     fs.writeFileSync(abs, current);
     this.manifest.agentsMd = { path: rel.replace(/\\/g, '/'), createdByAet: !existedBefore };
-    log.ok(`  ${rel} ${existedBefore ? '(Provenforge block merged)' : '(created)'}`);
+    log.ok(`  ${rel} ${existedBefore ? '(LazySitter block merged)' : '(created)'}`);
   }
 
   writeManifest(version, tools) {
-    const manifestRel = '.provenforge/manifest.json';
+    const manifestRel = '.lazysitter/manifest.json';
     const data = {
       aetVersion: version,
       installedAt: this.opts.now || new Date().toISOString(),
@@ -96,4 +96,4 @@ class InstallCtx {
   }
 }
 
-module.exports = { InstallCtx, PROVENFORGE_BEGIN, PROVENFORGE_END };
+module.exports = { InstallCtx, LAZYSITTER_BEGIN, LAZYSITTER_END };

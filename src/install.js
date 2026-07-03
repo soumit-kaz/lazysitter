@@ -12,7 +12,7 @@ function install(pkgRoot, opts) {
   const version = JSON.parse(readFile(path.join(pkgRoot, 'package.json'))).version;
   const targetRoot = resolveTargetRoot(opts.dir);
   const tools = resolveTools(opts, targetRoot);
-  const mode = exists(path.join(targetRoot, '.provenforge', 'manifest.json')) ? 'update' : 'install';
+  const mode = exists(path.join(targetRoot, '.lazysitter', 'manifest.json')) ? 'update' : 'install';
 
   log.info('');
   log.info(`${c.bold('Autonomous Engineering Team')} ${c.dim('v' + version)}`);
@@ -33,21 +33,21 @@ function install(pkgRoot, opts) {
 
 function printNextSteps(tools, agentCount) {
   log.info('');
-  log.ok(`${c.bold('Provenforge installed')} — ${agentCount} agents across the pipeline.`);
+  log.ok(`${c.bold('LazySitter installed')} — ${agentCount} agents across the pipeline.`);
   log.info('');
   log.info(c.bold('Next steps:'));
   if (tools.includes('claude')) {
-    log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/provenforge <feature request>')} in your project.`);
-    log.info(`               e.g. ${c.dim('/provenforge Add CSV export to the analytics dashboard --dry-run')}`);
+    log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/lsi <feature request>')} in your project.`);
+    log.info(`               e.g. ${c.dim('/lsi Add CSV export to the analytics dashboard --dry-run')}`);
   }
   if (tools.includes('codex')) {
-    log.info(`  ${c.cyan('Codex')}        open ${c.bold('codex')} and say "run Provenforge on <feature>".`);
-    log.info(`               Set model slugs in ${c.dim('.codex/skills/provenforge/models.env')} first`);
+    log.info(`  ${c.cyan('Codex')}        open ${c.bold('codex')} and say "run LazySitter on <feature>".`);
+    log.info(`               Set model slugs in ${c.dim('.codex/skills/lazysitter/models.env')} first`);
     log.info(`               (esp. MODEL_HIGH_ALT for a distinct red-team model).`);
   }
   log.info('');
-  log.info(`  Kill switch: create ${c.dim('.claude/provenforge/KILL')} or ${c.dim('.codex/provenforge/KILL')} to halt.`);
-  log.info(`  Uninstall:   ${c.dim('npx provenforge uninstall')}`);
+  log.info(`  Kill switch: create ${c.dim('.claude/lazysitter/KILL')} or ${c.dim('.codex/lazysitter/KILL')} to halt.`);
+  log.info(`  Uninstall:   ${c.dim('npx lazysitter uninstall')}`);
   log.info('');
 }
 

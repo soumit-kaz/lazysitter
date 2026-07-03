@@ -6,15 +6,15 @@ const { log, c, exists, readFile, sha256 } = require('./util');
 
 function doctor(pkgRoot, opts) {
   const targetRoot = path.resolve(opts.dir || process.cwd());
-  const manifestPath = path.join(targetRoot, '.provenforge', 'manifest.json');
+  const manifestPath = path.join(targetRoot, '.lazysitter', 'manifest.json');
 
   log.info('');
-  log.info(`${c.bold('Provenforge doctor')} — ${targetRoot}`);
+  log.info(`${c.bold('LazySitter doctor')} — ${targetRoot}`);
   log.info('');
 
   if (!exists(manifestPath)) {
-    log.err('No Provenforge install found here (.provenforge/manifest.json missing).');
-    log.info(`  Run ${c.dim('npx provenforge init')} first.`);
+    log.err('No LazySitter install found here (.lazysitter/manifest.json missing).');
+    log.info(`  Run ${c.dim('npx lazysitter init')} first.`);
     process.exitCode = 1;
     return;
   }
@@ -37,7 +37,7 @@ function doctor(pkgRoot, opts) {
     }
   }
   if (!missing && !drifted) log.ok(`  ${manifest.managed.length} managed files present and unmodified.`);
-  else log.info(`  ${c.dim(`${missing} missing, ${drifted} locally modified (re-run \`provenforge update\` to restore)`)}`);
+  else log.info(`  ${c.dim(`${missing} missing, ${drifted} locally modified (re-run \`lazysitter update\` to restore)`)}`);
   log.info('');
 
   // 2. Tool availability.
@@ -46,13 +46,13 @@ function doctor(pkgRoot, opts) {
 
   // 3. Codex model tiering sanity.
   if (manifest.tools.includes('codex')) {
-    const modelsEnv = path.join(targetRoot, '.codex/skills/provenforge/models.env');
+    const modelsEnv = path.join(targetRoot, '.codex/skills/lazysitter/models.env');
     if (exists(modelsEnv)) {
       const env = readFile(modelsEnv);
       const alt = /^MODEL_HIGH_ALT="?([^"\n]*)"?/m.exec(env);
       if (!alt || !alt[1].trim()) {
         log.warn('  MODEL_HIGH_ALT is blank — red-team will share the architect\'s model (weaker independence).');
-        log.info(`    ${c.dim('Set a distinct high-tier slug in .codex/skills/provenforge/models.env')}`);
+        log.info(`    ${c.dim('Set a distinct high-tier slug in .codex/skills/lazysitter/models.env')}`);
       } else {
         log.ok(`  Red-team model set (MODEL_HIGH_ALT=${alt[1].trim()}).`);
       }
@@ -69,7 +69,7 @@ function checkBinary(bin, label) {
     execFileSync(cmd, [bin], { stdio: 'ignore' });
     log.ok(`  ${label} found on PATH (${bin}).`);
   } catch {
-    log.warn(`  ${label} not found on PATH (${bin}) — install it to run Provenforge.`);
+    log.warn(`  ${label} not found on PATH (${bin}) — install it to run LazySitter.`);
   }
 }
 

@@ -1,9 +1,9 @@
 {
-  "name": "provenforge",
+  "name": "lazysitter",
   "version": "1.0.0",
   "description": "Autonomous Engineering Team — a 26-agent autonomous feature pipeline installable into any project, for Claude Code and Codex.",
   "bin": {
-    "provenforge": "bin/provenforge.js"
+    "lazysitter": "bin/lazysitter.js"
   },
   "files": [
     "bin/",
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "node test/smoke.js",
-    "provenforge": "node bin/provenforge.js"
+    "lazysitter": "node bin/lazysitter.js"
   },
   "engines": {
     "node": ">=16"
