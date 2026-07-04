@@ -46,11 +46,12 @@ node lazysitter/bin/lazysitter.js init /path/to/your/project
 
 ### Always getting the latest version
 
-`npx` caches GitHub packages, so a plain re-run can silently reuse an old copy. To force the newest release, pin `@latest` (this bypasses the stale cache entry):
+`npx` caches GitHub packages, so a plain re-run can silently reuse an old copy. LazySitter is distributed from GitHub (not the npm registry), so pin the **latest release tag** with `#semver:*` — that resolves to the highest `vX.Y.Z` git tag and sidesteps a stale cache entry (npm dist-tags like `@latest` do **not** apply to `github:` specs):
 
 ```bash
-npx -y github:soumit-kaz/lazysitter@latest update   # refresh an existing install to latest
-npx -y github:soumit-kaz/lazysitter@latest init      # fresh install at latest
+npx -y "github:soumit-kaz/lazysitter#semver:*" update   # refresh an existing install to the latest release
+npx -y "github:soumit-kaz/lazysitter#semver:*" init      # fresh install at the latest release
+npx -y "github:soumit-kaz/lazysitter#main"     init      # bleeding edge (unreleased main)
 ```
 
 Every `init` / `update` / `doctor` run also probes the repo directly (independent of the npx cache) and prints a one-line notice if a newer version exists — so you always know when you're behind. Set `LAZYSITTER_NO_UPDATE_CHECK=1` to silence it.
@@ -95,7 +96,7 @@ LazySitter merges only when tests **pass**, security is **clean**, review is **c
 ```bash
 npx github:soumit-kaz/lazysitter doctor              # verify install, tooling, and model config
 npx github:soumit-kaz/lazysitter list                # print the agent roster
-npx -y github:soumit-kaz/lazysitter@latest update    # refresh agents to the latest, keep your config edits
+npx -y "github:soumit-kaz/lazysitter#semver:*" update # refresh agents to the latest release, keep your config edits
 npx github:soumit-kaz/lazysitter uninstall           # remove LazySitter
 ```
 

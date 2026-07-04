@@ -10,9 +10,10 @@ const path = require('path');
 const { readFile } = require('./util');
 
 const RAW_PKG_URL = 'https://raw.githubusercontent.com/soumit-kaz/lazysitter/main/package.json';
-// The most reliable "always latest" invocation: @latest pins npm's resolver to the
-// newest ref and bypasses a stale cache entry.
-const LATEST_CMD = 'npx -y github:soumit-kaz/lazysitter@latest';
+// Reliable "always latest" invocation for a GitHub-distributed CLI: `#semver:*`
+// resolves to the highest version *git tag* (npm dist-tags like @latest do NOT apply
+// to github: specs — the committish must follow `#`). Quoted because `#`/`*` are shell-special.
+const LATEST_CMD = 'npx -y "github:soumit-kaz/lazysitter#semver:*"';
 
 function currentVersion(pkgRoot) {
   try {

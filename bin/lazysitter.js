@@ -133,7 +133,8 @@ ${c.bold('Examples')}
   npx lazysitter uninstall --purge
 
 ${c.bold('Always the latest')}
-  npx -y github:soumit-kaz/lazysitter@latest update   ${c.dim('# @latest bypasses the npx cache')}
+  npx -y "github:soumit-kaz/lazysitter#semver:*" update   ${c.dim('# highest release tag; bypasses the npx cache')}
+  ${c.dim('(npm @latest does not apply to github: specs — use #semver:* or #main.)')}
   ${c.dim('init/update/doctor also warn when a newer version exists. Silence with LAZYSITTER_NO_UPDATE_CHECK=1.')}
 `);
 }
