@@ -27,3 +27,17 @@ Compare the implementation diff against the approved PLAN and flag drift, defect
 ## Lint / typecheck / build results
 ## Verdict: PASS | BLOCK (list blockers)
 ```
+
+## Machine verdict (the orchestrator parses THIS block; the prose above is the evidence)
+End your report with a fenced `lsi-verdict` block. Map your prose verdict to `PASS` (green) or `BLOCK` (red):
+```lsi-verdict
+verdict: PASS | BLOCK
+blocking: true | false
+degraded: true | false          # true if a tool (lint/typecheck/build) could not run — never silently PASS a gap
+evidence: inline above
+claims:                          # one line per material claim; tag how you know it + whether it is observable
+  - "[observed|reasoned][observable|internal] <claim> :: <evidence, or OPEN>"
+concerns:                        # every concern you raise MUST terminate in a disposition
+  - "[VERIFIED-FALSE|FIXED|ACCEPTED-RISK|OPEN] <concern> :: <evidence>"
+```
+Disposition rule (non-negotiable): an `observable` concern may NOT be closed VERIFIED-FALSE by argument — discharge it by running/observing it, or mark it OPEN / ACCEPTED-RISK. Any OPEN observable concern blocks a PASS. Prefer `observed` claims; a bare `reasoned` claim about observable behaviour is a hypothesis, not a finding.

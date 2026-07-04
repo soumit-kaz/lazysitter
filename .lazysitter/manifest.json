@@ -1,6 +1,6 @@
 {
-  "aetVersion": "1.0.0",
-  "installedAt": "2026-07-02T20:38:37.695Z",
+  "aetVersion": "1.1.0",
+  "installedAt": "2026-07-04T06:42:50.253Z",
   "tools": [
     "claude",
     "codex"
@@ -8,347 +8,349 @@
   "managed": [
     {
       "path": ".claude/agents/lazysitter-architect.md",
-      "sha256": "7191f430e7642b3c30ff153bc6cb3672a77ac21e5ae458c33333a90dea8bb2d3"
+      "sha256": "e524df1f3f13cb3535d5ec43647db0947c203e7a09cb65d264de7c9de1bbe289"
     },
     {
       "path": ".claude/agents/lazysitter-backend-implementer.md",
-      "sha256": "1b1cd04dfd7d7c51f24fb25778218ea03d8783466a24fa8471b3c9e8edaa989e"
+      "sha256": "f4b30109629de61dc0936a179dcb9f478ba17625efde381d609745ac1c79f27d"
     },
     {
       "path": ".claude/agents/lazysitter-business-analyst.md",
-      "sha256": "cadbdd40cdd24e9cd50de941b06dee000f65d625b572f9175883a1a31b2d82a1"
+      "sha256": "650ee00c2ab3ffdba408bd32d1f764f88ca6b90eee1e7cea48fc5ecf1d21148e"
     },
     {
       "path": ".claude/agents/lazysitter-closing-loop-auditor.md",
-      "sha256": "13e3f519b392cb17a1d943af6f0715ac2f5df795e4c0cc1823e36d3a0c358a05"
+      "sha256": "a4c1fabf6b9fa79acc770ef7a4c469a6960c4378f25cee64083d1d5e40d5898c"
     },
     {
       "path": ".claude/agents/lazysitter-code-reviewer.md",
-      "sha256": "a03c11d282950852de077692bd940742fe29c179272010f98bec2a94f7a5607f"
+      "sha256": "309843400957edf7589c03e28539521429d3c3864676f19f07b8dfd57cf9ae69"
     },
     {
       "path": ".claude/agents/lazysitter-database-expert.md",
-      "sha256": "02a3d1de2f5e2f2e8aef60baffdcea993eead101ae8c6210d7abe3f6bb60caf4"
+      "sha256": "80a13221cd930b7287b082732bb0fc64f78f9550db610f4461fb65a7459d09bb"
     },
     {
       "path": ".claude/agents/lazysitter-dependency-auditor.md",
-      "sha256": "2a181b9dcc57979ef91c899f47e7c716cc5abe838795aee04380860c6dcdfdfd"
+      "sha256": "772ab22dd9cd321c55962085675734e86c5d3b1a3f7904d266b1866f958879e0"
     },
     {
       "path": ".claude/agents/lazysitter-devils-advocate.md",
-      "sha256": "7d7f092468be1954c0b879a7910d8abbadbbb309d6e240f212f9f6be86b411d9"
+      "sha256": "4714c7eb869b5f7ef8411700e488390c9457e04a82a572c268a8a9a347f3cdfd"
     },
     {
       "path": ".claude/agents/lazysitter-docs-agent.md",
-      "sha256": "07913fa5672a0f921bd8f0076c3fdc4cd6ec30410959119f321e7d3fae2e367c"
+      "sha256": "8c9f5eda1aa90a7920a2846a6065ae53797be144cdd638f298ac80df4926f642"
     },
     {
       "path": ".claude/agents/lazysitter-explorer.md",
-      "sha256": "7bbad7176963bba2c657d18f8cf97b78b4dcf1cf8b27029049d0fb3e44c32887"
+      "sha256": "206acd8e27e075976f5d8045a86fa89a1731ab22e85547bc12f72f0be671e7c4"
     },
     {
       "path": ".claude/agents/lazysitter-frontend-expert.md",
-      "sha256": "b01c45fccc4c1bd7169b491da14bf1e5550aa89ecefd695889de13a35fd4ef62"
+      "sha256": "9ac1bd5bf45c05d18c036fd92b9b1ef617f0eb90fca3e482696c08573ee2f2a7"
     },
     {
       "path": ".claude/agents/lazysitter-frontend-implementer.md",
-      "sha256": "cd63b06558d6b593cccb6ff4a29b9327dd316f9ef583c592a0d661bed94c34d3"
+      "sha256": "52c5450d8ec93a93f0f365cbe140103734e18957174a58996fbede2976a98c58"
     },
     {
       "path": ".claude/agents/lazysitter-infra-expert.md",
-      "sha256": "30ec8cb3ccd1c8c5259096c366007bb8d733dd309b5799020c51e5837730ee3b"
+      "sha256": "b824885ca4b0365d9f4086a06cf13776d0f5a390276748736f76d7ec3c4a1ee6"
     },
     {
       "path": ".claude/agents/lazysitter-integration-checker.md",
-      "sha256": "3c0efa82b30f7dac31734bd7b23218dfc8a78e22fed2f0cc559f97e6c2de603f"
+      "sha256": "42182f6e5f0c59d595ec4c34d1173a9e2c8bd500cd85d523ad6ac06037fc50f3"
     },
     {
       "path": ".claude/agents/lazysitter-monitor-agent.md",
-      "sha256": "452422b96ec61468e558b029c2ca9d820c13e0c56062e6dd2ec4c51b9ab0c0ee"
+      "sha256": "d4f3bd398a813e691c69a54ced88b0c9c6d5d7a59dc001ac76f6a276b40d7dc0"
     },
     {
       "path": ".claude/agents/lazysitter-red-team.md",
-      "sha256": "e3176e4569e0994d59bb252a54f64de5965f4f36cff64a71dfd8196a31789c2d"
+      "sha256": "86e143578b2c09e3620e2306a3a1ba824289b6b4289e8174ed5fa64d4635c3e0"
     },
     {
       "path": ".claude/agents/lazysitter-release-agent.md",
-      "sha256": "4b0f1199a87b3390c27d3f96456de929db06ad31744ffe997ebf2f2f592d3708"
+      "sha256": "dc1d58951e9e23ea217f4d53d6fef8dca219832f9bc43b4baded85dce849c219"
     },
     {
       "path": ".claude/agents/lazysitter-rollback-agent.md",
-      "sha256": "9d9d8f45fd1c2a46a889c4fd8f6c5b42d41eabf9fb42f0505c6da7341d260e4c"
+      "sha256": "ca0fa72887db825897409157cc4ed90788265d751dda51bdf456db369395f1c6"
     },
     {
       "path": ".claude/agents/lazysitter-secrets-scanner.md",
-      "sha256": "d178fdd6455df51dd753c2409aae62b1451a49ab2125eb9719e58698d3eb8a8f"
+      "sha256": "322dc89718d889f6cf9c1501d0379047a09245fcfbe2b0cd6641fa95efdd9547"
     },
     {
       "path": ".claude/agents/lazysitter-security-auditor.md",
-      "sha256": "e343135f5de1d44fdfe86865a0acab4404845662d87c70d8e1c3f468c8697703"
+      "sha256": "030cd2ce180c06922bd2d6a250ed6309c75e72b015d9420e7e8986e3909c6430"
     },
     {
       "path": ".claude/agents/lazysitter-security-expert.md",
-      "sha256": "ed26dfa1ebf710c81c96a9e0ce4e88160d4bf34a0f85a5de1872151a00beab83"
+      "sha256": "ac7fa39e9b7d9aa52278874a69e7d7973ea888d5932c65c067b54949f98e0822"
     },
     {
       "path": ".claude/agents/lazysitter-spec-writer.md",
-      "sha256": "f5cb849fcd4f0af2ee0eb480a9ead2475d4a889fabde1979e588c5625d137349"
+      "sha256": "1320062d0123c412f415da8741b3dab2b053745e8b8278ed14f5279b7cd4b186"
     },
     {
       "path": ".claude/agents/lazysitter-test-author.md",
-      "sha256": "835e2995fa28658779cd77418a70945815ff33c6ba27052539b472fb9c43053e"
+      "sha256": "caed7fcea21c6ac4b37f181687bc6f154394483c68a806e2af40beb149087576"
     },
     {
       "path": ".claude/agents/lazysitter-test-runner.md",
-      "sha256": "fe9b3e20591177095c8cb9832a62effdad135cd4f7eced2c4547dff5db11b072"
+      "sha256": "c58b0b7ee221d19625aede428c3eec673755fc6876ee3c91416046e27209f62d"
     },
     {
       "path": ".claude/agents/lazysitter-triage.md",
-      "sha256": "3fa1ced8a0ee76ac73bd1fb778283a9b8d2febc66fab520f1c21062571246ae5"
+      "sha256": "6c71a5e8f8805bf54b903686f22564833139c9b031bd0a4648f57cb1476e46e3"
     },
     {
       "path": ".claude/agents/lazysitter-ux-analyst.md",
-      "sha256": "a5eb19cacb188c3ee9ec399a40d1d6c35e4ba4c3748091758265458078f7d52c"
+      "sha256": "00aa12609030be31d73c3f095f6ff294adbcf08f0c5a383cf32f0b0b1203fa96"
     },
     {
       "path": ".claude/commands/lsi.md",
-      "sha256": "16b0a25a73a566b926b0ae706d03f36589a13da862dee38170aece3c0a2f4361"
+      "sha256": "a68ce924fcb583983a15f90ed1ce6e2f5fc028d5d698aeb4013f28b636113964"
     },
     {
       "path": ".claude/lazysitter/README.md",
-      "sha256": "7b1f5fd65fdf40387c2606c796e96e54d1de6b36f5277b67830eba8a06f37656"
+      "sha256": "9c3e206ab4953b0ad612bf68f2bf3c23e4a9a83b96a1602412cce58197583ebd"
     },
     {
       "path": ".codex/skills/lazysitter/SKILL.md",
-      "sha256": "2736a9cde1828f05e934ada36cbf89537d911f16744beb8ee2fe03cf095916d0"
+      "sha256": "8e9b2f827cfb85452e03ef201e367547563a477c15f5c3dde32102ce49a46594"
     },
     {
       "path": ".codex/skills/lazysitter/orchestrator.md",
-      "sha256": "b23ec53296c7e00e70d46c05f475a4910931f89f1dc2c3af4e8ad583400f62a3"
+      "sha256": "0320e43038ba682ab4acacea724b88d13a4e90190fa59bf0155cd4b9209c0924"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-architect.md",
-      "sha256": "3215145c3652fd0fdfe9a550435a62a4b6956262030016d73493ab1b8969d1e9"
+      "sha256": "c80a1137e7bfda233f38d33c94b7e21307b4672f0e51b602228cccea3274e6ee"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-architect.meta",
-      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+      "sha256": "371e92e194f0e39212cd7c0a276a13881af00ba3d4584709b4ed9415cd2fef83"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-backend-implementer.md",
-      "sha256": "d8dc02dced0949731d631e4a30d3f327aa6caa85cdaeec4bb95ecfefb9ec926b"
+      "sha256": "9d5c8c3d9b266f0331780cfc9580aafa8cb72316cecfce24451decb67b88f943"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-backend-implementer.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-business-analyst.md",
-      "sha256": "a8cdde295bc9b519093a9edc47a16d2885eb1f6411abff47d3467f19c238424d"
+      "sha256": "136ff8191cf83765f8b6e98dc03061853543e14cef2e73054743b0e01ddf8ec8"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-business-analyst.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-closing-loop-auditor.md",
-      "sha256": "1241ff030004b37ed4c90caeec16e5707d7449770199393f98ea38ef8d5d9abb"
+      "sha256": "bd2b4334fa925f3b4c984e98a2ff18af9530482fd53dd8b09845ecf75f5bbd17"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-closing-loop-auditor.meta",
-      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+      "sha256": "ee7cf3ad5e7797c1e3db31356be751fc9da98aad3c871e5af7bfbe7df3b0c033"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-code-reviewer.md",
-      "sha256": "c735f4511bdb0b40b106361d67779eeb021ba0466976d07d47bd6df6e9065a1a"
+      "sha256": "d8c691873583ef33fe7dae05f21330c1ba8c4007e9bc3d1071aab53c34d6d56f"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-code-reviewer.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-database-expert.md",
-      "sha256": "47ca7de1fe6c101208f0c75973e40eded007e1b9da22d5e53fefe1758e498022"
+      "sha256": "d471fdf9b40c7978898303c5f4923c292c0374eab6db8f892a548406c260de5d"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-database-expert.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "02a1a2a86642fed215a09eb8a3c1bb404d3c682ad2c7cac68cafc6edc2850726"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-dependency-auditor.md",
-      "sha256": "1354ea36cd83e0d43546a328c95ef40531304017e972c16507dab868f846bad0"
+      "sha256": "dbfac4ecd5770011ed68183606a169f2d6a80053be7e755d7c1412d9d9909b7e"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-dependency-auditor.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-devils-advocate.md",
-      "sha256": "986d0e077f37677d0d02fcf918ea7dd20e2a9965b742c4b3f9ebb79b162ddacb"
+      "sha256": "acea71b77c75910cc75cce885d39faf4c4ac93a3664996769838539225dacb04"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-devils-advocate.meta",
-      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+      "sha256": "ee7cf3ad5e7797c1e3db31356be751fc9da98aad3c871e5af7bfbe7df3b0c033"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-docs-agent.md",
-      "sha256": "d5929ebb8e3df587b1e1abeedc34b9b30d15023fcb33b17fcca24f93ae4c5c56"
+      "sha256": "8f4ec31a1f494d3f824a2e169a37bca3a4873b8e0114c3117f019352f52b8d58"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-docs-agent.meta",
-      "sha256": "7a453a7ad15ff7447ec6ac54259e4cb0c61a135ac57234077aab34e4ac91c27c"
+      "sha256": "863e6a423453c0943328b267f2a782ad98f26d3b160bb63da2e704ea8d49592d"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-explorer.md",
-      "sha256": "d0c33ba89e6e09357220221217f4c0b92f0bfd29ab992148de58c40e01b5205e"
+      "sha256": "138166faf5adcb2e3d0534adc47e1ef31b74560cc89d23f11af9bb5d7c71dc9e"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-explorer.meta",
-      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+      "sha256": "863e6a423453c0943328b267f2a782ad98f26d3b160bb63da2e704ea8d49592d"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-frontend-expert.md",
-      "sha256": "37f0e95ad112259043e9f3a3890c2513135d325095d41340df87799de6dbe075"
+      "sha256": "e9e6fa36d72d113659d279c7f57170098fa97ce978c4b6576c0f1e763aa31751"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-frontend-expert.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "02a1a2a86642fed215a09eb8a3c1bb404d3c682ad2c7cac68cafc6edc2850726"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-frontend-implementer.md",
-      "sha256": "355b0d85d82d640aadc46c251b0eea75f3b86465e5d767c38f280b1ca30337f8"
+      "sha256": "4c1654ba7c822d5f231708cd7771beefc265334d9fe181d12225b9a6619b7204"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-frontend-implementer.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-infra-expert.md",
-      "sha256": "e6e12e5dc062150fd4c706019d14945c95b25c9eab242846e5d341ef7d441f92"
+      "sha256": "347f0c8ffd554d01e0465b8d6e6974823cb5f88791dd573d815f8fbf299a4769"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-infra-expert.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "02a1a2a86642fed215a09eb8a3c1bb404d3c682ad2c7cac68cafc6edc2850726"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-integration-checker.md",
-      "sha256": "260e64ff13e50e718772392dd10acdda8371ffd72401c628850d223e3ef569ec"
+      "sha256": "3e9c6fb058dc2a5274fa349d188830fe855242eb786bafd9acd25ebaabb7283c"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-integration-checker.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-monitor-agent.md",
-      "sha256": "2240daba5f7955f2b3cecf32d81f113b9a2e74767d6b53fe7fdf3d4d19e8ea56"
+      "sha256": "968a33ca36d22d37156bd77900811931a8f5d62791988683a23188c062108a96"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-monitor-agent.meta",
-      "sha256": "7a453a7ad15ff7447ec6ac54259e4cb0c61a135ac57234077aab34e4ac91c27c"
+      "sha256": "863e6a423453c0943328b267f2a782ad98f26d3b160bb63da2e704ea8d49592d"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-red-team.md",
-      "sha256": "0539959f871feca1fa2e383211b39787acc601edda4692979a765e6dc90f0a9b"
+      "sha256": "5b270a8c389f5e2560c03af7547ef6c2ac91580355e5edb63e5a405d78ecf56d"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-red-team.meta",
-      "sha256": "4e6e0a0415f29d93e8bc7cbbc2251a46ecefc640b60fa18948082b7450afb4bf"
+      "sha256": "3bb5026d6ce21bd29fe1fb8eaf34d0c95a24e4ec6abfd3cc5bd4dbd3741b3afc"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-release-agent.md",
-      "sha256": "ba5b5c0f0e076479125534a463f7eebfb8bd6fd35928d09d76d09d0b78a6c979"
+      "sha256": "548f308edca478c99c2d26cce8e391899a77b6fdddfd9ef6919589b380e265cd"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-release-agent.meta",
-      "sha256": "ca40c772d2e8e833c433f2c2f45ac210eaa8ed32661a268ff1c78a524c8e075f"
+      "sha256": "f00b643464ed637d7dabcefc1fd1cc8d8d6152792a3e95e431731e6060283400"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-rollback-agent.md",
-      "sha256": "7f91fbc3ae7aa122e7fddc0daf533e3880d3570943ab5ca3d716dd48083cf6ad"
+      "sha256": "05970048d73dae62843f79e9f93c5875dcdfa6f8fca509a04521d3e5437b1e77"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-rollback-agent.meta",
-      "sha256": "ca40c772d2e8e833c433f2c2f45ac210eaa8ed32661a268ff1c78a524c8e075f"
+      "sha256": "f00b643464ed637d7dabcefc1fd1cc8d8d6152792a3e95e431731e6060283400"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-secrets-scanner.md",
-      "sha256": "2101836748c7dd8b356f04013d747d329a748c81334965dd6e20d82c443aef83"
+      "sha256": "63b643d8745ba808d9c7a9acf42c789d7c80dffd5b7de0eb2984db3faf040f11"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-secrets-scanner.meta",
-      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+      "sha256": "ae310a9c79cbbbe91f6469461e5d3c76c41424dd895f48d36565f708c0e7ba77"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-security-auditor.md",
-      "sha256": "66692405de39cbc29bb59a24380a62af0cea4712de59701407e1519d43284be6"
+      "sha256": "42bc934ee2276abf4a86c46cd6394ff98c3630acffe5bfeb0210bc315ab47df4"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-security-auditor.meta",
-      "sha256": "c2f1d78d1905ebd54f53559d607bf7a6dd4a3a7cb4f75b17456dd83fa2f6651f"
+      "sha256": "371e92e194f0e39212cd7c0a276a13881af00ba3d4584709b4ed9415cd2fef83"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-security-expert.md",
-      "sha256": "6d09c158f249e567dc40e91096bf54ef7b55b43c5fb72ac4215585eb40178768"
+      "sha256": "35182e2ebc4bb195e5aa0398267809a17f2edbae896f86eff484ada5206ded96"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-security-expert.meta",
-      "sha256": "b4743c3ae2cfcd70681a6b7e1ccd553229a0e68ac5b92e823f58bdb2dd9cb005"
+      "sha256": "ee7cf3ad5e7797c1e3db31356be751fc9da98aad3c871e5af7bfbe7df3b0c033"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-spec-writer.md",
-      "sha256": "3d11d95e7d37e54f43875697de88f5dc665a2735a79609047f4ac95b9dd38fed"
+      "sha256": "c8f46bf9c04b1058d2369511a20740633505a1b9cc96ef1f3a0967e175aebed1"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-spec-writer.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-test-author.md",
-      "sha256": "29346e759df799929bad0b703b39b774ad65e9f4b2db4a42ef933d6d86631463"
+      "sha256": "c5d98686d0b7841dbd157b00880c99bd7da469aebc42bf18789b1b8370dd3327"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-test-author.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-test-runner.md",
-      "sha256": "23253067860809aecbdf95663f9ca23d208d46fe90013d9d9707b51d2098a08a"
+      "sha256": "c6f121649192cbcebeb2dd70f40e63034d69ea173c2312a5cbd1926d230864f4"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-test-runner.meta",
-      "sha256": "3895a6b6f47b741f746dd202229421428d33aeb5597b40c5cd7b82b30d49cd4b"
+      "sha256": "ee3ba79e98ee0e36f9dcd85f27816fdce41248bc979a900c335ebf08214a042a"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-triage.md",
-      "sha256": "fd7d42d5c260f41b6d290790c8edb8ea54f97dfcfcc9887382497aa76474cb29"
+      "sha256": "96aff793221a2765a6ebce3f6d31cc24b5f96516ba62e33d02ce3e56fdaf470b"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-triage.meta",
-      "sha256": "494480918dbdd01a07d62ca6b4a694707cff987b3900ade0689429e5df4adbf0"
+      "sha256": "ae310a9c79cbbbe91f6469461e5d3c76c41424dd895f48d36565f708c0e7ba77"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-ux-analyst.md",
-      "sha256": "9db00f2bb1f063d0a894b560ab7dbc8426f54e5e960ed7e67106a4c31c428a08"
+      "sha256": "98695f65e54037f8f42beab260ca7c27032c400e5f64820572480b9b68e49686"
     },
     {
       "path": ".codex/skills/lazysitter/agents/lazysitter-ux-analyst.meta",
-      "sha256": "b07de76e8059bc81a3bea1367204dd0f250623480bbe03e35871afefa171a002"
+      "sha256": "02a1a2a86642fed215a09eb8a3c1bb404d3c682ad2c7cac68cafc6edc2850726"
     },
     {
       "path": ".codex/skills/lazysitter/run-agent.sh",
-      "sha256": "51f9274c0cf3fe02167451462a6e7a607d86e61c6808ea2229517cd878358da7"
+      "sha256": "fad6f4dc4bee6eb6fa3cdca4ab2ba7d9956e6934f1f78a4cb9a038f3f1fb8a3a"
     },
     {
       "path": ".codex/skills/lazysitter/run-agent.ps1",
-      "sha256": "d3b8a752f5b1597746d0ed93011cb8f8bf0d29778f21bc8d72aad1f61d999cd0"
+      "sha256": "2cab0878f683fa95ab3ea37054152a2c1ab82e75df51addb0736e7406825d6dd"
     }
   ],
   "preserve": [
+    ".claude/lazysitter/PITFALL-LEDGER.md",
+    ".codex/skills/lazysitter/PITFALL-LEDGER.md",
     ".codex/skills/lazysitter/models.env",
     ".codex/skills/lazysitter/lazysitter.config.json"
   ],
   "agentsMd": {
     "path": "AGENTS.md",
-    "createdByAet": true
+    "createdByAet": false
   }
 }

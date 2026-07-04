@@ -33,3 +33,11 @@ Validate the feature against the *current* integration base, not the stale branc
 ## Cross-feature regressions
 ## Verdict: PASS | BLOCK
 ```
+
+## Machine verdict (the orchestrator parses THIS block)
+```lsi-verdict
+verdict: PASS | BLOCK
+blocking: true | false
+degraded: true | false          # true if the suite could not run against the integrated base
+evidence: inline above
+```

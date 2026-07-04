@@ -50,16 +50,75 @@ Keep logs terse; the artifact files are the reconstructable record. When you spa
 
 ---
 
+## Cross-cutting mechanics (these change how you route — read before the pipeline)
+
+You are the hub, but not the pipe for content. Route control (who runs when); let agents read/write a shared substrate for facts, so your own context stays lean at the merge gate.
+
+### Shared substrate
+- **Run-manifest** `<run-dir>/MANIFEST.md` — VERIFIED FACTS ONLY: commit SHAs, contract signatures, file paths, toolchain/deploy facts, frozen-test paths + hashes. Agents read facts from here (pass its path in their input file) instead of you re-narrating them. **Never put interpretations/labels in it** — a wrong label poisons every reader; judgments stay per-agent.
+- **Agents persist their own artifacts.** business-analyst, explorer, spec-writer, architect write their own file to `<run-dir>/` (they run `workspace-write` for this) and return a short summary + path. You PROMOTE/FREEZE; you do not re-transcribe. Carry pointers + summaries + machine verdicts, not full essays. **Re-read a frozen artifact by path when you need it** (especially the spec at the gate).
+- **Structured gate-state** `<run-dir>/gate-state.jsonl` — every verifier's output file ends with a fenced `lsi-verdict` block. Append each to gate-state.jsonl and evaluate the gate by READING it. `degraded:true` is NOT a pass.
+
+### The `lsi-verdict` block (every verifier emits it)
+```
+verdict: PASS | BLOCK
+blocking: true|false
+degraded: true|false
+evidence: <path or 'inline above'>
+claims:   - "[observed|reasoned][observable|internal] <claim> :: <evidence|OPEN>"
+concerns: - "[VERIFIED-FALSE|FIXED|ACCEPTED-RISK|OPEN] <concern> :: <evidence>"
+```
+**Observable-claim rule:** an `observable` concern may NOT be closed VERIFIED-FALSE by argument. An OPEN observable concern — or a `reasoned` claim dismissing an observable property while a harness that could observe it exists — means the gate is NOT clean. Route it to the observing gate or surface it as ACCEPTED-RISK. Enforce raiser≠dismisser.
+
+### Teeth check (mechanical — never skip)
+Before trusting the frozen suite, run `lazysitter-test-runner` in `teeth-check` mode against the pre-implementation baseline commit. Require ≥1 must-test to FAIL; record which. Any must-test passing at baseline → BLOCK, back to test-author.
+
+### Freeze integrity (hash guard)
+On freeze, record each frozen test file's sha256 in MANIFEST.md. The only legal post-freeze change is a mechanics-only harness repair with a logged exception in DECISIONS.md. Re-hash before the gate; an unlogged hash change BLOCKS.
+
+### AC → test → verdict traceability
+Maintain `<run-dir>/TRACEABILITY.md` (must-AC → test id(s) → last verdict from test-runner's `ac_results`). The gate asserts every must-AC is tested and green; an orphan or red must-AC BLOCKS.
+
+### Limitations ledger
+`<run-dir>/LIMITATIONS.md` accumulates user-facing limitations as any agent finds them; closing-loop-auditor verifies each is disclosed. Surface all in the final report.
+
+### Verification cache
+Run build/typecheck/test ONCE per commit (keyed on exact SHA + clean tree; never cache a dirty tree) and share the raw output with verifiers. Each still forms its own verdict — share ground truth, never judgment.
+
+### Model tier on retries
+Route only confirmed-MECHANICAL retries to a cheaper tier (`low`). Never downgrade an adversarial/verification judgment — red-team keeps its distinct `high_alt` model.
+
+### Pitfall ledgers (two)
+- **Project-tech** — `.codex/lazysitter/PROJECT-PITFALLS.md` (tech triggers). explorer greps by this feature's triggers, injects ~5 matching rows (never the whole file). implementers/red-team append via `pitfalls[]`; dedup by hit-count. hits ≥2 + no guard → GRADUATE into a lint/harness/preflight guard, then mark `graduated` and stop injecting.
+- **Process/collaboration** — `.codex/skills/lazysitter/PITFALL-LEDGER.md` (shipped, seeded). Read at preflight so you don't repeat a known process fault.
+
+### Visual/behavioral gate (generic slot — project owns the harness)
+If the project declares a render/behavioral harness (command + fixtures contract), run it in Tier 6 as the arbiter of every `observable` criterion and concern. Observable surface but no harness → a `degraded` gap; never let an argument substitute for the missing observation. LazySitter does not ship the harness.
+
+### Un-anchoring adversaries
+Hand `lazysitter-red-team`, `lazysitter-security-auditor`, `lazysitter-closing-loop-auditor` FACTS (diff, spec, constraints, original ask) — NOT your theory of the bug. Anchoring them is confirmation bias where it hurts most.
+
+---
+
+## Tier 0 — Preflight (before intake)
+- **0a.** Check the kill switch. Read `.codex/skills/lazysitter/PITFALL-LEDGER.md` (process faults).
+- **0b. Toolchain + topology detection.** Detect the verification toolchains this feature needs and read the deploy topology (does `git push` deploy, or is there a separate deploy step/target?). Record as facts in MANIFEST.md.
+- **0c. Missing verification toolchain?** Do NOT silently ride "verification-degraded" and do NOT auto-install. Surface it ONCE to the user (the same sanctioned interrupt as the budget cap): install now, or proceed with a recorded gap.
+- **0d.** Note whether a render/behavioral harness is declared (Tier-6 visual gate).
+- **0e.** Initialize `<run-dir>/`: MANIFEST.md, gate-state.jsonl, TRACEABILITY.md, LIMITATIONS.md, and `.codex/lazysitter/PROJECT-PITFALLS.md` (create empty if absent).
+
+---
+
 ## Pipeline
 
 Run these tiers in order. Pass each agent only the inputs its role file lists (respect the one-directional context flow — the context pack flows down; nobody re-explores).
 
 ### Tier 1 — Intake
 1. Spawn `lazysitter-business-analyst` with the raw request. Save `REQUIREMENT.md`. If it returns a `CLARIFY` block, ask the user those questions, then re-run or amend the requirement with the answers.
-2. Spawn `lazysitter-triage`. Save `TRIAGE.md`. It gives feature size + which optional experts and implementers to activate. Honor the never-skip list.
+2. Spawn `lazysitter-triage` **and** `lazysitter-explorer` concurrently (both need only the requirement — launch both `run-agent.sh` calls in the background and wait for both). Save `TRIAGE.md` and `CONTEXT-PACK.md` (explorer persists its own copy; you promote it). The pack is reused by everyone downstream — nobody re-explores.
 
 ### Tier 2 — Research
-3. Spawn `lazysitter-explorer`. Save `CONTEXT-PACK.md`. This single pack is reused by everyone downstream — do not let any later agent re-explore.
+(Explorer already ran in parallel with triage, above.) Confirm `CONTEXT-PACK.md` is persisted and injected with any matching `PROJECT-PITFALLS.md` rows before proceeding.
 
 ### Tier 3 — Spec
 4. Spawn `lazysitter-spec-writer` (inputs: requirement + context pack). Save `ACCEPTANCE-CRITERIA.md`. This is the source of truth for tests.
@@ -76,25 +135,28 @@ Run these tiers in order. Pass each agent only the inputs its role file lists (r
    - `lazysitter-test-author` with ONLY the acceptance criteria + the plan's public contracts + the context pack's test-tooling section (never the implementation).
    This parallelism is what makes the tests genuinely blind.
 10. When any implementer reports new dependencies, spawn `lazysitter-dependency-auditor` on them. If it returns `BLOCK`, route back to the implementer to replace the dependency (counts against auto-fix retries).
-11. When `lazysitter-test-author` returns, **freeze the tests** (record the frozen paths in the audit log; they are not edited again).
+11. When `lazysitter-test-author` returns, **freeze the tests**: record the frozen paths AND each file's sha256 in MANIFEST.md. Not edited again except by a logged mechanics-only harness repair.
+11a. **Teeth check.** Run `lazysitter-test-runner` in `teeth-check` mode against the pre-implementation baseline commit. Require ≥1 must-test to FAIL; record which. Any must-test passing at baseline → BLOCK, back to test-author.
 
 ### Tier 6 — Independent verification (spawn in parallel, all required)
-12. Spawn together: `lazysitter-test-runner` (frozen tests vs implementation), `lazysitter-code-reviewer` (diff vs plan + lint/typecheck/build), `lazysitter-red-team` (attack it), `lazysitter-security-auditor` (audit the diff), and `lazysitter-secrets-scanner` (diff). Save each report.
+12. Run build/typecheck/test ONCE for this commit (verification cache) and share the raw output. Then spawn together, handing each FACTS not your bug-theory (un-anchor adversaries): `lazysitter-test-runner` (frozen tests; may reuse the cached run), `lazysitter-code-reviewer` (diff vs plan + lint/typecheck/build), `lazysitter-red-team` (attack it — facts only), `lazysitter-security-auditor` (audit the diff — facts only), and `lazysitter-secrets-scanner` (diff). Append each `lsi-verdict` block to gate-state.jsonl; save each report.
+12a. **Visual/behavioral gate.** If a render/behavioral harness is declared (Tier 0d), run it now as the arbiter of every `observable` acceptance criterion and observable concern. Observable surface but no harness → record a `degraded` gap; never accept a reasoned dismissal in its place.
 
 ### Tier 7 — Integration & intent
 13. Spawn `lazysitter-integration-checker` (full suite vs current devBase + any concurrent branches).
 14. Spawn `lazysitter-closing-loop-auditor` with the **original verbatim user request** (not the plan) + final diff + `DECISIONS.md`.
 
-### Merge gate
-15. The gate requires ALL simultaneously green: test-runner PASS · security-auditor CLEAN · code-reviewer CLEAN · integration-checker PASS · closing-loop-auditor INTENT MATCH. Also require secrets-scanner CLEAN and dependency-auditor PASS.
-16. **Failure handling:** if any gate is red, route the specific failures back to the relevant implementer for a fix, up to a capped **3 auto-fix retries** total. Re-run only the affected verifiers after each fix (tests stay frozen). If still failing after the cap, **leave the work on the branch with a written failure summary** and stop — NEVER force-merge.
+### Merge gate — evaluate from `gate-state.jsonl`, not from memory
+15. Re-read the frozen spec by path, then evaluate mechanically: all verdicts green (test-runner · security-auditor · code-reviewer · integration-checker · closing-loop-auditor · secrets-scanner · dependency-auditor, read from `gate-state.jsonl`); no unresolved `degraded:true`; no OPEN observable concern; every `must` AC in TRACEABILITY.md tested and green; frozen-test hashes match MANIFEST.md (or a logged exception exists); every LIMITATIONS.md item confirmed disclosed.
+16. **Failure handling:** route red checks back to the relevant implementer, capped at **3 auto-fix retries** total (confirmed-mechanical retries at the cheaper `low` tier; fresh judgments at full tier). Re-run only the affected verifiers (tests stay frozen) and refresh their gate-state entries. If still failing after the cap, **leave the work on the branch with a written failure summary** — NEVER force-merge.
 17. If not `--auto`, HOLD here and summarize the gate status for the user instead of merging.
 
 ### Tier 8 — Release & recovery
-18. Spawn `lazysitter-release-agent`: rebase onto current devBase, re-verify the gate, and prefer staged/canary rollout if infra supports it. Record the merge ref.
+18. Spawn `lazysitter-release-agent`: rebase onto current devBase, re-verify the gate, and prefer staged/canary rollout if infra supports it. Hand it the deploy-topology facts from MANIFEST.md — if `push ≠ deploy`, it runs the recorded deploy step, not an assumed push. Record the merge ref.
 19. Spawn `lazysitter-monitor-agent` for the monitoring window on the merge ref.
 20. If the monitor reports `REGRESSION`, spawn `lazysitter-rollback-agent` immediately (standing authority — no extra approval).
 21. If stable, spawn `lazysitter-docs-agent` to update changelog/README/API docs.
+22. **Graduate pitfalls.** Fold new `pitfalls[]` rows into `PROJECT-PITFALLS.md` (dedup by hit-count); flag any row now at hits ≥2 without a guard as a graduation candidate.
 
 ## Final report to the user
-Summarize: what was built, the triage size + which agents woke, the merge-gate verdict, any logged overrides, red-team/security findings, rollout mode, and the audit-log path. Keep it skimmable; point to `.codex/lazysitter/runs/<slug>/` for detail.
+Summarize: what was built, the triage size + which agents woke, the merge-gate verdict (from `gate-state.jsonl`), any logged overrides, red-team/security findings, **known limitations**, any `degraded`/accepted-risk items, graduation candidates, rollout mode, and the audit-log path. Keep it skimmable; point to `.codex/lazysitter/runs/<slug>/` for detail.

@@ -37,10 +37,14 @@ function main() {
     purge: !!flags.purge,
   };
 
+  // Commands where knowing you're on a stale npx-cached copy matters.
+  let notifyStale = false;
+
   switch (cmd) {
     case 'init':
     case 'install':
       require('../src/install').install(PKG_ROOT, opts);
+      notifyStale = true;
       break;
     case 'update': {
       // Reuse the adapters recorded in the existing manifest.
@@ -50,6 +54,7 @@ function main() {
         opts.codex = mf.tools.includes('codex');
       }
       require('../src/install').install(PKG_ROOT, opts);
+      notifyStale = true;
       break;
     }
     case 'uninstall':
@@ -59,6 +64,7 @@ function main() {
     case 'doctor':
     case 'check':
       require('../src/doctor').doctor(PKG_ROOT, opts);
+      notifyStale = true;
       break;
     case 'list':
     case 'roster':
@@ -68,6 +74,12 @@ function main() {
       log.err(`Unknown command: ${cmd}`);
       help();
       process.exitCode = 1;
+  }
+
+  // Fire-and-forget freshness check (offline-safe, ~2.5s cap). Keeps the event loop
+  // alive only until the probe resolves, then the process exits with its set code.
+  if (notifyStale) {
+    require('../src/version').printUpdateNoticeIfStale(PKG_ROOT, log, c);
   }
 }
 
@@ -119,6 +131,10 @@ ${c.bold('Examples')}
   npx lazysitter init . --codex       ${c.dim('# Codex only')}
   npx lazysitter doctor
   npx lazysitter uninstall --purge
+
+${c.bold('Always the latest')}
+  npx -y github:soumit-kaz/lazysitter@latest update   ${c.dim('# @latest bypasses the npx cache')}
+  ${c.dim('init/update/doctor also warn when a newer version exists. Silence with LAZYSITTER_NO_UPDATE_CHECK=1.')}
 `);
 }
 

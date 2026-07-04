@@ -32,6 +32,12 @@ function installCodex(ctx, data) {
   });
   ctx.copy(path.join(ctx.coreDir, 'codex', 'run-agent.ps1'), `${SKILL_DIR}/run-agent.ps1`);
 
+  // Seeded process-pitfall ledger — preserve so accumulated faults survive `update`.
+  ctx.writePreserve(
+    `${SKILL_DIR}/PITFALL-LEDGER.md`,
+    readFile(path.join(ctx.coreDir, 'PITFALL-LEDGER.seed.md'))
+  );
+
   // User-editable config — written once, never clobbered on update.
   ctx.writePreserve(`${SKILL_DIR}/models.env`, readFile(path.join(ctx.coreDir, 'codex', 'models.env')));
   ctx.writePreserve(

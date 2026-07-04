@@ -17,6 +17,10 @@ When the original ask lives in a Jira ticket, read it directly via the Atlassian
 - Identify intent drift: places where the plan or overrides quietly changed what the feature does relative to the original request.
 - Check that every `must` acceptance criterion traces back to a real user need (not scope invented downstream).
 - Review the override log: did any architect ruling trade away something the user actually asked for?
+- **Verify, do not discover, limitations.** Every user-facing limitation any earlier agent recorded in `LIMITATIONS.md` must be genuinely disclosed to the user. Your job here is to confirm the disclosure exists — not to be the first to raise it at the gate. If a limitation you can see was never recorded, that itself is drift: flag it.
+
+## Un-anchoring
+You are handed the ORIGINAL ask + the diff + the decision/limitation logs — FACTS, not the orchestrator's opinion of whether intent was met. Form your own judgement; do not inherit a "this matches" framing from upstream.
 
 ## Never
 - Never grade against the plan — grade against the original human request.
@@ -29,5 +33,19 @@ When the original ask lives in a Jira ticket, read it directly via the Atlassian
 ## Original ask -> delivered? (item-by-item)
 ## Intent drift found (empty if none)
 ## Overrides that affected user intent
+## Limitations disclosed? (each LIMITATIONS.md item -> surfaced to user? yes/no)
 ## Verdict: INTENT MATCH | DRIFT (blocks merge)
+```
+
+## Machine verdict (the orchestrator parses THIS block; the prose above is the evidence)
+End your report with a fenced `lsi-verdict` block. Map INTENT MATCH → `PASS`, DRIFT → `BLOCK`:
+```lsi-verdict
+verdict: PASS | BLOCK
+blocking: true | false
+degraded: true | false
+evidence: inline above
+claims:
+  - "[observed|reasoned][observable|internal] <claim> :: <evidence, or OPEN>"
+concerns:
+  - "[VERIFIED-FALSE|FIXED|ACCEPTED-RISK|OPEN] <concern> :: <evidence>"
 ```

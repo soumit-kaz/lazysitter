@@ -44,6 +44,17 @@ node lazysitter/bin/lazysitter.js init /path/to/your/project
 
 **Requirements:** Node.js ≥ 16 for the installer, plus the Claude Code CLI and/or the OpenAI Codex CLI at run time.
 
+### Always getting the latest version
+
+`npx` caches GitHub packages, so a plain re-run can silently reuse an old copy. To force the newest release, pin `@latest` (this bypasses the stale cache entry):
+
+```bash
+npx -y github:soumit-kaz/lazysitter@latest update   # refresh an existing install to latest
+npx -y github:soumit-kaz/lazysitter@latest init      # fresh install at latest
+```
+
+Every `init` / `update` / `doctor` run also probes the repo directly (independent of the npx cache) and prints a one-line notice if a newer version exists — so you always know when you're behind. Set `LAZYSITTER_NO_UPDATE_CHECK=1` to silence it.
+
 > The short `npx lazysitter init` form works only once the package is published to npm. Until then, use the `npx github:soumit-kaz/lazysitter …` form above.
 
 ## Quick start
@@ -82,10 +93,10 @@ LazySitter merges only when tests **pass**, security is **clean**, review is **c
 ## Commands
 
 ```bash
-npx github:soumit-kaz/lazysitter doctor      # verify install, tooling, and model config
-npx github:soumit-kaz/lazysitter list        # print the agent roster
-npx github:soumit-kaz/lazysitter update      # refresh agents, keep your config edits
-npx github:soumit-kaz/lazysitter uninstall   # remove LazySitter
+npx github:soumit-kaz/lazysitter doctor              # verify install, tooling, and model config
+npx github:soumit-kaz/lazysitter list                # print the agent roster
+npx -y github:soumit-kaz/lazysitter@latest update    # refresh agents to the latest, keep your config edits
+npx github:soumit-kaz/lazysitter uninstall           # remove LazySitter
 ```
 
 ## Documentation

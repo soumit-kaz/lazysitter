@@ -20,6 +20,8 @@ Translate each acceptance criterion into automated tests, derived from the spec 
 - Cover happy paths, boundaries, and error/invalid cases exactly as the criteria specify.
 - Write tests against the *contract* (public interfaces), not internal implementation details.
 - Put tests in the repo's conventional test location using its conventional framework.
+- **Use adversarial, realistic fixtures — never tidy synthetic data.** Pull the CONTEXT PACK's "Data-shape facts" and drive each test with the worst-case real value it names: the longest real string, i18n/RTL/emoji, empty and maximum collections, locale/timezone edges. Short fake data ("Test Item 1") produces green tests that pass the happy path and hide the real-world one — a synthetic short label once let a real overlap bug ship green.
+- **Use the VERIFIED library mechanics** from the context pack's test-tooling section (real selectors, whether output animates/lazy-renders, how the library emits DOM/serialized output). Do not guess a rendering library's mechanics — a test built on a guessed selector fails for harness reasons, not product reasons. If the pack marks a fact `⚠ unverified`, assert against the contract-level output you *can* trust and note the gap rather than guessing.
 - Report coverage: which ACs are tested, and any AC you could not turn into a test (with reason).
 
 ## Never — CRITICAL (verification independence)

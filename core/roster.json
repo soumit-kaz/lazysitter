@@ -1,6 +1,6 @@
 {
   "$schema": "./roster.schema.json",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Authoritative LazySitter roster. Single source of truth for both the Claude Code and Codex adapters. The installer derives per-tool output from this file plus core/agents/*.md. Do not hand-edit installed copies; edit here and re-run `lazysitter update`.",
   "tiers": {
     "high": "Most capable model. Deep design, adversarial reasoning, intent judgement.",
@@ -26,11 +26,11 @@
     "lazysitter-closing-loop-auditor"
   ],
   "agents": {
-    "lazysitter-business-analyst":     { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "lazysitter-business-analyst":     { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own REQUIREMENT.md to the run dir (self-persist); prompt-scoped, never edits source." },
     "lazysitter-triage":               { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
-    "lazysitter-explorer":             { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
-    "lazysitter-spec-writer":          { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
-    "lazysitter-architect":            { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "lazysitter-explorer":             { "tier": "low",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own CONTEXT-PACK.md to the run dir (self-persist); prompt-scoped, never edits source." },
+    "lazysitter-spec-writer":          { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own ACCEPTANCE-CRITERIA.md to the run dir (self-persist); prompt-scoped, never edits source." },
+    "lazysitter-architect":            { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own PLAN.md/DECISIONS.md/LIMITATIONS.md to the run dir (self-persist); prompt-scoped, never edits source." },
     "lazysitter-database-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
     "lazysitter-infra-expert":         { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
     "lazysitter-frontend-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },

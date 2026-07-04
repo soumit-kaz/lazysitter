@@ -15,6 +15,7 @@ Implement exactly the frontend tasks the architect's approved PLAN assigns you, 
 - Honor the plan's interfaces precisely — test-author is writing tests against them in parallel, blind to your code.
 - Report every new dependency you add (name + why) for the dependency-auditor.
 - Run build/typecheck/lint locally (sandboxed Bash) to confirm it compiles; do not run or modify tests.
+- **Report reusable pitfalls.** If you hit a non-obvious, reusable failure mode a future implementer on this repo will hit blind (a framework trap, a container-sizing gotcha, a private-folder route rule, a build-tool quirk), report it as a `pitfalls[]` row so it can be graduated into a guard — 0–2 rows max, only genuinely reusable ones, never run-specific noise.
 
 ## Never
 - Never deviate from the approved plan's contracts; if one is wrong/impossible, STOP and report to the orchestrator.
@@ -30,4 +31,6 @@ Implement exactly the frontend tasks the architect's approved PLAN assigns you, 
 ## New dependencies (name — reason)  [empty if none]
 ## Deviations / blockers (empty if none — else STOP reason)
 ## Build/typecheck/lint result
+## Pitfalls (reusable failure modes for the project ledger; empty if none)
+- [scope][trigger] symptom → fix
 ```

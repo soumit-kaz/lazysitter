@@ -1,10 +1,10 @@
 # Autonomous Engineering Team (LazySitter)
 
-A 24-agent autonomous feature pipeline, implemented as Claude Code subagents + one orchestrator command. Built from the "Autonomous Engineering Team — Full Design" spec.
+A 26-agent autonomous feature pipeline, implemented as Claude Code subagents + one orchestrator command. Built from the "Autonomous Engineering Team — Full Design" spec.
 
 ## What it is
 
-One **orchestrator** (the main Claude session, Opus) drives a pipeline of **23 specialized subagents** across 8 tiers: intake → research → spec → design → build → independent verification → integration/intent → release/recovery. The core guarantee: **no agent verifies its own work**, and **tests are written from the spec, blind to the code**.
+One **orchestrator** (the main Claude session, Opus) drives a pipeline of **25 specialized subagents** across 8 tiers: intake → research → spec → design → build → independent verification → integration/intent → release/recovery. The core guarantee: **no agent verifies its own work**, and **tests are written from the spec, blind to the code**.
 
 ## How to use it
 
@@ -36,10 +36,17 @@ The orchestrator will:
 
 Every run writes to `.claude/lazysitter/runs/<feature-slug>/`:
 - `audit.log` — one terse line per event (agent, event, verdict). Cheap to skim, fully reconstructable.
-- `REQUIREMENT.md`, `TRIAGE.md`, `CONTEXT-PACK.md`, `ACCEPTANCE-CRITERIA.md`, `PLAN.md`, `DECISIONS.md`
+- `MANIFEST.md` — verified facts (commit SHAs, contracts, toolchain/deploy facts, frozen-test hashes) that agents read directly instead of the orchestrator re-narrating them.
+- `REQUIREMENT.md`, `TRIAGE.md`, `CONTEXT-PACK.md`, `ACCEPTANCE-CRITERIA.md`, `PLAN.md`, `DECISIONS.md` — each **self-persisted by its producing agent**, not hand-transcribed.
+- `gate-state.jsonl` — one structured `lsi-verdict` per verifier; the merge gate is evaluated from this, deterministically.
+- `TRACEABILITY.md` (must-AC → test → verdict), `LIMITATIONS.md` (user-facing limitations, tracked from discovery).
 - One report file per verification agent.
 
-## The roster (24 agents)
+Two ledgers live outside the run dir:
+- `.claude/lazysitter/PITFALL-LEDGER.md` — process/collaboration faults, seeded; read at preflight so known process faults aren't repeated. Preserved across `update`.
+- `lazysitter/PROJECT-PITFALLS.md` — project-tech pitfalls; the explorer injects only the rows matching each feature's tech, and recurring ones graduate into guards.
+
+## The roster (26 agents)
 
 | Tier | Agents | Model |
 |------|--------|-------|
@@ -57,11 +64,14 @@ Most features wake 6–10 of them; `triage` and the never-skip list decide which
 
 ## Key policies (enforced by the orchestrator)
 
-- **Merge gate:** merges only when tests PASS · security CLEAN · review CLEAN · integration CLEAN · intent MATCH — all at once. Never force-merges.
-- **Failure handling:** capped at 3 auto-fix retries, then left on the branch with a failure summary.
+- **Merge gate:** evaluated from `gate-state.jsonl`, not prose — all verdicts green, no `degraded` gap, no OPEN observable concern, every must-AC traced + green, frozen-test hashes intact, limitations disclosed. Never force-merges.
+- **Teeth check:** the frozen suite is run against the pre-implementation baseline first; ≥1 must-test must FAIL there or the criterion is toothless and blocks.
+- **Observable claims are observed, not argued:** a concern about rendered/returned output can't be closed by reasoning while a harness that could observe it exists — it routes to the render/behavioral gate or to you as accepted-risk. (Raiser ≠ dismisser.)
+- **Adversaries run un-anchored:** red-team / security-auditor / closing-loop-auditor get facts, never the orchestrator's bug-theory.
+- **Failure handling:** capped at 3 auto-fix retries (mechanical ones at a cheaper tier), then left on the branch with a failure summary.
 - **Consensus:** max 2 rounds; `devils-advocate` challenges every round; architect rules and logs overrides after round 2. Never escalates design conflict to you.
 - **Verification independence:** design-time `security-expert` (reviews the plan) and post-build `security-auditor` (reviews the diff) are separate invocations; one never substitutes for the other. `red-team` uses a distinct Opus config from the implementers to avoid shared blind spots.
-- **Connection policy:** the orchestrator is the only hub. No subagent has the `Task` tool, so none can spawn another — flat, always debuggable.
+- **Connection policy:** the orchestrator is the only hub. No subagent has the `Task` tool, so none can spawn another — flat, always debuggable. Producers get run-dir-scoped `Write` to self-persist their own artifact (that is file I/O, not spawn authority).
 
 ## How the design maps to Claude Code (and one honest caveat)
 

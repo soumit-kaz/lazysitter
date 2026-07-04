@@ -1,6 +1,6 @@
 {
   "name": "lazysitter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Autonomous Engineering Team — a 26-agent autonomous feature pipeline installable into any project, for Claude Code and Codex.",
   "bin": {
     "lazysitter": "bin/lazysitter.js"

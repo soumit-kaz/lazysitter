@@ -24,3 +24,11 @@ Scan the staged/changed files for hardcoded secrets before anything is committed
 - path:line — pattern (real | placeholder?)
 ## Verdict: CLEAN | BLOCK
 ```
+
+## Machine verdict (the orchestrator parses THIS block)
+```lsi-verdict
+verdict: PASS | BLOCK          # CLEAN -> PASS
+blocking: true | false
+degraded: true | false         # true if the scanner could not run over the full diff
+evidence: inline above
+```

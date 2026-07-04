@@ -21,7 +21,8 @@ function ok(cond, msg) {
 function run(args, cwd) {
   return execFileSync(process.execPath, [BIN, ...args], {
     cwd,
-    env: { ...process.env, NO_COLOR: '1' },
+    // Keep the smoke test hermetic: no network probe from the version freshness check.
+    env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
     encoding: 'utf8',
   });
 }
@@ -42,6 +43,8 @@ try {
   ok(has(tmp, '.codex/skills/lazysitter/models.env'), 'models.env written');
   ok(has(tmp, 'AGENTS.md'), 'AGENTS.md created');
   ok(has(tmp, '.lazysitter/manifest.json'), 'manifest written');
+  ok(has(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), 'claude process-pitfall ledger seeded');
+  ok(has(tmp, '.codex/skills/lazysitter/PITFALL-LEDGER.md'), 'codex process-pitfall ledger seeded');
 
   const claudeAgents = fs.readdirSync(path.join(tmp, '.claude/agents')).filter((f) => f.endsWith('.md'));
   ok(claudeAgents.length === 26, `26 claude agents (got ${claudeAgents.length})`);
@@ -61,9 +64,12 @@ try {
 
   console.log('\nupdate (preserves user config)');
   fs.writeFileSync(path.join(tmp, '.codex/skills/lazysitter/models.env'), 'MODEL_HIGH="x"\nMODEL_HIGH_ALT="y"\n');
+  fs.writeFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), '# my accumulated pitfalls\n[proc][x] y -> z | 3 | no\n');
   run(['update', tmp], tmp);
   const preserved = fs.readFileSync(path.join(tmp, '.codex/skills/lazysitter/models.env'), 'utf8');
   ok(/MODEL_HIGH_ALT="y"/.test(preserved), 'models.env edits preserved across update');
+  const ledger = fs.readFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), 'utf8');
+  ok(/my accumulated pitfalls/.test(ledger), 'accumulated pitfall-ledger preserved across update');
 
   console.log('\ndoctor');
   const doc = run(['doctor', tmp], tmp);

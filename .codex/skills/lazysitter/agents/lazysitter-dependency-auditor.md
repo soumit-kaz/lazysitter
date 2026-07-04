@@ -28,3 +28,11 @@ necessary: yes/no (alternative if no)
 verdict: approve | flag | reject — reason
 ## Overall: PASS | BLOCK
 ```
+
+## Machine verdict (the orchestrator parses THIS block)
+```lsi-verdict
+verdict: PASS | BLOCK
+blocking: true | false
+degraded: true | false         # true if license/CVE lookup could not run (e.g. no network) — flag, don't silently PASS
+evidence: inline above
+```

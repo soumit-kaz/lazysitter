@@ -20,6 +20,7 @@ Implement exactly the backend tasks the architect's approved PLAN assigns you, h
 - Honor the plan's interfaces precisely — test-author is writing tests against them in parallel, blind to your code.
 - Report every new dependency you add (name + why) so the dependency-auditor can check it.
 - Run builds/typecheck locally (sandboxed Bash) to confirm it compiles; do not run or modify tests.
+- **Report reusable pitfalls.** If you hit a non-obvious, reusable failure mode a future implementer on this repo will hit blind (a migration ordering trap, an ORM query-filter gotcha, a toolchain/PATH quirk, a deploy topology surprise), report it as a `pitfalls[]` row so it can be graduated into a guard — 0–2 rows max, only genuinely reusable ones, never run-specific noise.
 
 ## Never
 - Never deviate from the approved plan's contracts; if a contract is wrong/impossible, STOP and report back to the orchestrator rather than improvising.
@@ -35,4 +36,6 @@ Implement exactly the backend tasks the architect's approved PLAN assigns you, h
 ## New dependencies (name — reason)  [empty if none]
 ## Deviations / blockers (empty if none — else STOP reason)
 ## Build/typecheck result
+## Pitfalls (reusable failure modes for the project ledger; empty if none)
+- [scope][trigger] symptom → fix
 ```
