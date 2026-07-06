@@ -15,7 +15,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node test/smoke.js",
+    "test": "node test/smoke.js && node program-mode/test/engine.test.js && node program-mode/test/engine2.test.js",
     "lazysitter": "node bin/lazysitter.js"
   },
   "engines": {
