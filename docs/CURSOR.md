@@ -46,10 +46,12 @@ Kill switch:
 
 ## Model strategy (quality vs cost)
 
-The Cursor rule applies a “cheapest safe model” strategy:
-- low tier for intake/triage/explorer and mechanical tasks
-- mid tier for implementers and test-author/test-runner
-- high tier for architect/security-expert/red-team/security-auditor/intent auditing
+The Cursor rule applies a “cheapest safe model” strategy with an **explicit model map**:
+
+- **low**: `composer-2.5-fast`
+- **mid**: `claude-sonnet-5-thinking-high`
+- **high**: `claude-opus-4-8-thinking-high`
+- **high_alt** (distinct from high): `gpt-5.3-codex` (used for red-team / devil’s-advocate)
 
 If you want maximum quality, say “run LazySitter in beast mode”. If you want minimum cost, say “run LazySitter in budget mode”.
 

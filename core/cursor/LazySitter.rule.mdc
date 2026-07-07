@@ -30,7 +30,51 @@ Override by user intent:
 - If the user says “beast / highest quality / no compromises”: switch to **beast** profile.
 - If the user says “cheap / minimize spend”: switch to **budget** profile.
 
-### Profile → tier mapping (guidance, not hard requirement)
+### Fixed model set (explicit; use these names)
+
+Use these exact models when possible:
+
+- **high**: `claude-opus-4-8-thinking-high`
+- **high_alt** (must differ from high): `gpt-5.3-codex`
+- **mid**: `claude-sonnet-5-thinking-high`
+- **low**: `composer-2.5-fast`
+
+If any one of these models is unavailable in the user's Cursor workspace, pick the closest available substitute with the same intent:
+- low → fastest/cheapest general model available
+- mid → strong general coding model
+- high/high_alt → strongest reasoning model(s), and keep **red-team distinct** from implementers
+
+### Agent → model mapping (what to use for each role)
+
+- **orchestrator**: balanced=`mid`, beast=`high`, budget=`mid`
+- **lazysitter-business-analyst**: `low`
+- **lazysitter-triage**: `low`
+- **lazysitter-explorer**: `low`
+- **lazysitter-spec-writer**: `mid`
+- **lazysitter-architect**: `high`
+- **lazysitter-security-expert**: `high`
+- **lazysitter-devils-advocate**: `high_alt`
+- **lazysitter-database-expert**: `mid`
+- **lazysitter-infra-expert**: `mid`
+- **lazysitter-frontend-expert**: `mid`
+- **lazysitter-ux-analyst**: `mid`
+- **lazysitter-backend-implementer**: `mid`
+- **lazysitter-frontend-implementer**: `mid`
+- **lazysitter-dependency-auditor**: `mid`
+- **lazysitter-test-author**: `mid`
+- **lazysitter-test-runner**: `mid` (escalate to `high` only if failures are subtle/ambiguous)
+- **lazysitter-code-reviewer**: `mid` (escalate to `high` only if plan-drift is subtle)
+- **lazysitter-red-team**: `high_alt` (MUST be distinct from implementers whenever possible)
+- **lazysitter-security-auditor**: `high`
+- **lazysitter-secrets-scanner**: `low`
+- **lazysitter-integration-checker**: `mid`
+- **lazysitter-closing-loop-auditor**: `high`
+- **lazysitter-release-agent**: `mid`
+- **lazysitter-monitor-agent**: `low`
+- **lazysitter-rollback-agent**: `mid`
+- **lazysitter-docs-agent**: `low`
+
+### Tier mapping (derived from agent mapping)
 
 - **Tier 0 (orchestrator)**: balanced=mid, beast=high, budget=mid
 - **Intake/triage/explorer**: low (fast + cheap)
