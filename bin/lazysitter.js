@@ -33,6 +33,7 @@ function main() {
     dir: dirArg,
     claude: !!flags.claude,
     codex: !!flags.codex,
+    cursor: !!flags.cursor,
     force: !!flags.force,
     purge: !!flags.purge,
   };
@@ -52,6 +53,7 @@ function main() {
       if (mf) {
         opts.claude = mf.tools.includes('claude');
         opts.codex = mf.tools.includes('codex');
+        opts.cursor = mf.tools.includes('cursor');
       }
       require('../src/install').install(PKG_ROOT, opts);
       notifyStale = true;
@@ -107,13 +109,13 @@ function listRoster() {
 
 function help() {
   log.info(`
-${c.bold('lazysitter')} — install the Autonomous Engineering Team into a project (Claude Code + Codex)
+${c.bold('lazysitter')} — install the Autonomous Engineering Team into a project (Cursor + Claude Code + Codex)
 
 ${c.bold('Usage')}
   npx lazysitter <command> [dir] [flags]
 
 ${c.bold('Commands')}
-  init [dir]        Install LazySitter into a project (default). Auto-detects Claude/Codex.
+  init [dir]        Install LazySitter into a project (default). Auto-detects Cursor/Claude/Codex.
   update [dir]      Refresh managed files; keeps your models.env / config edits.
   uninstall [dir]   Remove LazySitter. Add --purge to also delete your config.
   doctor [dir]      Verify the install, tool availability, and model tiering.
@@ -123,12 +125,14 @@ ${c.bold('Commands')}
 ${c.bold('Flags')}
   --claude          Install only the Claude Code adapter.
   --codex           Install only the Codex adapter.
+  --cursor          Install only the Cursor adapter.
   --purge           (uninstall) also remove user config (models.env, lazysitter.config.json).
   --force           Overwrite without prompting.
 
 ${c.bold('Examples')}
   npx lazysitter init                 ${c.dim('# both adapters, into the current repo')}
   npx lazysitter init . --codex       ${c.dim('# Codex only')}
+  npx lazysitter init . --cursor      ${c.dim('# Cursor only')}
   npx lazysitter doctor
   npx lazysitter uninstall --purge
 

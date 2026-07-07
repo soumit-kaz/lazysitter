@@ -16,19 +16,34 @@ function resolveTargetRoot(dirArg) {
 }
 
 // Decide which tool adapters to install. Explicit flags win; otherwise detect
-// existing .claude/.codex dirs; if neither exists, install both.
+// existing .claude/.codex/.cursor dirs; if none exists, install all.
 function resolveTools(opts, targetRoot) {
-  if (opts.claude && !opts.codex) return ['claude'];
-  if (opts.codex && !opts.claude) return ['codex'];
-  if (opts.claude && opts.codex) return ['claude', 'codex'];
+  const anyExplicit = opts.claude || opts.codex || opts.cursor;
+  if (anyExplicit) {
+    const tools = [];
+    if (opts.claude) tools.push('claude');
+    if (opts.codex) tools.push('codex');
+    if (opts.cursor) tools.push('cursor');
+    return tools;
+  }
 
   const hasClaude = exists(path.join(targetRoot, '.claude'));
   const hasCodex =
     exists(path.join(targetRoot, '.codex')) || exists(path.join(targetRoot, 'AGENTS.md'));
+  const hasCursor = exists(path.join(targetRoot, '.cursor'));
 
-  if (hasClaude && !hasCodex) return ['claude'];
-  if (hasCodex && !hasClaude) return ['codex'];
-  return ['claude', 'codex'];
+  if (hasClaude && !hasCodex && !hasCursor) return ['claude'];
+  if (hasCodex && !hasClaude && !hasCursor) return ['codex'];
+  if (hasCursor && !hasClaude && !hasCodex) return ['cursor'];
+
+  const tools = [];
+  if (hasClaude) tools.push('claude');
+  if (hasCodex) tools.push('codex');
+  if (hasCursor) tools.push('cursor');
+
+  // If nothing is detected, install all adapters so the repo is ready
+  // regardless of which client the user uses first.
+  return tools.length ? tools : ['claude', 'codex', 'cursor'];
 }
 
 module.exports = { resolveTargetRoot, resolveTools };

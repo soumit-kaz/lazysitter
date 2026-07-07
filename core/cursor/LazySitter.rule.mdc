@@ -1,0 +1,59 @@
+---
+description: LazySitter (Cursor) — run the full Autonomous Engineering Team pipeline with best-quality / lowest-cost defaults.
+---
+
+# LazySitter for Cursor (Quality ↑, Cost ↓)
+
+When the user asks to **run LazySitter**, **run the autonomous engineering team**, or drive a feature through the full intake → design → build → verify → release pipeline, you MUST run the LazySitter pipeline with the same guarantees as the Claude Code orchestrator:
+
+- **No agent verifies its own work.**
+- **Tests come from the spec, blind to the code** (spawn `test-author` in parallel with implementers from the frozen acceptance criteria; never show it implementation).
+- **Always run adversaries** (`devils-advocate`, `red-team`, `security-auditor`, `secrets-scanner`, `closing-loop-auditor`).
+- **Run parallel where the pipeline says so** (triage+explorer; implementers+test-author; verifiers).
+- **Gate from structured verdicts**, not prose. If any verifier is `degraded:true` or any observable concern is OPEN, the gate is not clean.
+
+## How to run it (Cursor-native)
+
+Cursor supports native subagents. Use subagents for every tier. The orchestrator (you) is the only hub.
+
+- **Canonical playbook**: follow `.claude/commands/lsi.md` as the source of truth for tier ordering, artifacts, and gate mechanics.
+- **Run directory**: write artifacts under `.cursor/lazysitter/runs/<slug>/` (same structure as Claude’s run dir).
+- **Kill switch**: before each tier, if `.cursor/lazysitter/KILL` exists, stop before the next tier and report it.
+
+## “Beast mode” model policy (best quality, lowest cost)
+
+Cursor offers many models. Use **the cheapest model that is safe for the job**, but never cheapen adversarial or high-stakes judgments.
+
+Default profile: **balanced** (aims for “Claude Code feel” at lower cost).
+
+Override by user intent:
+- If the user says “beast / highest quality / no compromises”: switch to **beast** profile.
+- If the user says “cheap / minimize spend”: switch to **budget** profile.
+
+### Profile → tier mapping (guidance, not hard requirement)
+
+- **Tier 0 (orchestrator)**: balanced=mid, beast=high, budget=mid
+- **Intake/triage/explorer**: low (fast + cheap)
+- **Spec-writer**: mid (clarity matters)
+- **Architect + security-expert + closing-loop-auditor**: high (correctness/intent)
+- **Implementers**: mid (throughput)
+- **Test-author**: mid (must be careful but can be cheaper than architect)
+- **Test-runner (analysis of failures) + code-reviewer**: mid→high if failures are subtle
+- **Red-team + security-auditor**: high, and **use a distinct model family** from the implementers when possible
+- **Secrets-scanner**: low
+- **Release/rollback**: mid (mechanical + cautious)
+
+### Cost controls you MUST apply
+
+- **Strict parallelism only where specified** (don’t spawn extra “nice to have” agents).
+- **Cache verification**: run build/typecheck/tests once per commit; reuse outputs.
+- **Retry cap**: at most **3 auto-fix retries** total.
+- **Mechanical retries downgrade**: only confirmed mechanical reruns use low tier; never downgrade adversaries.
+
+## Cursor usage contract
+
+When the user says “run LazySitter” (or similar), respond by:
+- stating you will run the pipeline,
+- asking clarifying questions ONLY if business scope ambiguity exists (or if you are about to exceed a hard budget),
+- then proceeding autonomously through the tiers.
+

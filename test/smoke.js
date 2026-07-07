@@ -1,6 +1,6 @@
 'use strict';
 
-// Zero-dependency smoke test: install into a temp project, assert both adapters
+// Zero-dependency smoke test: install into a temp project, assert adapters
 // render, config is preserved across update, and uninstall cleans up.
 const fs = require('fs');
 const path = require('path');
@@ -32,8 +32,11 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-'));
 try {
   console.log(`temp project: ${tmp}\n`);
 
-  console.log('init (both adapters)');
+  console.log('init (all adapters)');
   run(['init', tmp], tmp);
+  ok(has(tmp, '.cursor/rules/lazysitter.mdc'), 'cursor rule written');
+  ok(has(tmp, '.cursor/lazysitter/README.md'), 'cursor README written');
+  ok(has(tmp, '.cursor/lazysitter/PITFALL-LEDGER.md'), 'cursor process-pitfall ledger seeded');
   ok(has(tmp, '.claude/commands/lsi.md'), 'claude command written');
   ok(has(tmp, '.claude/agents/lazysitter-architect.md'), 'claude agent written');
   ok(has(tmp, '.codex/skills/lazysitter/SKILL.md'), 'codex skill written');
@@ -65,11 +68,14 @@ try {
   console.log('\nupdate (preserves user config)');
   fs.writeFileSync(path.join(tmp, '.codex/skills/lazysitter/models.env'), 'MODEL_HIGH="x"\nMODEL_HIGH_ALT="y"\n');
   fs.writeFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), '# my accumulated pitfalls\n[proc][x] y -> z | 3 | no\n');
+  fs.writeFileSync(path.join(tmp, '.cursor/lazysitter/PITFALL-LEDGER.md'), '# my cursor accumulated pitfalls\n[proc][x] y -> z | 3 | no\n');
   run(['update', tmp], tmp);
   const preserved = fs.readFileSync(path.join(tmp, '.codex/skills/lazysitter/models.env'), 'utf8');
   ok(/MODEL_HIGH_ALT="y"/.test(preserved), 'models.env edits preserved across update');
   const ledger = fs.readFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), 'utf8');
   ok(/my accumulated pitfalls/.test(ledger), 'accumulated pitfall-ledger preserved across update');
+  const cursorLedger = fs.readFileSync(path.join(tmp, '.cursor/lazysitter/PITFALL-LEDGER.md'), 'utf8');
+  ok(/my cursor accumulated pitfalls/.test(cursorLedger), 'accumulated cursor pitfall-ledger preserved across update');
 
   console.log('\ndoctor');
   const doc = run(['doctor', tmp], tmp);
@@ -87,6 +93,7 @@ try {
 
   console.log('\nuninstall');
   run(['uninstall', tmp], tmp);
+  ok(!has(tmp, '.cursor/rules/lazysitter.mdc'), 'cursor rule removed');
   ok(!has(tmp, '.claude/agents/lazysitter-architect.md'), 'claude agents removed');
   ok(!has(tmp, '.codex/skills/lazysitter/SKILL.md'), 'codex skill removed');
   ok(!has(tmp, '.lazysitter/manifest.json'), 'manifest removed');

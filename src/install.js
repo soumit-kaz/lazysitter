@@ -7,6 +7,7 @@ const { loadRoster } = require('./roster');
 const { resolveTargetRoot, resolveTools } = require('./detect');
 const { installClaude } = require('./install-claude');
 const { installCodex } = require('./install-codex');
+const { installCursor } = require('./install-cursor');
 
 function install(pkgRoot, opts) {
   const version = JSON.parse(readFile(path.join(pkgRoot, 'package.json'))).version;
@@ -25,6 +26,7 @@ function install(pkgRoot, opts) {
 
   if (tools.includes('claude')) installClaude(ctx, data);
   if (tools.includes('codex')) installCodex(ctx, data);
+  if (tools.includes('cursor')) installCursor(ctx, data);
 
   ctx.writeManifest(version, tools);
   printNextSteps(tools, data.agents.length);
@@ -36,6 +38,10 @@ function printNextSteps(tools, agentCount) {
   log.ok(`${c.bold('LazySitter installed')} — ${agentCount} agents across the pipeline.`);
   log.info('');
   log.info(c.bold('Next steps:'));
+  if (tools.includes('cursor')) {
+    log.info(`  ${c.cyan('Cursor')}       open Cursor Chat and say "run LazySitter on <feature>".`);
+    log.info(`               e.g. ${c.dim('run LazySitter on: Add CSV export to the analytics dashboard --dry-run')}`);
+  }
   if (tools.includes('claude')) {
     log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/lsi <feature request>')} in your project.`);
     log.info(`               e.g. ${c.dim('/lsi Add CSV export to the analytics dashboard --dry-run')}`);
@@ -46,7 +52,9 @@ function printNextSteps(tools, agentCount) {
     log.info(`               (esp. MODEL_HIGH_ALT for a distinct red-team model).`);
   }
   log.info('');
-  log.info(`  Kill switch: create ${c.dim('.claude/lazysitter/KILL')} or ${c.dim('.codex/lazysitter/KILL')} to halt.`);
+  log.info(
+    `  Kill switch: create ${c.dim('.cursor/lazysitter/KILL')}, ${c.dim('.claude/lazysitter/KILL')}, or ${c.dim('.codex/lazysitter/KILL')} to halt.`
+  );
   log.info(`  Uninstall:   ${c.dim('npx lazysitter uninstall')}`);
   log.info('');
 }

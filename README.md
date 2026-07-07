@@ -1,8 +1,8 @@
-# LazySitter — Autonomous AI Engineering Team for Claude Code & Codex
+# LazySitter — Autonomous AI Engineering Team for Cursor, Claude Code & Codex
 
 **LazySitter is an open-source, multi-agent AI coding pipeline that turns a plain-language feature request into shipped, independently-verified code.** It installs a 26-agent autonomous engineering team into your own repository and runs the whole software workflow — intake → spec → design → build → automated code review → testing → release — with one hard guarantee: **no agent checks its own work, and tests are written from the spec, blind to the code.**
 
-Works with **[Claude Code](https://claude.com/claude-code)** and **OpenAI Codex** out of the box.
+Works with **Cursor**, **[Claude Code](https://claude.com/claude-code)**, and **OpenAI Codex** out of the box.
 
 ```bash
 npx github:soumit-kaz/lazysitter init
@@ -31,6 +31,7 @@ npx github:soumit-kaz/lazysitter init
 It auto-detects whether your project uses Claude Code, Codex, or both, and installs only what fits. Install a single adapter:
 
 ```bash
+npx github:soumit-kaz/lazysitter init . --cursor   # Cursor only
 npx github:soumit-kaz/lazysitter init . --claude   # Claude Code only
 npx github:soumit-kaz/lazysitter init . --codex    # Codex only
 ```
@@ -59,6 +60,10 @@ Every `init` / `update` / `doctor` run also probes the repo directly (independen
 > The short `npx lazysitter init` form works only once the package is published to npm. Until then, use the `npx github:soumit-kaz/lazysitter …` form above.
 
 ## Quick start
+
+**Cursor** — open Cursor Chat in your project and say:
+
+> run LazySitter on: add CSV export to the analytics dashboard, dry run
 
 **Claude Code** — run the orchestrator command in your project:
 
@@ -102,6 +107,7 @@ npx github:soumit-kaz/lazysitter uninstall           # remove LazySitter
 
 ## Documentation
 
+- [docs/CURSOR.md](docs/CURSOR.md) — using LazySitter with Cursor
 - [docs/CLAUDE.md](docs/CLAUDE.md) — using LazySitter with Claude Code
 - [docs/CODEX.md](docs/CODEX.md) — using LazySitter with OpenAI Codex
 - [docs/CUSTOMIZING.md](docs/CUSTOMIZING.md) — change models, tiers, and sandboxes
