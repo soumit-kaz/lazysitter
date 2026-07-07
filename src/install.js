@@ -39,8 +39,9 @@ function printNextSteps(tools, agentCount) {
   log.info('');
   log.info(c.bold('Next steps:'));
   if (tools.includes('cursor')) {
-    log.info(`  ${c.cyan('Cursor')}       open Cursor Chat and say "run LazySitter on <feature>".`);
-    log.info(`               e.g. ${c.dim('run LazySitter on: Add CSV export to the analytics dashboard --dry-run')}`);
+    log.info(`  ${c.cyan('Cursor')}       run ${c.bold('/lsi <feature request>')} (or say "run LazySitter on <feature>").`);
+    log.info(`               e.g. ${c.dim('/lsi Add CSV export to the analytics dashboard --dry-run')}`);
+    log.info(`               Models are pinned per agent; edit ${c.dim('.cursor/lazysitter/models.json')} to change them.`);
   }
   if (tools.includes('claude')) {
     log.info(`  ${c.cyan('Claude Code')}  run ${c.bold('/lsi <feature request>')} in your project.`);

@@ -1,6 +1,6 @@
 # LazySitter on Cursor
 
-Cursor is the best runtime for LazySitter if you want **top quality at the lowest cost**, because Cursor supports **native subagents**. That lets the pipeline keep strict role separation (no agent checks its own work) without paying for separate external processes.
+Cursor gets the **same structure as the Claude Code install** — not a lightweight rule. Cursor natively reads `.cursor/agents/*.md` subagents and `.cursor/commands/*.md` slash commands, so LazySitter installs one definition file per agent (each with its own pinned model and `readonly` scope) plus a real `/lsi` orchestrator command. All of it is generated from the same single-source roster the Claude and Codex adapters use, so the three never drift.
 
 ## Install
 
@@ -17,13 +17,21 @@ npx github:soumit-kaz/lazysitter init . --cursor
 ```
 
 This installs:
-- `.cursor/rules/lazysitter.mdc` — Cursor rule that makes LazySitter “just work” in chat
-- `.cursor/lazysitter/README.md` — local usage notes
-- `.cursor/lazysitter/PITFALL-LEDGER.md` — preserved across updates
+- `.cursor/agents/lazysitter-*.md` — **26 native Cursor subagents**, each with a pinned `model:` and `readonly:` scope
+- `.cursor/commands/lsi.md` — the `/lsi` orchestrator command (the full pipeline playbook)
+- `.cursor/rules/lazysitter.mdc` — a trigger rule so "run LazySitter" works without the slash command
+- `.cursor/lazysitter/models.json` — the tier→model map (editable, preserved across updates)
+- `.cursor/lazysitter/README.md` and `PITFALL-LEDGER.md`
 
 ## How to use it
 
-In Cursor Chat, ask for LazySitter explicitly. Example:
+In Cursor, run the slash command:
+
+```text
+/lsi Add CSV export to the analytics dashboard --dry-run
+```
+
+…or just say it in chat:
 
 ```text
 run LazySitter on: Add CSV export to the analytics dashboard --dry-run
@@ -34,24 +42,25 @@ Flags:
 - `--budget <tokens>` — token ceiling (default 400000)
 - `--auto` — proceed through merge + auto-rollback (default)
 
-## Where the audit trail is written
+## The audit trail
 
-Runs are written to:
+Runs are written to `.cursor/lazysitter/runs/<feature-slug>/`. Kill switch: create `.cursor/lazysitter/KILL` to halt before the next tier.
 
-` .cursor/lazysitter/runs/<feature-slug>/ `
+## Models (pinned per agent)
 
-Kill switch:
+Every agent's model is baked into its `.cursor/agents/*.md` frontmatter from `.cursor/lazysitter/models.json`:
 
-` .cursor/lazysitter/KILL `
+| Tier | Model | Used by |
+|------|-------|---------|
+| `high` | `claude-opus-4-8-thinking-high` | architect, security-expert, devils-advocate, security-auditor, closing-loop-auditor |
+| `high_alt` (distinct) | `gpt-5.3-codex` | red-team — kept different from the build lineage to avoid shared blind spots |
+| `mid` | `claude-sonnet-5-thinking-high` | spec-writer, design experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
+| `low` | `composer-2.5-fast` | business-analyst, triage, explorer, secrets-scanner, monitor, docs |
 
-## Model strategy (quality vs cost)
+To change models, **edit `.cursor/lazysitter/models.json` and run `lazysitter update`** — the installer re-bakes every agent file. Don't hand-edit individual agent files, since update overwrites them.
 
-The Cursor rule applies a “cheapest safe model” strategy with an **explicit model map**:
+## Parity notes & caveats
 
-- **low**: `composer-2.5-fast`
-- **mid**: `claude-sonnet-5-thinking-high`
-- **high**: `claude-opus-4-8-thinking-high`
-- **high_alt** (distinct from high): `gpt-5.3-codex` (used for red-team / devil’s-advocate)
-
-If you want maximum quality, say “run LazySitter in beast mode”. If you want minimum cost, say “run LazySitter in budget mode”.
-
+- **Tool scoping:** Cursor has no per-agent `tools:` allow-list like Claude Code. LazySitter uses `readonly: true` on every inspect/verify agent instead; implementers, producers, and the git-mutating release/rollback agents get write.
+- **Flat hub:** Cursor allows one level of nested subagent spawning, but LazySitter forbids it — the orchestrator is the only hub. This is enforced by instruction in the `/lsi` command and the rule.
+- **Model fallback:** if a pinned model isn't available on your Cursor plan (e.g. Max-Mode-only, or blocked by a team admin), Cursor silently falls back. That can weaken the "red-team on a distinct model" guarantee — pick model IDs your plan can actually run.

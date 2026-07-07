@@ -1,0 +1,7 @@
+{
+  "$comment": "LazySitter tier -> Cursor model IDs. Baked into each .cursor/agents/*.md `model:` field at install time. Edit these to change which model each tier uses, then run `lazysitter update`. `high_alt` MUST differ from `high` so the red-team does not share the build lineage's blind spots.",
+  "high": "claude-opus-4-8-thinking-high",
+  "high_alt": "gpt-5.3-codex",
+  "mid": "claude-sonnet-5-thinking-high",
+  "low": "composer-2.5-fast"
+}

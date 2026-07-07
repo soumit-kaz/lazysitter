@@ -44,7 +44,25 @@ function doctor(pkgRoot, opts) {
   if (manifest.tools.includes('claude')) checkBinary('claude', 'Claude Code CLI');
   if (manifest.tools.includes('codex')) checkBinary('codex', 'Codex CLI');
 
-  // 3. Codex model tiering sanity.
+  // 3. Cursor model tiering sanity (red-team must be distinct from the build lineage).
+  if (manifest.tools.includes('cursor')) {
+    const cursorModels = path.join(targetRoot, '.cursor/lazysitter/models.json');
+    if (exists(cursorModels)) {
+      try {
+        const m = JSON.parse(readFile(cursorModels));
+        if (!m.high_alt || m.high_alt === m.high) {
+          log.warn('  Cursor high_alt equals high — red-team will share the architect\'s model (weaker independence).');
+          log.info(`    ${c.dim('Set a distinct high_alt slug in .cursor/lazysitter/models.json, then run `lazysitter update`.')}`);
+        } else {
+          log.ok(`  Cursor red-team model set (high_alt=${m.high_alt}).`);
+        }
+      } catch {
+        log.warn('  Cursor .cursor/lazysitter/models.json is not valid JSON.');
+      }
+    }
+  }
+
+  // 3b. Codex model tiering sanity.
   if (manifest.tools.includes('codex')) {
     const modelsEnv = path.join(targetRoot, '.codex/skills/lazysitter/models.env');
     if (exists(modelsEnv)) {
