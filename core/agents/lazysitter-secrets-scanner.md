@@ -44,6 +44,6 @@ verdict: PASS | BLOCK          # CLEAN -> PASS
 blocking: true | false
 degraded: true | false         # true if the scanner could not run over the full diff
 oracle: execution  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
-blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — whose fault; does NOT override the A1 degraded:true hard-BLOCK; only MINE blocks this diff's gate — a secret this diff added is MINE; an unresolved baseline hit is PRE-EXISTING
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds — a secret this diff added is MINE; an unresolved baseline hit is PRE-EXISTING
 evidence: inline above
 ```

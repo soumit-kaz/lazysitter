@@ -2,8 +2,18 @@
 
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { log, c, exists, readFile, sha256 } = require('./util');
+const { log, c, exists, readFile, readFileCapped, sha256 } = require('./util');
 const { warnIfKnowledgeGitignored } = require('./gitignore-check');
+
+function readTargetFileSafely(abs) {
+  if (!exists(abs)) return null;
+  try {
+    return readFileCapped(abs);
+  } catch (err) {
+    log.warn(`  could not read ${abs}: ${err.message}`);
+    return null;
+  }
+}
 
 const CLAUDE_HIGH_TIER_AGENTS = [
   'lazysitter-architect',
@@ -33,11 +43,18 @@ function doctor(pkgRoot, opts) {
     return;
   }
 
-  const manifest = JSON.parse(readFile(manifestPath));
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileCapped(manifestPath));
+  } catch (err) {
+    log.err(`Could not parse ${manifestPath}: ${err.message}`);
+    log.err('Run `lazysitter uninstall --purge` and reinstall, or fix the manifest by hand.');
+    process.exitCode = 1;
+    return;
+  }
   log.info(`  Version: ${c.bold(manifest.aetVersion)}   Adapters: ${c.cyan(manifest.tools.join(' + '))}`);
   log.info('');
 
-  // 1. Managed-file integrity.
   let missing = 0;
   let drifted = 0;
   for (const entry of manifest.managed) {
@@ -54,11 +71,9 @@ function doctor(pkgRoot, opts) {
   else log.info(`  ${c.dim(`${missing} missing, ${drifted} locally modified (re-run \`lazysitter update\` to restore)`)}`);
   log.info('');
 
-  // 2. Tool availability.
   if (manifest.tools.includes('claude')) checkBinary('claude', 'Claude Code CLI');
   if (manifest.tools.includes('codex')) checkBinary('codex', 'Codex CLI');
 
-  // 3. Cursor model tiering sanity (red-team must be distinct from the build lineage).
   if (manifest.tools.includes('cursor')) {
     const cursorModels = path.join(targetRoot, '.cursor/lazysitter/models.json');
     if (exists(cursorModels)) {
@@ -76,11 +91,10 @@ function doctor(pkgRoot, opts) {
     }
   }
 
-  // 3b. Codex model tiering sanity.
   if (manifest.tools.includes('codex')) {
     const modelsEnv = path.join(targetRoot, '.codex/skills/lazysitter/models.env');
-    if (exists(modelsEnv)) {
-      const env = readFile(modelsEnv);
+    const env = readTargetFileSafely(modelsEnv);
+    if (env !== null) {
       const alt = /^MODEL_HIGH_ALT="?([^"\n]*)"?/m.exec(env);
       if (!alt || !alt[1].trim()) {
         log.warn('  MODEL_HIGH_ALT is blank — red-team will share the architect\'s model (weaker independence).');
@@ -112,7 +126,39 @@ function doctor(pkgRoot, opts) {
     }
   }
 
-  warnIfKnowledgeGitignored(targetRoot);
+  const FABLE_RE = /fable/i;
+  if (manifest.tools.includes('codex')) {
+    const modelsEnv = path.join(targetRoot, '.codex/skills/lazysitter/models.env');
+    const env = readTargetFileSafely(modelsEnv);
+    if (env !== null) {
+      const fableVars = ['MODEL_HIGH', 'MODEL_HIGH_ALT', 'MODEL_MID', 'MODEL_LOW'].filter((key) => {
+        const m = new RegExp(`^${key}="?([^"\\n]*)"?`, 'm').exec(env);
+        return m && FABLE_RE.test(m[1]);
+      });
+      if (fableVars.length) {
+        log.err(`  .codex/skills/lazysitter/models.env names a Fable model in: ${fableVars.join(', ')} — Fable is never used in any tier (C22).`);
+      }
+    }
+  }
+  if (manifest.tools.includes('claude')) {
+    const fableAgents = [];
+    for (const entry of manifest.managed) {
+      if (!/^\.claude\/agents\/.*\.md$/.test(entry.path)) continue;
+      const abs = path.join(targetRoot, entry.path);
+      if (!exists(abs)) continue;
+      const model = extractModel(readFile(abs));
+      if (model && FABLE_RE.test(model)) fableAgents.push(entry.path);
+    }
+    if (fableAgents.length) {
+      log.err(`  Fable model id found in Claude agent frontmatter: ${fableAgents.join(', ')} — Fable is never used in any tier (C22).`);
+    }
+  }
+
+  try {
+    warnIfKnowledgeGitignored(targetRoot);
+  } catch (err) {
+    log.warn(`  gitignore check failed: ${err.message}`);
+  }
 
   log.info('');
   if (missing) process.exitCode = 1;

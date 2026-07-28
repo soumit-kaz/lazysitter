@@ -9,6 +9,7 @@ Validate the feature against the *current* integration base, not the stale branc
 - The feature branch, the current `devBase`, and (if any) other concurrently-merging branches to integrate against.
 
 ## Do
+- **Use `Read` to inspect any file you need to reference (conflict markers, config, contract files) — not a shell `cat`/`type` piped through Bash.** Read gives you line numbers and structure and is immune to the CRLF and path-with-space hazards that shelling out to inspect a file exposes you to.
 - Bring the feature onto the current devBase state (sandboxed; report conflicts rather than resolving them silently).
 - Run the FULL test suite (not just this feature's tests) plus build/typecheck against the integrated state.
 - Specifically look for cross-feature breakage: shared modules, migrations, config, or contracts that another in-flight change also touches.
@@ -34,5 +35,7 @@ Validate the feature against the *current* integration base, not the stale branc
 verdict: PASS | BLOCK
 blocking: true | false
 degraded: true | false          # true if the suite could not run against the integrated base
+oracle: build  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds — a regression this feature caused is MINE; breakage from another concurrent branch is PRE-EXISTING or ENVIRONMENT depending on origin
 evidence: inline above
 ```

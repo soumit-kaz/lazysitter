@@ -6,8 +6,6 @@ const fm = require('./frontmatter');
 
 const AGENT_NAME_RE = /^lazysitter-[a-z0-9-]+$/;
 
-// Resolve the LazySitter roster from the package's core/ directory into a normalized
-// per-agent view that both adapters consume.
 function loadRoster(coreDir) {
   const roster = JSON.parse(readFile(path.join(coreDir, 'roster.json')));
   const agentDir = path.join(coreDir, 'agents');
@@ -62,7 +60,6 @@ function loadRoster(coreDir) {
   return { roster, agents };
 }
 
-// Fallback sandbox inference when roster.json lacks an explicit mapping.
 function deriveSandbox(tools) {
   if (tools.includes('Write') || tools.includes('Edit') || tools.includes('Bash')) {
     return 'workspace-write';

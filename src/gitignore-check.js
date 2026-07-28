@@ -1,9 +1,21 @@
 'use strict';
 
 const path = require('path');
-const { exists, readFile, log, c } = require('./util');
+const { exists, readFileCapped, log, c } = require('./util');
 
 const MAX_PATTERN_LENGTH = 512;
+
+const MAX_GITIGNORE_BYTES = 8 * 1024 * 1024;
+
+function readGitignoreSafely(gi) {
+  if (!exists(gi)) return null;
+  try {
+    return readFileCapped(gi, MAX_GITIGNORE_BYTES);
+  } catch (err) {
+    log.warn(`  skipping oversized or unreadable .gitignore at ${gi}: ${err.message}`);
+    return null;
+  }
+}
 
 function tokenizePattern(pattern) {
   const tokens = [];
@@ -91,8 +103,9 @@ function parseGitignoreLine(line) {
 
 function loadRulesFromDir(dir, baseRel) {
   const gi = path.join(dir, '.gitignore');
-  if (!exists(gi)) return [];
-  return readFile(gi)
+  const content = readGitignoreSafely(gi);
+  if (content === null) return [];
+  return content
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l !== '' && !l.startsWith('#'))
@@ -132,8 +145,14 @@ function isPathIgnored(repoRoot, relPath) {
 }
 
 function warnIfKnowledgeGitignored(targetRoot) {
-  const candidates = ['.lazysitter', '.lazysitter/knowledge'];
-  const ignored = candidates.filter((rel) => isPathIgnored(targetRoot, rel));
+  let ignored;
+  try {
+    const candidates = ['.lazysitter', '.lazysitter/knowledge'];
+    ignored = candidates.filter((rel) => isPathIgnored(targetRoot, rel));
+  } catch (err) {
+    log.warn(`  could not check whether committed knowledge is gitignored: ${err.message}`);
+    return;
+  }
   if (!ignored.length) return;
   log.warn(
     `  ${ignored.join(', ')} ${ignored.length > 1 ? 'are' : 'is'} gitignored — committed knowledge in .lazysitter/knowledge/ will not be tracked.`

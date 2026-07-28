@@ -1,18 +1,10 @@
 'use strict';
 
-// Version freshness check. `npx github:owner/repo` aggressively caches the fetched
-// tarball, so a user can unknowingly run a stale copy. This probes the repo's
-// package.json directly (independent of any npx cache) and reports whether a newer
-// version exists — silent and offline-safe (resolves to nulls on any error/timeout).
-
 const https = require('https');
 const path = require('path');
 const { readFile } = require('./util');
 
 const RAW_PKG_URL = 'https://raw.githubusercontent.com/soumit-kaz/lazysitter/main/package.json';
-// Reliable "always latest" invocation for a GitHub-distributed CLI: `#semver:*`
-// resolves to the highest version *git tag* (npm dist-tags like @latest do NOT apply
-// to github: specs — the committish must follow `#`). Quoted because `#`/`*` are shell-special.
 const LATEST_CMD = 'npx -y "github:soumit-kaz/lazysitter#semver:*"';
 
 function currentVersion(pkgRoot) {
@@ -83,7 +75,6 @@ async function checkLatest(pkgRoot) {
   return { current, latest, stale };
 }
 
-// Print a one-line notice if a newer version exists. Never throws.
 async function printUpdateNoticeIfStale(pkgRoot, log, c) {
   try {
     const { current, latest, stale } = await checkLatest(pkgRoot);
@@ -93,9 +84,7 @@ async function printUpdateNoticeIfStale(pkgRoot, log, c) {
       );
       log.info(`  Get the latest:  ${c.cyan(LATEST_CMD + ' update')}`);
     }
-  } catch {
-    /* offline / any error: stay silent */
-  }
+  } catch {}
 }
 
 module.exports = { checkLatest, printUpdateNoticeIfStale, cmpSemver, currentVersion, LATEST_CMD };

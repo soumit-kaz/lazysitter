@@ -26,15 +26,57 @@ META="$DIR/agents/$AGENT.meta"
 [ -f "$META" ] || { echo "lazysitter: missing meta for '$AGENT' ($META)" >&2; exit 2; }
 [ -f "$INPUTS" ] || { echo "lazysitter: inputs file not found: $INPUTS" >&2; exit 2; }
 
+trim() {
+  local s="$1"
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  printf '%s' "$s"
+}
+
+is_allowed_kv_key() {
+  local key="$1"; shift
+  local k
+  for k in "$@"; do
+    [ "$k" = "$key" ] && return 0
+  done
+  return 1
+}
+
+load_kv_data_file() {
+  local file="$1"; shift
+  local line key value len
+  [ -f "$file" ] || return 0
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    case "$line" in
+      ''|'#'*) continue ;;
+    esac
+    case "$line" in
+      *=*) ;;
+      *) continue ;;
+    esac
+    key="$(trim "${line%%=*}")"
+    value="$(trim "${line#*=}")"
+    is_allowed_kv_key "$key" "$@" || continue
+    if { [[ "$value" == \"*\" && "$value" == *\" ]] || [[ "$value" == \'*\' && "$value" == *\' ]]; } && [ "${#value}" -ge 2 ]; then
+      len="${#value}"
+      value="${value:1:$((len - 2))}"
+    fi
+    if [ -n "$value" ] && [[ ! "$value" =~ ^[A-Za-z0-9_./:-]+$ ]]; then
+      echo "lazysitter: refusing unsafe value for $key in $file" >&2
+      exit 2
+    fi
+    printf -v "$key" '%s' "$value"
+  done < "$file"
+}
+
 # Defaults, then overridden by the generated meta file.
 SANDBOX="read-only"; APPROVAL="never"; TIER="mid"; DISTINCT_MODEL="0"
-# shellcheck disable=SC1090
-source "$META"
+load_kv_data_file "$META" SANDBOX APPROVAL TIER DISTINCT_MODEL
 
 # Model slugs (user-editable). Blank => omit -m and use Codex's default model.
 MODEL_HIGH=""; MODEL_HIGH_ALT=""; MODEL_MID=""; MODEL_LOW=""
-[ -f "$DIR/models.env" ] && { # shellcheck disable=SC1091
-  source "$DIR/models.env"; }
+load_kv_data_file "$DIR/models.env" MODEL_HIGH MODEL_HIGH_ALT MODEL_MID MODEL_LOW
 
 case "$TIER" in
   high) MODEL="$MODEL_HIGH" ;;

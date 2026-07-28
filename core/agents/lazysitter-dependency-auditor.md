@@ -47,6 +47,6 @@ verdict: PASS | BLOCK
 blocking: true | false
 degraded: true | false         # true if ANY package carries cannot-verify-offline — flag, don't silently PASS
 oracle: execution  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
-blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — whose fault; does NOT override the A1 degraded:true hard-BLOCK; only MINE blocks this diff's gate — a newly added package is MINE; a pre-existing-sweep finding is PRE-EXISTING; cannot-verify-offline is ENVIRONMENT
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds — a newly added package is MINE; a pre-existing-sweep finding is PRE-EXISTING; cannot-verify-offline is ENVIRONMENT
 evidence: inline above
 ```

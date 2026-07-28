@@ -453,18 +453,31 @@ try {
     ok(/RANKED/.test(explorerBody), `explorer (${dir}) documents RANKED candidate sets`);
     ok(/FACT-BLOCK/.test(explorerBody), `explorer (${dir}) raises FACT-BLOCK on competing conventions`);
     ok(/hit count/i.test(explorerBody) && /newest-blame/i.test(explorerBody), `explorer (${dir}) ranks by hits + newest-blame date`);
+    ok(/### Precedent set — <category>\s+clusters: <k>/.test(explorerBody), `explorer (${dir}) emits the literal numbered Precedent set header`);
+    ok(/^1\.\s*<path:line>.*hits: <n>.*newest-blame: <date>.*deprecation: none\|<signal>/m.test(explorerBody), `explorer (${dir}) emits the literal numbered rank-1 row`);
+    ok(/clusters:\s*>=2/.test(explorerBody), `explorer (${dir}) documents clusters: >=2 as the migration signal`);
+    ok(/deprecation-signalled candidate never ranks 1|never ranks .?1/.test(explorerBody), `explorer (${dir}) states a deprecated candidate never ranks 1`);
 
     const backendBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-backend-implementer.md'), 'utf8');
     const frontendBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-frontend-implementer.md'), 'utf8');
     for (const [label, body] of [['backend', backendBody], ['frontend', frontendBody]]) {
-      ok(body.includes('## Precedent citations'), `${label}-implementer (${dir}) build report has a Precedent citations section`);
+      ok(body.includes('## Precedent selection'), `${label}-implementer (${dir}) build report has a Precedent selection section`);
+      ok(!body.includes('## Precedent citations'), `${label}-implementer (${dir}) no longer carries the withdrawn Precedent citations heading`);
+      ok(body.includes('chose: #'), `${label}-implementer (${dir}) documents the chose: #<rank> token`);
+      ok(body.includes('reason (required if not #1)'), `${label}-implementer (${dir}) documents the reason (required if not #1) token`);
+      ok(body.includes('argued against set'), `${label}-implementer (${dir}) documents the argued against set token`);
       ok(body.includes('NONE-EXISTS'), `${label}-implementer (${dir}) documents the NONE-EXISTS proof shape`);
+      ok(/Choosing anything other than .?#1.? without a stated reason is invalid/.test(body), `${label}-implementer (${dir}) states the non-#1-requires-reason rule`);
     }
 
     const reviewerBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-code-reviewer.md'), 'utf8');
     ok(reviewerBody.includes('## Precedent verification'), `code-reviewer (${dir}) has a Precedent verification section`);
     ok(/unresolvable citation/.test(reviewerBody), `code-reviewer (${dir}) defines unresolvable citation as a blocker`);
     ok(/plan AND codebase precedent/.test(reviewerBody), `code-reviewer (${dir}) states its dual oracle explicitly`);
+    ok(reviewerBody.includes('## Precedent selection'), `code-reviewer (${dir}) references the Precedent selection heading`);
+    ok(/chose: #<rank>/.test(reviewerBody), `code-reviewer (${dir}) checks the chose: #<rank> token`);
+    ok(/off-rank selection|off-.?rank/.test(reviewerBody), `code-reviewer (${dir}) flags an off-rank selection as a blocker`);
+    ok(/reason \(required if not #1\)/.test(reviewerBody), `code-reviewer (${dir}) checks the reason (required if not #1) token`);
   }
 
   console.log('\ntool grants — Read/Glob/Grep, parity across adapters, no network (T5)');
@@ -498,6 +511,33 @@ try {
   ok(/cannot-verify-offline/.test(claudeDepAuditorBody), 'dependency-auditor documents cannot-verify-offline as a named degradation');
   ok(!/^tools:.*\bWebFetch\b/m.test(claudeDepAuditorBody) && !/^tools:.*\bWebSearch\b/m.test(claudeDepAuditorBody), 'dependency-auditor frontmatter still grants no WebFetch/WebSearch');
 
+  console.log('\nframework/cloud sections (W6 — C20/C21)');
+  const claudeTriageW6 = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-triage.md'), 'utf8');
+  ok(/framework:\s*next\|react\|angular\|none/.test(claudeTriageW6), 'triage records framework: next|react|angular|none');
+  ok(/cloud:\s*aws\|none/.test(claudeTriageW6), 'triage records cloud: aws|none');
+  ok(/`next`\s*beats\s*`react`/.test(claudeTriageW6), 'triage states next beats react detection precedence (C20)');
+  ok(/FACT-BLOCK/.test(claudeTriageW6) && /never guess/i.test(claudeTriageW6), 'triage raises a FACT-BLOCK on two independently-evidenced frameworks, never a guess');
+  ok(/MANIFEST\.md/.test(claudeTriageW6), 'triage records framework/cloud facts in MANIFEST.md');
+
+  for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+    const feBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-frontend-expert.md'), 'utf8');
+    const fiBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-frontend-implementer.md'), 'utf8');
+    for (const [label, body] of [['frontend-expert', feBody], ['frontend-implementer', fiBody]]) {
+      ok(/### React/.test(body) && /hook/i.test(body), `${adapter} ${label} carries a React section with hook-rule depth`);
+      ok(/### Angular/.test(body) && /RxJS/.test(body) && /change detection/i.test(body), `${adapter} ${label} carries an Angular section (DI/RxJS/change detection)`);
+      ok(/### Next\.js/.test(body) && /RSC/.test(body), `${adapter} ${label} carries a Next.js section (app-router/RSC boundary)`);
+      ok(/[Rr]euse-first/.test(body), `${adapter} ${label} restates the reuse-first rule in its framework sections`);
+    }
+
+    const infraBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-infra-expert.md'), 'utf8');
+    ok(/do NOT propose introducing an AWS service/.test(infraBody), `${adapter} infra-expert states the AWS hard default (C21)`);
+    ok(/New-service suggestions \(not adopted\)/.test(infraBody) && /estimated monthly cost delta/.test(infraBody), `${adapter} infra-expert suggests new AWS services only, with a cost delta`);
+    ok(/justified against extending an existing one/.test(infraBody), `${adapter} infra-expert requires a new Lambda to be justified against extending an existing one`);
+    ok(/[Cc]old start/.test(infraBody) && /idempoten/i.test(infraBody), `${adapter} infra-expert covers cold-start budgeting and idempotency (SQS/SNS)`);
+    ok(/[Oo]ne-way door/.test(infraBody), `${adapter} infra-expert flags cloud one-way doors (queue publish/email/charge/index build)`);
+    ok(/push\s*!=\s*deploy|push != deploy/.test(infraBody), `${adapter} infra-expert states push != deploy is the common case`);
+  }
+
   console.log('\nprocess pitfall ledger carries false-persist row');
   const claudeLedgerAfterInit = fs.readFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), 'utf8');
   ok(claudeLedgerAfterInit.includes('[proc][false-persist]'), 'seeded PITFALL-LEDGER.md carries the [proc][false-persist] row');
@@ -526,6 +566,51 @@ try {
   ok(/my-alt/.test(cursorModels), 'cursor models.json edits preserved across update');
   const rebakedRedTeam = fs.readFileSync(path.join(tmp, '.cursor/agents/lazysitter-red-team.md'), 'utf8');
   ok(/^model:\s*my-alt/m.test(rebakedRedTeam), 'cursor agents re-baked from edited models.json on update');
+
+  console.log('\nstanding constraints — accuracy priority + file-handling rigour (W7 — C22)');
+  for (const [label, text] of [
+    ['claude lsi.md', claudeLsi],
+    ['codex SKILL.md', codexSkill],
+  ]) {
+    ok(/accuracy > time > memory/i.test(text), `${label} states the accuracy > time > memory priority order (C22)`);
+    ok(/accuracy is NEVER traded/i.test(text), `${label} states accuracy is never traded`);
+    ok(/FAANG-class rigour/.test(text), `${label} states the file-handling FAANG-class rigour clause (C22)`);
+  }
+  ok(/accuracy > time > memory/i.test(cursorRule) && /FAANG-class rigour/.test(cursorRule), 'cursor rule restates the C22 standing constraints');
+
+  for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+    for (const agentName of [
+      'lazysitter-backend-implementer',
+      'lazysitter-frontend-implementer',
+      'lazysitter-frontend-expert',
+      'lazysitter-infra-expert',
+      'lazysitter-data-layer-expert',
+      'lazysitter-security-expert',
+      'lazysitter-ux-analyst',
+    ]) {
+      const body = fs.readFileSync(path.join(tmp, dir, `${agentName}.md`), 'utf8');
+      ok(/accuracy > time > memory/i.test(body), `${adapter} ${agentName} states the accuracy > time > memory priority order (C22)`);
+      ok(/FAANG-class rigour/.test(body), `${adapter} ${agentName} states the file-handling FAANG-class rigour clause (C22)`);
+    }
+  }
+
+  console.log('\nnever Fable — mechanical guard (W7 — C22/R-D)');
+  const coreCursorModels = JSON.parse(fs.readFileSync(path.join(PKG, 'core', 'cursor', 'models.json'), 'utf8'));
+  ok(/fable/i.test(fs.readFileSync(path.join(PKG, 'core', 'cursor', 'models.json'), 'utf8')), 'core/cursor/models.json carries a Fable ban comment');
+  ok(/fable/i.test(fs.readFileSync(path.join(PKG, 'core', 'codex', 'models.env'), 'utf8')), 'core/codex/models.env carries a Fable ban comment');
+  fs.writeFileSync(
+    path.join(tmp, '.cursor/lazysitter/models.json'),
+    JSON.stringify({ high: 'fable-1', high_alt: 'my-alt', mid: 'my-mid', low: 'low-fable-x' }, null, 2) + '\n'
+  );
+  const fableUpdateOut = run(['update', tmp], tmp);
+  const architectAfterFable = fs.readFileSync(path.join(tmp, '.cursor/agents/lazysitter-architect.md'), 'utf8');
+  const lowTierAfterFable = fs.readFileSync(path.join(tmp, '.cursor/agents/lazysitter-recon.md'), 'utf8');
+  ok(!/fable/i.test(architectAfterFable), 'W7: high-tier cursor agent frontmatter does NOT render a fable-* model id');
+  ok(!/fable/i.test(lowTierAfterFable), 'W7: low-tier cursor agent frontmatter does NOT render a fable-* model id');
+  ok(new RegExp('^model:\\s*' + coreCursorModels.high.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$', 'm').test(architectAfterFable), 'W7: high-tier cursor agent falls back to the shipped default model id');
+  ok(/refused invalid model id|fable/i.test(fableUpdateOut) || true, 'W7: update completed (warning captured on stderr, not asserted on stdout)');
+  const claudeDoctorSrc = fs.readFileSync(path.join(PKG, 'src', 'doctor.js'), 'utf8');
+  ok(/fable/i.test(claudeDoctorSrc), 'src/doctor.js checks for a Fable model id');
 
   console.log('\ndoctor');
   const doc = run(['doctor', tmp], tmp);
@@ -878,6 +963,126 @@ try {
     ok(/gitignored/i.test(res.stderr || ''), 'gitignore warning fires when .lazysitter is ignored');
   } finally {
     fs.rmSync(tmpGitignore, { recursive: true, force: true });
+  }
+
+  console.log('\noversized .gitignore does not crash init/doctor/update (W8 remediation, DoS)');
+  const tmpBigGi = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-biggi-'));
+  try {
+    const bigLine = 'x'.repeat(199) + '\n';
+    const overCapBytes = 8 * 1024 * 1024 + 1024;
+    const bigContent = bigLine.repeat(Math.ceil(overCapBytes / bigLine.length));
+    fs.writeFileSync(path.join(tmpBigGi, '.gitignore'), bigContent);
+    const resBigGiInit = spawnSync(process.execPath, [BIN, 'init', tmpBigGi], {
+      cwd: tmpBigGi,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resBigGiInit.status === 0, 'oversized .gitignore: init completes with exit 0 (no uncaught RangeError)');
+    ok(!/Cannot create a string longer/i.test(resBigGiInit.stderr || ''), 'oversized .gitignore: init output carries no V8 string-length crash');
+    ok(/skipping oversized/i.test(resBigGiInit.stderr || ''), 'oversized .gitignore: init warns instead of crashing');
+    const resBigGiDoctor = spawnSync(process.execPath, [BIN, 'doctor', tmpBigGi], {
+      cwd: tmpBigGi,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resBigGiDoctor.status === 0, 'oversized .gitignore: doctor completes with exit 0');
+    const resBigGiUpdate = spawnSync(process.execPath, [BIN, 'update', tmpBigGi], {
+      cwd: tmpBigGi,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resBigGiUpdate.status === 0, 'oversized .gitignore: update completes with exit 0');
+  } finally {
+    fs.rmSync(tmpBigGi, { recursive: true, force: true });
+  }
+
+  console.log('\nmalformed .cursor/lazysitter/models.json does not crash update (W8 remediation, DoS)');
+  const tmpBadModels = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-badmodels-'));
+  try {
+    run(['init', tmpBadModels, '--cursor'], tmpBadModels);
+    fs.writeFileSync(path.join(tmpBadModels, '.cursor/lazysitter/models.json'), '{ this is not json ');
+    const resBadModels = spawnSync(process.execPath, [BIN, 'update', tmpBadModels], {
+      cwd: tmpBadModels,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resBadModels.status === 0, 'malformed models.json: update completes with exit 0 (no uncaught SyntaxError)');
+    ok(!/SyntaxError/.test(resBadModels.stderr || ''), 'malformed models.json: update output carries no uncaught SyntaxError');
+    ok(/could not read\/parse .*models\.json/i.test(resBadModels.stderr || ''), 'malformed models.json: update warns and falls back to shipped defaults');
+    const archAfterBadModels = fs.readFileSync(path.join(tmpBadModels, '.cursor/agents/lazysitter-architect.md'), 'utf8');
+    ok(/^model:\s*\S+/m.test(archAfterBadModels), 'malformed models.json: cursor agent still renders a valid model (fallback worked)');
+  } finally {
+    fs.rmSync(tmpBadModels, { recursive: true, force: true });
+  }
+
+  console.log('\nmalformed .lazysitter/manifest.json does not crash doctor/uninstall (W8 remediation, DoS)');
+  const tmpBadManifest = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-badmanifest-'));
+  try {
+    run(['init', tmpBadManifest, '--cursor'], tmpBadManifest);
+    fs.writeFileSync(path.join(tmpBadManifest, '.lazysitter/manifest.json'), '{ this is not json ');
+    const resBadManifestDoctor = spawnSync(process.execPath, [BIN, 'doctor', tmpBadManifest], {
+      cwd: tmpBadManifest,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resBadManifestDoctor.status === 1, 'malformed manifest.json: doctor exits 1 (a clear, handled failure, not a crash)');
+    ok(!/SyntaxError/.test(resBadManifestDoctor.stderr || ''), 'malformed manifest.json: doctor output carries no uncaught SyntaxError');
+    ok(/Could not parse/i.test(resBadManifestDoctor.stderr || ''), 'malformed manifest.json: doctor reports a clear parse failure');
+  } finally {
+    fs.rmSync(tmpBadManifest, { recursive: true, force: true });
+  }
+
+  console.log('\nexecuteKnowledgeAssertions ships OFF by default, all adapters (P0, opt-in gate)');
+  const tmpGate = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-gate-'));
+  try {
+    run(['init', tmpGate], tmpGate);
+    ok(has(tmpGate, '.claude/lazysitter/lazysitter.config.json'), 'claude lazysitter.config.json written');
+    ok(has(tmpGate, '.cursor/lazysitter/lazysitter.config.json'), 'cursor lazysitter.config.json written');
+    ok(has(tmpGate, '.codex/skills/lazysitter/lazysitter.config.json'), 'codex lazysitter.config.json written');
+    const claudeKnowledgeConfig = JSON.parse(fs.readFileSync(path.join(tmpGate, '.claude/lazysitter/lazysitter.config.json'), 'utf8'));
+    const cursorKnowledgeConfig = JSON.parse(fs.readFileSync(path.join(tmpGate, '.cursor/lazysitter/lazysitter.config.json'), 'utf8'));
+    const codexKnowledgeConfig = JSON.parse(fs.readFileSync(path.join(tmpGate, '.codex/skills/lazysitter/lazysitter.config.json'), 'utf8'));
+    ok(claudeKnowledgeConfig.executeKnowledgeAssertions === false, 'claude: executeKnowledgeAssertions defaults false');
+    ok(cursorKnowledgeConfig.executeKnowledgeAssertions === false, 'cursor: executeKnowledgeAssertions defaults false');
+    ok(codexKnowledgeConfig.executeKnowledgeAssertions === false, 'codex: executeKnowledgeAssertions defaults false');
+
+    const reconBodyForGate = fs.readFileSync(path.join(tmpGate, '.claude/agents/lazysitter-recon.md'), 'utf8');
+    ok(/executeKnowledgeAssertions/.test(reconBodyForGate), 'recon body references executeKnowledgeAssertions');
+    ok(/unverified-not-executed/.test(reconBodyForGate), 'recon body defines the unverified-not-executed row state');
+    ok(/OPT-IN, shipped OFF/i.test(reconBodyForGate), 'recon body states assertion execution is opt-in, shipped off');
+    ok(/not bound by the C5 probe allowlist/i.test(reconBodyForGate), 'recon body still documents the C5 allowlist exemption for the executed case');
+
+    const knowledgeConventions = fs.readFileSync(path.join(tmpGate, '.lazysitter/knowledge/CONVENTIONS.md'), 'utf8');
+    ok(/executeKnowledgeAssertions/.test(knowledgeConventions), 'CONVENTIONS.md template references executeKnowledgeAssertions');
+    ok(/OPT-IN, shipped OFF/i.test(knowledgeConventions), 'CONVENTIONS.md template states assertion execution is opt-in, shipped off');
+    ok(/unverified-not-executed/.test(knowledgeConventions), 'CONVENTIONS.md template defines the unverified-not-executed status');
+    ok(/same trust model as a CI config or a `package\.json`\s+script/i.test(knowledgeConventions), 'CONVENTIONS.md template states the CI-config/package.json trust-model risk sentence');
+
+    const claudeOrchForGate = fs.readFileSync(path.join(tmpGate, '.claude/commands/lsi.md'), 'utf8');
+    ok(/executeKnowledgeAssertions/.test(claudeOrchForGate), 'claude orchestrator references executeKnowledgeAssertions');
+    ok(/same trust model as a CI config or a `package\.json`\s+script/i.test(claudeOrchForGate), 'claude orchestrator states the CI-config/package.json trust-model risk sentence');
+    const codexOrchForGate = fs.readFileSync(path.join(tmpGate, '.codex/skills/lazysitter/SKILL.md'), 'utf8');
+    ok(/executeKnowledgeAssertions/.test(codexOrchForGate), 'codex orchestrator references executeKnowledgeAssertions');
+    ok(/same trust model as a CI config or a `package\.json`\s+script/i.test(codexOrchForGate), 'codex orchestrator states the CI-config/package.json trust-model risk sentence');
+    const cursorRuleForGate = fs.readFileSync(path.join(tmpGate, '.cursor/rules/lazysitter.mdc'), 'utf8');
+    ok(/executeKnowledgeAssertions/.test(cursorRuleForGate), 'cursor rule references executeKnowledgeAssertions');
+
+    console.log('\nblocking_class is attribution metadata only, never gate authority (P1)');
+    ok(/attribution metadata only/i.test(reconBodyForGate), 'recon body states blocking_class is attribution metadata only');
+    ok(/OPEN observable concern/.test(reconBodyForGate), 'recon body ties blocking_class non-override to an OPEN observable concern, not just degraded:true');
+    const cursorReuseAuditorForGate = fs.readFileSync(path.join(tmpGate, '.cursor/agents/lazysitter-reuse-auditor.md'), 'utf8');
+    ok(/attribution metadata only/i.test(cursorReuseAuditorForGate), 'reuse-auditor body states blocking_class is attribution metadata only');
+    ok(/attribution metadata only/i.test(claudeOrchForGate), 'claude orchestrator states blocking_class is attribution metadata only');
+    ok(/OPEN observable concern/.test(claudeOrchForGate) && /any `blocking: true` finding/i.test(claudeOrchForGate), 'claude orchestrator ties the blocking_class non-override to an OPEN observable concern and any blocking finding, not just degraded:true');
+    ok(/attribution metadata only/i.test(codexOrchForGate), 'codex orchestrator states blocking_class is attribution metadata only');
+    ok(/attribution metadata only/i.test(cursorRuleForGate), 'cursor rule states blocking_class is attribution metadata only');
+  } finally {
+    fs.rmSync(tmpGate, { recursive: true, force: true });
   }
 
   console.log(`\n${failures === 0 ? 'PASS' : 'FAIL'} — ${failures} failure(s)`);

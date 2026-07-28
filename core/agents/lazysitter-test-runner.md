@@ -48,7 +48,7 @@ degraded: true | false          # true if the suite could not run at all
 verified_by: lazysitter-test-runner
 independent: true               # you execute the frozen tests; you never author or fix them
 oracle: test  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
-blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — whose fault; does NOT override the A1 degraded:true hard-BLOCK; only MINE blocks this diff's gate
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds
 evidence: inline above
 ac_results:                      # feeds the AC->test->verdict traceability matrix
   - "AC-<n>: <test name> -> pass | fail"

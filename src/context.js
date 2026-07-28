@@ -19,8 +19,6 @@ function countOccurrences(haystack, needle) {
   }
 }
 
-// Shared install context passed to each adapter. Owns file writing, the
-// preserve-vs-managed distinction, AGENTS.md block merging, and manifest tracking.
 class InstallCtx {
   constructor(targetRoot, pkgRoot, opts, priorManifest) {
     this.targetRoot = targetRoot;
@@ -37,7 +35,6 @@ class InstallCtx {
     return path.join(this.targetRoot, rel);
   }
 
-  // Write a file LazySitter fully owns (overwritten on update, removed on uninstall).
   write(rel, content, { exec = false } = {}) {
     const abs = this.abs(rel);
     assertContained(this.targetRoot, abs);
@@ -46,20 +43,16 @@ class InstallCtx {
     if (exec) {
       try {
         fs.chmodSync(abs, 0o755);
-      } catch {
-        /* windows: no-op */
-      }
+      } catch {}
     }
     this.manifest.managed.push({ path: rel.replace(/\\/g, '/'), sha256: sha256(content) });
     log.ok(`  ${rel}`);
   }
 
-  // Copy a package file verbatim as a managed file.
   copy(srcAbs, rel, opts) {
     this.write(rel, readFile(srcAbs), opts);
   }
 
-  // Write a user-editable file only if it does not already exist (never clobbers edits).
   writePreserve(rel, content) {
     const abs = this.abs(rel);
     assertContained(this.targetRoot, abs);
@@ -73,7 +66,6 @@ class InstallCtx {
     log.ok(`  ${rel}`);
   }
 
-  // Insert or replace the LazySitter block inside a doc file (AGENTS.md), preserving the rest.
   mergeMarkedBlock(rel, block) {
     const abs = this.abs(rel);
     assertContained(this.targetRoot, abs);

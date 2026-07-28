@@ -7,7 +7,7 @@ alwaysApply: false
 
 Cursor has the SAME structure as the Claude Code install:
 
-- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (26 agents). Each file pins its
+- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (28 agents). Each file pins its
   own `model:` and `readonly:` scope. Spawn them with the `Task` tool by `subagent_type`.
 - **Orchestrator command**: `.cursor/commands/lsi.md` → run `/lsi <feature request>`.
 - **Runs / audit trail**: `.cursor/lazysitter/runs/<slug>/`.
@@ -26,12 +26,49 @@ subagents. Do NOT collapse it into a single-agent pass.
   with the implementers from the frozen acceptance criteria; never show it implementation.
 - **Always run adversaries**: `lazysitter-devils-advocate`, `lazysitter-red-team`,
   `lazysitter-security-auditor`, `lazysitter-secrets-scanner`, `lazysitter-closing-loop-auditor`.
+- **Plan survives an attack before it builds**: `lazysitter-red-team` runs in `plan-attack` mode
+  against `PLAN.md` before Tier 5 begins; Tier 4 does not close until it does — a `BLOCK` routes
+  back to the architect for one amendment round. `lazysitter-devils-advocate` stays on the
+  never-skip list unchanged; `plan-attack` is an added guaranteed slot, not a replacement for it.
 - **Run in parallel** where the pipeline says so (triage+explorer; implementers+test-author;
   the Tier-6 verifiers).
 - **Gate from structured verdicts**, not prose. A `degraded:true` verdict or an OPEN observable
   concern means the gate is NOT clean. Never force-merge.
+- **`degraded:true` hard-BLOCKs.** It is closable ONLY by an explicit, recorded, per-run human
+  waiver — never by re-running the same agent, never by inference. **`--auto` does NOT satisfy
+  this waiver** — `--auto` (not the default; must be passed explicitly) only toggles whether you
+  HOLD at an already-clean gate.
+- **`independent: false` refuses GREEN.** Every verdict carries `verified_by` + `independent`
+  (C7). A blocking finding cleared by the SAME lineage that produced the artifact under test is
+  `independent: false`; the merge gate refuses GREEN until it is re-cleared by an independent
+  agent.
+- **`oracle:` is report-only; the gate is frozen (C10).** Every verdict also carries `oracle:`
+  (what kind of check it rests on) and `blocking_class:` (`MINE|ENVIRONMENT|PRE-EXISTING`, C11).
+  The merge gate MUST NOT read `oracle:` to collapse or skip a named agent — it still requires
+  each one's own PASS.
+- **`blocking_class` is attribution metadata only, never gate authority (C11).** It records whose
+  fault a finding is; it NEVER determines whether the gate blocks. Only `MINE` blocks this diff on
+  fault-routing grounds. An unresolved `degraded:true`, an OPEN observable concern, and any
+  `blocking: true` finding still hard-BLOCK regardless of `blocking_class` — including a
+  self-attested `ENVIRONMENT`/`PRE-EXISTING` on any of them.
+- **Comment density matches the cited precedent — never a blanket zero (C5).** Any agent that
+  writes matches the measured comment density of the sibling file(s) named in its
+  `## Precedent selection` row (T1) — copy the convention, don't invent a zero and don't pad
+  beyond it. Forbidden absolutely, at any density: AC-IDs, criterion IDs, and decision/run
+  references (`AC-<n>`, `D-<n>`, run slugs, plan section numbers) in shipped source — those live
+  only in `TRACEABILITY.md`. (This repo's own `src/` measures near-zero comment density, so the
+  corrected rule yields the same no-comment result here — it is this repo's own worked example,
+  not an exception to it.)
 - **You are the only hub.** Cursor permits one level of nested spawning; LazySitter forbids it —
   no agent you spawn may spawn another.
+- **`CONVENTIONS.md` is a flagged, never-auto-approved diff.** Assertion execution is opt-in,
+  shipped OFF: `lazysitter-recon` executes its `ASSERTION`/`PAIRED-POSITIVE` rows as code (C7)
+  ONLY when `executeKnowledgeAssertions` is `true` in `.cursor/lazysitter/lazysitter.config.json`
+  (default `false`) — the same trust model as a CI config or a `package.json` script; enable it
+  only for repos you trust. While off, every row-shape-2 row is `unverified-not-executed` and
+  excluded from the context pack, never silently trusted — the same treatment a `STALE` row (a
+  failing assertion, or a paired-positive that returns 0 hits) already carries. This file inherits
+  `SECRETS-BASELINE.md`'s never-auto-approve treatment regardless of the flag's current setting.
 
 ## Model pinning (already baked into each agent file)
 
@@ -42,11 +79,16 @@ Each agent's model is set in its `.cursor/agents/*.md` frontmatter, resolved fro
 |------|-------|--------|
 | `high` | `claude-opus-4-8-thinking-high` | architect, security-expert, devils-advocate, security-auditor, closing-loop-auditor |
 | `high_alt` (distinct) | `gpt-5.3-codex` | red-team (must differ from the build lineage) |
-| `mid` | `claude-sonnet-5-thinking-high` | spec-writer, experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
-| `low` | `composer-2.5-fast` | business-analyst-triage, triage, explorer, secrets-scanner, monitor, docs |
+| `mid` | `claude-sonnet-5-thinking-high` | business-analyst, triage, explorer, spec-writer, experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, reuse-auditor, integration-checker, release/rollback |
+| `low` | `composer-2.5-fast` | recon, secrets-scanner, monitor, docs |
 
 To change models, edit `.cursor/lazysitter/models.json` and run `lazysitter update` — do not
 hand-edit individual agent files (update overwrites them).
+
+## Standing constraints (C22, binding on every agent)
+
+- **Standing constraint — priority order (C22, binding on every agent).** Accuracy > time > memory, and sometimes accuracy > memory > time — but **accuracy is NEVER traded away** for either, regardless of budget or urgency pressure elsewhere in the run.
+- **Standing constraint — file-handling rigour (C22).** Any file-handling work (reading, writing, streaming, parsing) requires FAANG-class rigour: an explicit buffering vs whole-file-read choice, a streaming path for large inputs, explicit character encoding (never an assumed platform default), correct partial-read/partial-write handling, and a memory-bounded path for large files. Shallow file-handling advice ("just read it into memory") is not acceptable from any agent.
 
 ## Cost controls you MUST apply
 

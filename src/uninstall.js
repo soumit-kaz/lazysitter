@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { log, c, exists, readFile, sha256 } = require('./util');
+const { log, c, exists, readFile, readFileCapped, sha256 } = require('./util');
 const { LAZYSITTER_BEGIN, LAZYSITTER_END } = require('./context');
 const { isContained, hasSymlinkSegment } = require('./contain');
 
@@ -105,7 +105,15 @@ function uninstall(pkgRoot, opts) {
     process.exitCode = 1;
     return;
   }
-  const manifest = JSON.parse(readFile(manifestPath));
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileCapped(manifestPath));
+  } catch (err) {
+    log.err(`Could not parse ${manifestPath}: ${err.message}`);
+    log.err('Fix the manifest by hand, or remove .lazysitter/, .claude/, .codex/, and .cursor/ by hand and reinstall.');
+    process.exitCode = 1;
+    return;
+  }
 
   log.info('');
   log.info(`${c.bold('Removing LazySitter')} from ${c.bold(targetRoot)}`);
@@ -194,7 +202,6 @@ function uninstall(pkgRoot, opts) {
     return;
   }
 
-  // Remove the manifest and any now-empty LazySitter directories.
   try {
     fs.rmSync(manifestPath);
   } catch (err) {

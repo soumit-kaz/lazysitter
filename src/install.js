@@ -47,7 +47,11 @@ function install(pkgRoot, opts) {
   } finally {
     ctx.writeManifest(version, tools);
   }
-  warnIfKnowledgeGitignored(targetRoot);
+  try {
+    warnIfKnowledgeGitignored(targetRoot);
+  } catch (err) {
+    log.warn(`  gitignore check failed: ${err.message}`);
+  }
   printNextSteps(tools, data.agents.length);
   return { targetRoot, tools, mode };
 }

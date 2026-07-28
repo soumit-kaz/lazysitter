@@ -42,6 +42,20 @@ function readFile(p) {
   return fs.readFileSync(p, 'utf8');
 }
 
+const MAX_SAFE_READ_BYTES = 8 * 1024 * 1024;
+
+function readFileCapped(p, maxBytes = MAX_SAFE_READ_BYTES) {
+  const stat = fs.statSync(p);
+  if (stat.size > maxBytes) {
+    const err = new Error(`${p} is ${stat.size} bytes, over the ${maxBytes}-byte safety cap — refusing to read it into memory`);
+    err.code = 'LAZYSITTER_FILE_TOO_LARGE';
+    err.path = p;
+    err.size = stat.size;
+    throw err;
+  }
+  return fs.readFileSync(p, 'utf8');
+}
+
 function writeFile(p, content) {
   ensureDir(path.dirname(p));
   fs.writeFileSync(p, content);
@@ -64,8 +78,6 @@ function listFiles(dir, filterExt) {
     .sort();
 }
 
-// Walk upward from `start` looking for a directory containing `.git`.
-// Returns that directory, or null if none found before the filesystem root.
 function findGitRoot(start) {
   let dir = path.resolve(start);
   for (;;) {
@@ -82,6 +94,8 @@ module.exports = {
   ensureDir,
   exists,
   readFile,
+  readFileCapped,
+  MAX_SAFE_READ_BYTES,
   writeFile,
   copyInto,
   sha256,

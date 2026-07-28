@@ -48,6 +48,8 @@ End your report with a fenced `lsi-verdict` block. Map INTENT MATCH → `PASS`, 
 verdict: PASS | BLOCK
 blocking: true | false
 degraded: true | false
+oracle: human  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field — the original verbatim user request
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds — intent drift introduced by this diff/plan is MINE
 evidence: inline above
 claims:
   - "[observed|reasoned][observable|internal] <claim> :: <evidence, or OPEN>"
