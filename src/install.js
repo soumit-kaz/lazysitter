@@ -10,6 +10,7 @@ const { installCodex } = require('./install-codex');
 const { installCursor } = require('./install-cursor');
 const { installKnowledge } = require('./install-knowledge');
 const { warnIfKnowledgeGitignored } = require('./gitignore-check');
+const { pruneOrphans } = require('./prune');
 
 function install(pkgRoot, opts) {
   const version = JSON.parse(readFile(path.join(pkgRoot, 'package.json'))).version;
@@ -44,6 +45,17 @@ function install(pkgRoot, opts) {
     if (tools.includes('cursor')) installCursor(ctx, data);
 
     installKnowledge(ctx);
+
+    if (priorManifest && Array.isArray(priorManifest.managed) && priorManifest.managed.length) {
+      const freshPaths = ctx.manifest.managed.map((entry) => entry.path);
+      const { kept } = pruneOrphans(targetRoot, priorManifest.managed, freshPaths, tools);
+      if (kept.length) {
+        const keptSet = new Set(kept);
+        for (const entry of priorManifest.managed) {
+          if (keptSet.has(entry.path)) ctx.manifest.managed.push(entry);
+        }
+      }
+    }
   } finally {
     ctx.writeManifest(version, tools);
   }

@@ -1037,6 +1037,108 @@ try {
     fs.rmSync(tmpBadManifest, { recursive: true, force: true });
   }
 
+  console.log('\nprune orphaned managed files no longer in the roster (v1.1.0 -> v2.0.x renamed-agent regression)');
+  const tmpPrune = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-prune-'));
+  try {
+    run(['init', tmpPrune], tmpPrune);
+    const manifestPathPrune = path.join(tmpPrune, '.lazysitter', 'manifest.json');
+    const mPrune = JSON.parse(fs.readFileSync(manifestPathPrune, 'utf8'));
+    const staleClaude = '.claude/agents/lazysitter-database-expert.md';
+    const staleCodexRole = '.codex/skills/lazysitter/agents/lazysitter-database-expert.md';
+    const staleCodexMeta = '.codex/skills/lazysitter/agents/lazysitter-database-expert.meta';
+    const staleCursor = '.cursor/agents/lazysitter-database-expert.md';
+    const staleContent = '---\nname: lazysitter-database-expert\n---\nstale body\n';
+    const staleMetaContent = 'TIER=mid\n';
+    for (const [rel, content] of [
+      [staleClaude, staleContent],
+      [staleCodexRole, staleContent],
+      [staleCodexMeta, staleMetaContent],
+      [staleCursor, staleContent],
+    ]) {
+      fs.writeFileSync(path.join(tmpPrune, rel), content);
+      mPrune.managed.push({ path: rel, sha256: crypto.createHash('sha256').update(content).digest('hex') });
+    }
+    fs.writeFileSync(manifestPathPrune, JSON.stringify(mPrune, null, 2) + '\n');
+
+    const pruneOut = run(['update', tmpPrune], tmpPrune);
+    ok(!has(tmpPrune, staleClaude), 'orphaned claude agent pruned after roster rename');
+    ok(!has(tmpPrune, staleCodexRole), 'orphaned codex agent role pruned after roster rename');
+    ok(!has(tmpPrune, staleCodexMeta), 'orphaned codex agent meta pruned after roster rename');
+    ok(!has(tmpPrune, staleCursor), 'orphaned cursor agent pruned after roster rename');
+    ok(/pruned .*lazysitter-database-expert\.md/.test(pruneOut), 'update output reports the pruned orphan files');
+    ok(has(tmpPrune, '.claude/agents/lazysitter-data-layer-expert.md'), 'renamed agent (data-layer-expert) present after update');
+    ok(has(tmpPrune, '.claude/agents/lazysitter-reuse-auditor.md'), 'new agent (reuse-auditor) present after update');
+    const claudeAgentsAfterPrune = fs.readdirSync(path.join(tmpPrune, '.claude/agents')).filter((f) => f.endsWith('.md'));
+    ok(claudeAgentsAfterPrune.length === 28, `28 claude agents after prune (got ${claudeAgentsAfterPrune.length})`);
+    const cursorAgentsAfterPrune = fs.readdirSync(path.join(tmpPrune, '.cursor/agents')).filter((f) => f.endsWith('.md'));
+    ok(cursorAgentsAfterPrune.length === 28, `28 cursor agents after prune (got ${cursorAgentsAfterPrune.length})`);
+    const manifestAfterPrune = JSON.parse(fs.readFileSync(manifestPathPrune, 'utf8'));
+    ok(!manifestAfterPrune.managed.some((e) => e.path.includes('database-expert')), 'manifest no longer records the pruned orphan entries');
+  } finally {
+    fs.rmSync(tmpPrune, { recursive: true, force: true });
+  }
+
+  console.log('\nprune safety rail: locally modified orphan is warned about and kept, not deleted');
+  const tmpPruneSafety = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-prune-safety-'));
+  try {
+    run(['init', tmpPruneSafety], tmpPruneSafety);
+    const manifestPathSafety = path.join(tmpPruneSafety, '.lazysitter', 'manifest.json');
+    const mSafety = JSON.parse(fs.readFileSync(manifestPathSafety, 'utf8'));
+    const staleRel = '.claude/agents/lazysitter-legacy-thing.md';
+    const originalContent = '---\nname: lazysitter-legacy-thing\n---\noriginal body\n';
+    fs.writeFileSync(path.join(tmpPruneSafety, staleRel), originalContent);
+    mSafety.managed.push({ path: staleRel, sha256: crypto.createHash('sha256').update(originalContent).digest('hex') });
+    fs.writeFileSync(manifestPathSafety, JSON.stringify(mSafety, null, 2) + '\n');
+
+    const editedContent = '---\nname: lazysitter-legacy-thing\n---\nUSER EDITED THIS BODY\n';
+    fs.writeFileSync(path.join(tmpPruneSafety, staleRel), editedContent);
+
+    const resSafety = spawnSync(process.execPath, [BIN, 'update', tmpPruneSafety], {
+      cwd: tmpPruneSafety,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(resSafety.status === 0, 'prune safety rail: update on a locally-modified orphan still exits 0');
+    ok(has(tmpPruneSafety, staleRel), 'prune safety rail: locally-modified orphaned file is NOT deleted');
+    const keptContent = fs.readFileSync(path.join(tmpPruneSafety, staleRel), 'utf8');
+    ok(keptContent === editedContent, "prune safety rail: kept file retains the user's edits byte-for-byte");
+    ok(/kept .*lazysitter-legacy-thing\.md.*locally modified/i.test(resSafety.stderr || ''), 'prune safety rail: update warns by name that the modified orphan was kept');
+    const manifestAfterSafety = JSON.parse(fs.readFileSync(manifestPathSafety, 'utf8'));
+    ok(manifestAfterSafety.managed.some((e) => e.path === staleRel), 'prune safety rail: manifest keeps tracking the kept orphan so it is not silently forgotten');
+
+    const resSafetyAgain = spawnSync(process.execPath, [BIN, 'update', tmpPruneSafety], {
+      cwd: tmpPruneSafety,
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', LAZYSITTER_NO_UPDATE_CHECK: '1' },
+      encoding: 'utf8',
+    });
+    ok(has(tmpPruneSafety, staleRel), 'prune safety rail: still not deleted after a second update run');
+    ok(/kept .*lazysitter-legacy-thing\.md.*locally modified/i.test(resSafetyAgain.stderr || ''), 'prune safety rail: still warns on a second update run (not a one-time notice)');
+  } finally {
+    fs.rmSync(tmpPruneSafety, { recursive: true, force: true });
+  }
+
+  console.log('\nprune scoping: a single-tool re-render never prunes trees for tools not being rendered this run');
+  const tmpPruneScope = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-prune-scope-'));
+  try {
+    run(['init', tmpPruneScope], tmpPruneScope);
+    const cursorCountBefore = fs.readdirSync(path.join(tmpPruneScope, '.cursor/agents')).filter((f) => f.endsWith('.md')).length;
+    const codexCountBefore = fs
+      .readdirSync(path.join(tmpPruneScope, '.codex/skills/lazysitter/agents'))
+      .filter((f) => f.endsWith('.md')).length;
+    run(['init', tmpPruneScope, '--claude'], tmpPruneScope);
+    ok(has(tmpPruneScope, '.cursor/agents/lazysitter-architect.md'), 'prune scoping: cursor tree untouched by claude-only re-render');
+    const cursorCountAfter = fs.readdirSync(path.join(tmpPruneScope, '.cursor/agents')).filter((f) => f.endsWith('.md')).length;
+    ok(cursorCountAfter === cursorCountBefore, 'prune scoping: cursor agent count unchanged after claude-only re-render');
+    const codexCountAfter = fs
+      .readdirSync(path.join(tmpPruneScope, '.codex/skills/lazysitter/agents'))
+      .filter((f) => f.endsWith('.md')).length;
+    ok(codexCountAfter === codexCountBefore, 'prune scoping: codex agent count unchanged after claude-only re-render');
+  } finally {
+    fs.rmSync(tmpPruneScope, { recursive: true, force: true });
+  }
+
   console.log('\nexecuteKnowledgeAssertions ships OFF by default, all adapters (P0, opt-in gate)');
   const tmpGate = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-gate-'));
   try {

@@ -274,4 +274,11 @@ function removeEmptyDirsUpward(dirSet, stopAt) {
   }
 }
 
-module.exports = { uninstall };
+module.exports = {
+  uninstall,
+  normalizeManagedRel,
+  isManagedPathAllowed,
+  safeStat,
+  removeEmptyDirsUpward,
+  MANAGED_PREFIXES,
+};
