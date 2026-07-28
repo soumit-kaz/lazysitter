@@ -1,5 +1,6 @@
 {
   "budget": 400000,
   "autoApproveGit": false,
-  "monitorWindowMinutes": 30
+  "monitorWindowMinutes": 30,
+  "executeKnowledgeAssertions": false
 }

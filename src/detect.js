@@ -15,8 +15,6 @@ function resolveTargetRoot(dirArg) {
   return root;
 }
 
-// Decide which tool adapters to install. Explicit flags win; otherwise detect
-// existing .claude/.codex/.cursor dirs; if none exists, install all.
 function resolveTools(opts, targetRoot) {
   const anyExplicit = opts.claude || opts.codex || opts.cursor;
   if (anyExplicit) {
@@ -41,8 +39,6 @@ function resolveTools(opts, targetRoot) {
   if (hasCodex) tools.push('codex');
   if (hasCursor) tools.push('cursor');
 
-  // If nothing is detected, install all adapters so the repo is ready
-  // regardless of which client the user uses first.
   return tools.length ? tools : ['claude', 'codex', 'cursor'];
 }
 

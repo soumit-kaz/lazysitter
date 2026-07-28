@@ -1,8 +1,5 @@
 'use strict';
 
-// Minimal YAML-frontmatter splitter for LazySitter agent files. Handles only the flat
-// `key: value` frontmatter the agent files use (name, description, tools, model) —
-// intentionally NOT a general YAML parser (no deps). Returns { data, body }.
 function parse(raw) {
   const text = raw.replace(/^﻿/, '');
   const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(text);
@@ -27,7 +24,6 @@ function parse(raw) {
   return { data, body };
 }
 
-// Split a comma/space separated tools string into an array.
 function toolsArray(toolsStr) {
   if (!toolsStr) return [];
   return toolsStr

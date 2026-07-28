@@ -36,6 +36,8 @@ function main() {
     cursor: !!flags.cursor,
     force: !!flags.force,
     purge: !!flags.purge,
+    purgeKnowledge: !!flags['purge-knowledge'],
+    forceUnverified: !!flags['force-unverified'],
   };
 
   // Commands where knowing you're on a stale npx-cached copy matters.
@@ -127,6 +129,11 @@ ${c.bold('Flags')}
   --codex           Install only the Codex adapter.
   --cursor          Install only the Cursor adapter.
   --purge           (uninstall) also remove user config (models.env, lazysitter.config.json).
+  --purge-knowledge (uninstall, with --purge) also remove .lazysitter/knowledge/ (committed
+                    institutional memory). Ignored without --purge.
+  --force-unverified (uninstall) remove managed entries recorded in a manifest that predates
+                    the sha256 field, without an integrity check. Use only if you trust the
+                    manifest; without it, such entries are left on disk and the manifest is kept.
   --force           Overwrite without prompting.
 
 ${c.bold('Examples')}

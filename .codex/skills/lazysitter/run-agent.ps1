@@ -23,26 +23,36 @@ if (-not (Test-Path $role)) { Write-Error "lazysitter: unknown agent '$Agent' (n
 if (-not (Test-Path $meta)) { Write-Error "lazysitter: missing meta for '$Agent' ($meta)"; exit 2 }
 if (-not (Test-Path $InputsFile)) { Write-Error "lazysitter: inputs file not found: $InputsFile"; exit 2 }
 
-# Parse KEY=VALUE lines from a file into a hashtable.
-function Read-EnvFile($path) {
+function Read-EnvFile($path, [string[]]$allowedKeys) {
   $h = @{}
   if (Test-Path $path) {
     foreach ($line in Get-Content $path) {
       if ($line -match '^\s*#' -or $line -notmatch '=') { continue }
       $k, $v = $line -split '=', 2
-      $h[$k.Trim()] = $v.Trim().Trim('"')
+      $k = $k.Trim()
+      $v = $v.Trim()
+      if ($allowedKeys -notcontains $k) { continue }
+      if (($v.StartsWith('"') -and $v.EndsWith('"') -and $v.Length -ge 2) -or
+          ($v.StartsWith("'") -and $v.EndsWith("'") -and $v.Length -ge 2)) {
+        $v = $v.Substring(1, $v.Length - 2)
+      }
+      if ($v -and $v -notmatch '^[A-Za-z0-9_./:-]+$') {
+        [Console]::Error.WriteLine("lazysitter: refusing unsafe value for $k in $path")
+        exit 2
+      }
+      $h[$k] = $v
     }
   }
   return $h
 }
 
-$m = Read-EnvFile $meta
+$m = Read-EnvFile $meta @('SANDBOX', 'APPROVAL', 'TIER', 'DISTINCT_MODEL')
 $sandbox  = if ($m.ContainsKey('SANDBOX'))  { $m['SANDBOX'] }  else { 'read-only' }
 $approval = if ($m.ContainsKey('APPROVAL')) { $m['APPROVAL'] } else { 'never' }
 $tier     = if ($m.ContainsKey('TIER'))     { $m['TIER'] }     else { 'mid' }
 $distinct = if ($m.ContainsKey('DISTINCT_MODEL')) { $m['DISTINCT_MODEL'] } else { '0' }
 
-$models = Read-EnvFile (Join-Path $dir 'models.env')
+$models = Read-EnvFile (Join-Path $dir 'models.env') @('MODEL_HIGH', 'MODEL_HIGH_ALT', 'MODEL_MID', 'MODEL_LOW')
 switch ($tier) {
   'high' { $model = $models['MODEL_HIGH'] }
   'mid'  { $model = $models['MODEL_MID'] }

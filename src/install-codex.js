@@ -6,46 +6,36 @@ const fm = require('./frontmatter');
 
 const SKILL_DIR = '.codex/skills/lazysitter';
 
-// Render the Codex adapter. Codex has no typed subagents, so each agent becomes a
-// role prompt fed to a context-isolated `codex exec` via run-agent.sh/.ps1. The
-// orchestrator lives as a Codex skill.
 function installCodex(ctx, data) {
   log.step('Codex adapter → .codex/skills/lazysitter/');
 
-  // Orchestrator skill (SKILL.md keeps its frontmatter; Codex needs it).
   const orch = readFile(path.join(ctx.coreDir, 'orchestrator.codex.md'));
   ctx.write(`${SKILL_DIR}/SKILL.md`, orch);
 
-  // A frontmatter-free copy for humans who want to read the full playbook directly.
   const { body: orchBody } = fm.parse(orch);
   ctx.write(`${SKILL_DIR}/orchestrator.md`, orchBody.trimStart());
 
-  // Per-agent role prompts (frontmatter stripped) + resolved runtime meta.
   for (const agent of data.agents) {
     ctx.write(`${SKILL_DIR}/agents/${agent.file}`, roleFile(agent));
     ctx.write(`${SKILL_DIR}/agents/${agent.name}.meta`, metaFile(agent));
   }
 
-  // Runners.
   ctx.copy(path.join(ctx.coreDir, 'codex', 'run-agent.sh'), `${SKILL_DIR}/run-agent.sh`, {
     exec: true,
   });
   ctx.copy(path.join(ctx.coreDir, 'codex', 'run-agent.ps1'), `${SKILL_DIR}/run-agent.ps1`);
 
-  // Seeded process-pitfall ledger — preserve so accumulated faults survive `update`.
   ctx.writePreserve(
     `${SKILL_DIR}/PITFALL-LEDGER.md`,
     readFile(path.join(ctx.coreDir, 'PITFALL-LEDGER.seed.md'))
   );
 
-  // User-editable config — written once, never clobbered on update.
   ctx.writePreserve(`${SKILL_DIR}/models.env`, readFile(path.join(ctx.coreDir, 'codex', 'models.env')));
   ctx.writePreserve(
     `${SKILL_DIR}/lazysitter.config.json`,
     readFile(path.join(ctx.coreDir, 'codex', 'lazysitter.config.json'))
   );
 
-  // Discovery guarantee: point AGENTS.md at the skill.
   ctx.mergeMarkedBlock('AGENTS.md', readFile(path.join(ctx.coreDir, 'codex', 'AGENTS.lazysitter.md')));
 }
 

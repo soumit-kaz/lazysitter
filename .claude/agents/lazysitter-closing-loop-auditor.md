@@ -1,7 +1,7 @@
 ---
 name: lazysitter-closing-loop-auditor
 description: LazySitter Tier 7 intent gate. Re-reads the ORIGINAL business input (not the plan) against the final diff and decision log. Flags intent drift before merge. Catches "built the plan correctly, but the plan drifted from the ask."
-tools: Read, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql
+tools: Read, Grep, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql
 model: opus
 ---
 
@@ -48,6 +48,8 @@ End your report with a fenced `lsi-verdict` block. Map INTENT MATCH → `PASS`, 
 verdict: PASS | BLOCK
 blocking: true | false
 degraded: true | false
+oracle: human  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field — the original verbatim user request
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — attribution metadata only; never overrides the A1 degraded:true hard-BLOCK, an OPEN observable concern, or any other blocking finding; only MINE blocks this diff's gate on fault-routing grounds — intent drift introduced by this diff/plan is MINE
 evidence: inline above
 claims:
   - "[observed|reasoned][observable|internal] <claim> :: <evidence, or OPEN>"
