@@ -1,6 +1,6 @@
 # LazySitter — Autonomous AI Engineering Team for Cursor, Claude Code & Codex
 
-**LazySitter is an open-source, multi-agent AI coding pipeline that turns a plain-language feature request into shipped, independently-verified code.** It installs a 26-agent autonomous engineering team into your own repository and runs the whole software workflow — intake → spec → design → build → automated code review → testing → release — with one hard guarantee: **no agent checks its own work, and tests are written from the spec, blind to the code.**
+**LazySitter is an open-source, multi-agent AI coding pipeline that turns a plain-language feature request into shipped, independently-verified code.** It installs a 27-agent autonomous engineering team into your own repository and runs the whole software workflow — recon → intake → spec → design → build → automated code review → testing → release — with one hard guarantee: **no agent checks its own work, and tests are written from the spec, blind to the code.**
 
 Works with **Cursor**, **[Claude Code](https://claude.com/claude-code)**, and **OpenAI Codex** out of the box.
 
@@ -71,7 +71,7 @@ Every `init` / `update` / `doctor` run also probes the repo directly (independen
 /lsi Add CSV export to the analytics dashboard --dry-run
 ```
 
-Flags: `--dry-run` (stop after the plan), `--budget <tokens>` (default 400000), `--auto` (run through merge with auto-rollback — the default).
+Flags: `--dry-run` (stop after the plan), `--budget <tokens>` (default 400000), `--auto` (proceed through merge + auto-rollback autonomously — must be passed explicitly, it is NOT the default; without it the run HOLDs at the merge gate and summarizes instead of merging).
 
 **Codex** — open `codex` in the project and say:
 
@@ -79,12 +79,13 @@ Flags: `--dry-run` (stop after the plan), `--budget <tokens>` (default 400000), 
 
 **Kill switch:** create `.claude/lazysitter/KILL` or `.codex/lazysitter/KILL` to stop before the next stage. Every run writes a full audit trail under `lazysitter/runs/<feature>/`.
 
-## The 26 agents
+## The 27 agents
 
-LazySitter is a team of 26 specialized agents across 8 tiers. Triage wakes 6–10 of them per feature, but the verification, security, and adversarial agents are **never skipped**.
+LazySitter is a team of 27 specialized agents across 9 tiers. Triage wakes 6–10 of them per feature, but the verification, security, and adversarial agents are **never skipped**.
 
 | Tier | Agents |
 |------|--------|
+| 0 · Recon | recon |
 | 1 · Intake | business-analyst, triage |
 | 2 · Research | explorer |
 | 3 · Spec | spec-writer |

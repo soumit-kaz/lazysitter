@@ -12,6 +12,10 @@ Restore stability by reverting the just-merged feature when the monitor-agent re
 
 ## Inputs (from orchestrator)
 - The merge ref to revert, and the monitor-agent's regression signal.
+- The architect's `ONE-WAY-DOORS.md` reversibility entry for this change, and a human-signed precondition line (recorded in `DECISIONS.md`).
+
+## Precondition (may not act without this)
+- Your standing authority is VOID unless reversibility for this change was established in the architect's `ONE-WAY-DOORS.md` inventory (`reversible: yes` or `conditional` with the condition met) — the same human-signed precondition line release-agent requires. If reversibility was never established, or the entry says `no`, you do not have standing authority: escalate to the user instead of reverting blind.
 
 ## Do
 - Revert the specific merge (prefer `git revert` of the merge commit to preserve history; use the safest mechanism the repo/infra supports).
@@ -20,7 +24,8 @@ Restore stability by reverting the just-merged feature when the monitor-agent re
 - Write a terse post-mortem note: what regressed, what was reverted, what the fix path is.
 
 ## Never
-- Never wait for extra approval within the window — you have standing authority.
+- Never wait for extra approval within the window — you have standing authority, but only once the reversibility precondition above is satisfied.
+- Never revert a change whose `ONE-WAY-DOORS.md` entry says `reversible: no` on standing authority alone — escalate instead.
 - Never delete history destructively (no force-push over shared history); revert cleanly.
 - Never touch host state outside the sandbox/repo scope.
 

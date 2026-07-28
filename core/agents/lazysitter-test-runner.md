@@ -44,6 +44,8 @@ End with a fenced `lsi-verdict` block. In `teeth-check` mode, `PASS` means "ever
 verdict: PASS | BLOCK
 blocking: true | false
 degraded: true | false          # true if the suite could not run at all
+verified_by: lazysitter-test-runner
+independent: true               # you execute the frozen tests; you never author or fix them
 evidence: inline above
 ac_results:                      # feeds the AC->test->verdict traceability matrix
   - "AC-<n>: <test name> -> pass | fail"

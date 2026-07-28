@@ -7,7 +7,7 @@ alwaysApply: false
 
 Cursor has the SAME structure as the Claude Code install:
 
-- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (26 agents). Each file pins its
+- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (27 agents). Each file pins its
   own `model:` and `readonly:` scope. Spawn them with the `Task` tool by `subagent_type`.
 - **Orchestrator command**: `.cursor/commands/lsi.md` → run `/lsi <feature request>`.
 - **Runs / audit trail**: `.cursor/lazysitter/runs/<slug>/`.
@@ -26,10 +26,22 @@ subagents. Do NOT collapse it into a single-agent pass.
   with the implementers from the frozen acceptance criteria; never show it implementation.
 - **Always run adversaries**: `lazysitter-devils-advocate`, `lazysitter-red-team`,
   `lazysitter-security-auditor`, `lazysitter-secrets-scanner`, `lazysitter-closing-loop-auditor`.
+- **Plan survives an attack before it builds**: `lazysitter-red-team` runs in `plan-attack` mode
+  against `PLAN.md` before Tier 5 begins; Tier 4 does not close until it does — a `BLOCK` routes
+  back to the architect for one amendment round. `lazysitter-devils-advocate` stays on the
+  never-skip list unchanged; `plan-attack` is an added guaranteed slot, not a replacement for it.
 - **Run in parallel** where the pipeline says so (triage+explorer; implementers+test-author;
   the Tier-6 verifiers).
 - **Gate from structured verdicts**, not prose. A `degraded:true` verdict or an OPEN observable
   concern means the gate is NOT clean. Never force-merge.
+- **`degraded:true` hard-BLOCKs.** It is closable ONLY by an explicit, recorded, per-run human
+  waiver — never by re-running the same agent, never by inference. **`--auto` does NOT satisfy
+  this waiver** — `--auto` (not the default; must be passed explicitly) only toggles whether you
+  HOLD at an already-clean gate.
+- **`independent: false` refuses GREEN.** Every verdict carries `verified_by` + `independent`
+  (C7). A blocking finding cleared by the SAME lineage that produced the artifact under test is
+  `independent: false`; the merge gate refuses GREEN until it is re-cleared by an independent
+  agent.
 - **You are the only hub.** Cursor permits one level of nested spawning; LazySitter forbids it —
   no agent you spawn may spawn another.
 
@@ -42,8 +54,8 @@ Each agent's model is set in its `.cursor/agents/*.md` frontmatter, resolved fro
 |------|-------|--------|
 | `high` | `claude-opus-4-8-thinking-high` | architect, security-expert, devils-advocate, security-auditor, closing-loop-auditor |
 | `high_alt` (distinct) | `gpt-5.3-codex` | red-team (must differ from the build lineage) |
-| `mid` | `claude-sonnet-5-thinking-high` | spec-writer, experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
-| `low` | `composer-2.5-fast` | business-analyst-triage, triage, explorer, secrets-scanner, monitor, docs |
+| `mid` | `claude-sonnet-5-thinking-high` | business-analyst, triage, explorer, spec-writer, experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
+| `low` | `composer-2.5-fast` | recon, secrets-scanner, monitor, docs |
 
 To change models, edit `.cursor/lazysitter/models.json` and run `lazysitter update` — do not
 hand-edit individual agent files (update overwrites them).

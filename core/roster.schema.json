@@ -25,6 +25,19 @@
       "description": "Agents triage may never remove, regardless of feature size.",
       "items": { "type": "string" }
     },
+    "neverSkipModes": {
+      "type": "array",
+      "description": "Optional sibling to neverSkip: required agent+mode slots (e.g. red-team's plan-attack mode, test-runner's teeth-check mode). Not in `required` so an older roster.json still validates.",
+      "items": {
+        "type": "object",
+        "required": ["agent", "mode"],
+        "additionalProperties": false,
+        "properties": {
+          "agent": { "type": "string" },
+          "mode": { "type": "string" }
+        }
+      }
+    },
     "agents": {
       "type": "object",
       "description": "Per-agent runtime configuration keyed by agent name.",

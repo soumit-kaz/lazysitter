@@ -18,7 +18,8 @@ function installCursor(ctx, data) {
   // frontmatter is baked from the model IDs the user actually wants.
   const coreModels = JSON.parse(readFile(path.join(ctx.coreDir, 'cursor', 'models.json')));
   const targetModels = ctx.abs('.cursor/lazysitter/models.json');
-  const models = exists(targetModels) ? JSON.parse(readFile(targetModels)) : coreModels;
+  const rawModels = exists(targetModels) ? JSON.parse(readFile(targetModels)) : coreModels;
+  const models = sanitizeModels(rawModels, coreModels);
 
   // Per-agent Cursor subagent definitions — structural parity with .claude/agents/.
   for (const agent of data.agents) {
@@ -42,6 +43,29 @@ function installCursor(ctx, data) {
     '.cursor/lazysitter/PITFALL-LEDGER.md',
     readFile(path.join(ctx.coreDir, 'PITFALL-LEDGER.seed.md'))
   );
+}
+
+const MODEL_ID_RE = /^[A-Za-z0-9._:@\/-]+$/;
+
+function sanitizeModels(rawModels, fallbackModels) {
+  const out = {};
+  for (const tier of ['high', 'high_alt', 'mid', 'low']) {
+    const value = rawModels && rawModels[tier];
+    if (typeof value === 'string' && MODEL_ID_RE.test(value)) {
+      out[tier] = value;
+      continue;
+    }
+    const fallback = fallbackModels && fallbackModels[tier];
+    if (typeof fallback === 'string' && MODEL_ID_RE.test(fallback)) {
+      out[tier] = fallback;
+    } else {
+      out[tier] = 'inherit';
+    }
+    if (value !== undefined) {
+      log.warn(`  refused invalid model id for tier "${tier}" in .cursor/lazysitter/models.json: ${JSON.stringify(value)}`);
+    }
+  }
+  return out;
 }
 
 // Map an agent to its Cursor model ID. The red-team (distinctModel) uses the

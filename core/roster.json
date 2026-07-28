@@ -25,10 +25,15 @@
     "lazysitter-secrets-scanner",
     "lazysitter-closing-loop-auditor"
   ],
+  "neverSkipModes": [
+    { "agent": "lazysitter-red-team",    "mode": "plan-attack" },
+    { "agent": "lazysitter-test-runner", "mode": "teeth-check" }
+  ],
   "agents": {
+    "lazysitter-recon":                { "tier": "low",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Tier 0 mechanical capability probe; re-executes every run; CAPABILITIES.md is a drift-diff/audit record only, never gate authority (C3)." },
     "lazysitter-business-analyst":     { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own REQUIREMENT.md to the run dir (self-persist); prompt-scoped, never edits source." },
-    "lazysitter-triage":               { "tier": "low",  "codexSandbox": "read-only",       "codexApproval": "never" },
-    "lazysitter-explorer":             { "tier": "low",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own CONTEXT-PACK.md to the run dir (self-persist); prompt-scoped, never edits source." },
+    "lazysitter-triage":               { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
+    "lazysitter-explorer":             { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own CONTEXT-PACK.md to the run dir (self-persist); prompt-scoped, never edits source. Bash grant is bound to the C5 probe allowlist and the explorer Bash denylist." },
     "lazysitter-spec-writer":          { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own ACCEPTANCE-CRITERIA.md to the run dir (self-persist); prompt-scoped, never edits source." },
     "lazysitter-architect":            { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Writes ONLY its own PLAN.md/DECISIONS.md/LIMITATIONS.md to the run dir (self-persist); prompt-scoped, never edits source." },
     "lazysitter-database-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
@@ -36,7 +41,7 @@
     "lazysitter-frontend-expert":      { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
     "lazysitter-security-expert":      { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
     "lazysitter-ux-analyst":           { "tier": "mid",  "codexSandbox": "read-only",       "codexApproval": "never" },
-    "lazysitter-devils-advocate":      { "tier": "high", "codexSandbox": "read-only",       "codexApproval": "never" },
+    "lazysitter-devils-advocate":      { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "note": "Read-only-in-practice recon (Grep/Glob/Bash) to check a claim rather than argue it; never edits." },
     "lazysitter-backend-implementer":  { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
     "lazysitter-frontend-implementer": { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never" },
     "lazysitter-dependency-auditor":   { "tier": "mid",  "codexSandbox": "workspace-write", "codexApproval": "never", "note": "May need network for CVE/registry lookups; enable network in the codex sandbox config if required." },

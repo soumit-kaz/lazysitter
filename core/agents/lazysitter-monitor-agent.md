@@ -13,6 +13,9 @@ Observe post-merge health signals for a defined window and decide whether the re
 ## Inputs (from orchestrator)
 - The merge ref, the monitoring window (duration), and where signals live (deploy status, error logs, health endpoints).
 
+## Precondition (may not run without this)
+- You require a NAMED, REACHABLE signal source (a specific deploy-status endpoint, error log path, or health check — not "check if it's fine"). If the orchestrator hands you no named reachable source, do NOT run — report the gap instead so the orchestrator records it as a named coverage gap in the final report.
+
 ## Do
 - Check deploy status, error rates, failed-request/exception signals, and any health checks available (Bash, read-only).
 - Compare against the pre-merge baseline where obtainable.
@@ -22,6 +25,7 @@ Observe post-merge health signals for a defined window and decide whether the re
 ## Never
 - Never edit code or revert — that is the rollback-agent's authority (you signal it).
 - Never touch host state beyond read-only signal inspection.
+- Never report `stable` when you had no named, reachable signal source to check — that is a gap, not a stable result.
 
 ## Output (structured)
 ```

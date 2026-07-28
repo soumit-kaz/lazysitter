@@ -3,6 +3,20 @@
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { log, c, exists, readFile, sha256 } = require('./util');
+const { warnIfKnowledgeGitignored } = require('./gitignore-check');
+
+const CLAUDE_HIGH_TIER_AGENTS = [
+  'lazysitter-architect',
+  'lazysitter-security-expert',
+  'lazysitter-security-auditor',
+  'lazysitter-closing-loop-auditor',
+  'lazysitter-devils-advocate',
+];
+
+function extractModel(text) {
+  const m = /^model:\s*(\S+)/m.exec(text);
+  return m ? m[1] : null;
+}
 
 function doctor(pkgRoot, opts) {
   const targetRoot = path.resolve(opts.dir || process.cwd());
@@ -76,6 +90,29 @@ function doctor(pkgRoot, opts) {
       }
     }
   }
+
+  if (manifest.tools.includes('claude')) {
+    const redTeamPath = path.join(targetRoot, '.claude/agents/lazysitter-red-team.md');
+    if (exists(redTeamPath)) {
+      const redModel = extractModel(readFile(redTeamPath));
+      const sharedWith = CLAUDE_HIGH_TIER_AGENTS.filter((name) => {
+        const p = path.join(targetRoot, '.claude/agents', `${name}.md`);
+        return exists(p) && extractModel(readFile(p)) === redModel;
+      });
+      if (sharedWith.length) {
+        log.warn(
+          `  Claude red-team model (${redModel}) equals the high-tier build/design lineage's model (${sharedWith.join(', ')}) — Claude Code has no per-tier config file, so red-team shares blind spots with that lineage (weaker independence).`
+        );
+        log.info(
+          `    ${c.dim('If your Claude Code CLI supports pinning a distinct opus snapshot, edit .claude/agents/lazysitter-red-team.md model: directly (note: `lazysitter update` overwrites it).')}`
+        );
+      } else {
+        log.ok(`  Claude red-team model set distinct from the high-tier lineage (model=${redModel}).`);
+      }
+    }
+  }
+
+  warnIfKnowledgeGitignored(targetRoot);
 
   log.info('');
   if (missing) process.exitCode = 1;

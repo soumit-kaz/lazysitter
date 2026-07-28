@@ -29,7 +29,7 @@ already native Claude Code format.
 
 - `--dry-run` — intake → plan only; no code, no merge. Best first run.
 - `--budget N` — token ceiling (default 400000); pauses and asks before exceeding it.
-- `--auto` — proceed through the merge gate + auto-rollback autonomously (default).
+- `--auto` — proceed through the merge gate + auto-rollback autonomously. Without it (the default), the pipeline HOLDs at the merge gate and summarizes for you instead of merging. `--auto` does NOT satisfy the human waiver an unresolved `degraded:true` verdict requires — that hard-BLOCK only closes via an explicit, recorded waiver.
 
 Artifacts land in `.claude/lazysitter/runs/<slug>/`. Kill switch: create `.claude/lazysitter/KILL`.
 

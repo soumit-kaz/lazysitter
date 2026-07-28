@@ -8,6 +8,8 @@ const { resolveTargetRoot, resolveTools } = require('./detect');
 const { installClaude } = require('./install-claude');
 const { installCodex } = require('./install-codex');
 const { installCursor } = require('./install-cursor');
+const { installKnowledge } = require('./install-knowledge');
+const { warnIfKnowledgeGitignored } = require('./gitignore-check');
 
 function install(pkgRoot, opts) {
   const version = JSON.parse(readFile(path.join(pkgRoot, 'package.json'))).version;
@@ -22,13 +24,30 @@ function install(pkgRoot, opts) {
   log.info('');
 
   const data = loadRoster(path.join(pkgRoot, 'core'));
-  const ctx = new InstallCtx(targetRoot, pkgRoot, opts);
+  const manifestPath = path.join(targetRoot, '.lazysitter', 'manifest.json');
+  let priorManifest = null;
+  if (exists(manifestPath)) {
+    try {
+      priorManifest = JSON.parse(readFile(manifestPath));
+    } catch (err) {
+      log.err(`Could not parse ${manifestPath}: ${err.message}`);
+      log.err('Run `lazysitter uninstall --purge` and reinstall, or fix the manifest by hand.');
+      process.exitCode = 1;
+      return { targetRoot, tools, mode };
+    }
+  }
+  const ctx = new InstallCtx(targetRoot, pkgRoot, opts, priorManifest);
 
-  if (tools.includes('claude')) installClaude(ctx, data);
-  if (tools.includes('codex')) installCodex(ctx, data);
-  if (tools.includes('cursor')) installCursor(ctx, data);
+  try {
+    if (tools.includes('claude')) installClaude(ctx, data);
+    if (tools.includes('codex')) installCodex(ctx, data);
+    if (tools.includes('cursor')) installCursor(ctx, data);
 
-  ctx.writeManifest(version, tools);
+    installKnowledge(ctx);
+  } finally {
+    ctx.writeManifest(version, tools);
+  }
+  warnIfKnowledgeGitignored(targetRoot);
   printNextSteps(tools, data.agents.length);
   return { targetRoot, tools, mode };
 }

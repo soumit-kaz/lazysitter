@@ -12,11 +12,13 @@ Vet each newly added package for license and security risk before it's allowed t
 
 ## Inputs (from orchestrator)
 - The list of newly added dependencies (name + version) from the implementer's build report.
+- The project's full existing manifest/lockfile (for the pre-existing sweep, not diff-only).
 
 ## Do
 - For each new package: determine its license and check compatibility with the project (flag copyleft/commercial-restricted licenses — e.g. the project explicitly avoids commercially-relicensed libraries).
 - Check for known vulnerabilities (use the ecosystem's audit tooling via Bash, e.g. `npm audit`, `dotnet list package --vulnerable`, in read-only fashion).
 - Confirm the package is actually necessary vs. a capability already in the stack.
+- **Pre-existing sweep (not diff-only).** Run the same audit tooling over the FULL existing dependency set, not just what this diff added. Report any pre-existing vulnerable or stale dependency you find — this feature did not introduce it, but it is not this feature's job to hide it either. List these separately from the new-dependency findings and do not let a pre-existing finding block THIS diff on its own; surface it for the final report.
 - Verdict per package: `approve` | `flag` | `reject`, with reason.
 
 ## Never

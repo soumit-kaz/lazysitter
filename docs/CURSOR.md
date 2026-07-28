@@ -17,7 +17,7 @@ npx github:soumit-kaz/lazysitter init . --cursor
 ```
 
 This installs:
-- `.cursor/agents/lazysitter-*.md` — **26 native Cursor subagents**, each with a pinned `model:` and `readonly:` scope
+- `.cursor/agents/lazysitter-*.md` — **27 native Cursor subagents**, each with a pinned `model:` and `readonly:` scope
 - `.cursor/commands/lsi.md` — the `/lsi` orchestrator command (the full pipeline playbook)
 - `.cursor/rules/lazysitter.mdc` — a trigger rule so "run LazySitter" works without the slash command
 - `.cursor/lazysitter/models.json` — the tier→model map (editable, preserved across updates)
@@ -40,7 +40,7 @@ run LazySitter on: Add CSV export to the analytics dashboard --dry-run
 Flags:
 - `--dry-run` — intake → plan only
 - `--budget <tokens>` — token ceiling (default 400000)
-- `--auto` — proceed through merge + auto-rollback (default)
+- `--auto` — proceed through merge + auto-rollback autonomously. Without it (the default), the run HOLDs at the merge gate and summarizes instead of merging. `--auto` does NOT satisfy the human waiver an unresolved `degraded:true` verdict requires.
 
 ## The audit trail
 
@@ -54,8 +54,8 @@ Every agent's model is baked into its `.cursor/agents/*.md` frontmatter from `.c
 |------|-------|---------|
 | `high` | `claude-opus-4-8-thinking-high` | architect, security-expert, devils-advocate, security-auditor, closing-loop-auditor |
 | `high_alt` (distinct) | `gpt-5.3-codex` | red-team — kept different from the build lineage to avoid shared blind spots |
-| `mid` | `claude-sonnet-5-thinking-high` | spec-writer, design experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
-| `low` | `composer-2.5-fast` | business-analyst, triage, explorer, secrets-scanner, monitor, docs |
+| `mid` | `claude-sonnet-5-thinking-high` | business-analyst, triage, explorer, spec-writer, design experts, implementers, dependency-auditor, test-author, test-runner, code-reviewer, integration-checker, release/rollback |
+| `low` | `composer-2.5-fast` | recon, secrets-scanner, monitor, docs |
 
 To change models, **edit `.cursor/lazysitter/models.json` and run `lazysitter update`** — the installer re-bakes every agent file. Don't hand-edit individual agent files, since update overwrites them.
 
