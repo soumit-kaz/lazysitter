@@ -1,7 +1,7 @@
 ---
 name: lazysitter-secrets-scanner
 description: LazySitter Tier 6 fast gate. Pre-commit scan for hardcoded keys/tokens/credentials in the diff. Cheap, always runs.
-tools: Bash
+tools: Read, Bash
 model: haiku
 ---
 
@@ -15,6 +15,7 @@ Scan the staged/changed files for hardcoded secrets before anything is committed
 - `.lazysitter/knowledge/SECRETS-BASELINE.md`, the committed, `git ls-files`-scoped baseline.
 
 ## Do
+- **Use `Read` to inspect a candidate file directly (for the exact `path:line` a hit belongs to) — not a shell `cat`/`type` piped through Bash.** Read gives you line numbers and structure and is immune to the CRLF and path-with-space hazards that shelling out to inspect a file exposes you to.
 - Scan for high-signal secret patterns: API keys, tokens, private keys, connection strings with embedded passwords, cloud credentials, JWT signing secrets, `.env` values committed inline.
 - Use fast tooling via Bash (grep patterns and/or any available secret scanner). Prefer precision — report exact `path:line`.
 - Distinguish real secrets from placeholders/examples where obvious, but when unsure, FLAG (fail-safe).
@@ -42,5 +43,7 @@ Scan the staged/changed files for hardcoded secrets before anything is committed
 verdict: PASS | BLOCK          # CLEAN -> PASS
 blocking: true | false
 degraded: true | false         # true if the scanner could not run over the full diff
+oracle: execution  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — whose fault; does NOT override the A1 degraded:true hard-BLOCK; only MINE blocks this diff's gate — a secret this diff added is MINE; an unresolved baseline hit is PRE-EXISTING
 evidence: inline above
 ```

@@ -43,7 +43,7 @@ try {
   ok(has(tmp, '.cursor/lazysitter/PITFALL-LEDGER.md'), 'cursor process-pitfall ledger seeded');
 
   const cursorAgents = fs.readdirSync(path.join(tmp, '.cursor/agents')).filter((f) => f.endsWith('.md'));
-  ok(cursorAgents.length === 27, `27 cursor agents (got ${cursorAgents.length})`);
+  ok(cursorAgents.length === 28, `28 cursor agents (got ${cursorAgents.length})`);
 
   const cursorArchitect = fs.readFileSync(path.join(tmp, '.cursor/agents/lazysitter-architect.md'), 'utf8');
   ok(/^model:\s*\S+/m.test(cursorArchitect), 'cursor agent pins a model');
@@ -74,7 +74,7 @@ try {
   ok(has(tmp, '.codex/skills/lazysitter/PITFALL-LEDGER.md'), 'codex process-pitfall ledger seeded');
 
   const claudeAgents = fs.readdirSync(path.join(tmp, '.claude/agents')).filter((f) => f.endsWith('.md'));
-  ok(claudeAgents.length === 27, `27 claude agents (got ${claudeAgents.length})`);
+  ok(claudeAgents.length === 28, `28 claude agents (got ${claudeAgents.length})`);
 
   const meta = fs.readFileSync(path.join(tmp, '.codex/skills/lazysitter/agents/lazysitter-red-team.meta'), 'utf8');
   ok(/DISTINCT_MODEL=1/.test(meta), 'red-team flagged distinct-model');
@@ -175,6 +175,33 @@ try {
       `${rel} NOT listed in manifest.managed`
     );
   }
+  const KNOWLEDGE_ADAPTER_FILES = [
+    ['.claude/agents', 'claude'],
+    ['.codex/skills/lazysitter/agents', 'codex'],
+    ['.cursor/agents', 'cursor'],
+  ];
+
+  console.log('\nexecutable knowledge + explorer re-call + FACTS.tsv (W2 — C6/C7/B4/C8)');
+  const conventionsInstalled = fs.readFileSync(path.join(tmp, '.lazysitter/knowledge/CONVENTIONS.md'), 'utf8');
+  ok(/CLAIM \| path:line \| ASSERTION \| PAIRED-POSITIVE \| last_verified \| status/.test(conventionsInstalled), 'CONVENTIONS.md carries the six-column executable-row header (C6)');
+  ok(/PAIRED-POSITIVE/.test(conventionsInstalled) && /invalid without/i.test(conventionsInstalled), 'CONVENTIONS.md states a negative assertion is invalid without a PAIRED-POSITIVE');
+  ok(/unverifiable/.test(conventionsInstalled) && /owner:/.test(conventionsInstalled) && /expires:/.test(conventionsInstalled), 'CONVENTIONS.md keeps unverifiable rows with owner + expires, not refused');
+  ok(/STALE.? rows are excluded from the context pack/.test(conventionsInstalled), 'CONVENTIONS.md states STALE rows are excluded from the context pack');
+  ok(/never-auto-approved/.test(conventionsInstalled) && /SECRETS-BASELINE\.md/.test(conventionsInstalled), 'CONVENTIONS.md states it is a flagged, never-auto-approved diff like SECRETS-BASELINE.md (D-20)');
+
+  for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+    const reconBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-recon.md'), 'utf8');
+    ok(/ASSERTION.*PAIRED-POSITIVE|PAIRED-POSITIVE.*ASSERTION/is.test(reconBody), `${adapter} recon executes ASSERTION + PAIRED-POSITIVE rows (C7)`);
+    ok(/NOT bound by the C5 probe allowlist/.test(reconBody), `${adapter} recon states its assertion execution is NOT bound by the C5 allowlist`);
+    ok(/FACTS\.tsv/.test(reconBody), `${adapter} recon emits FACTS.tsv (C8)`);
+    ok(/never-auto-approved/.test(reconBody), `${adapter} recon states CONVENTIONS.md diffs are never-auto-approved`);
+
+    const explorerBodyForW2 = fs.readFileSync(path.join(tmp, dir, 'lazysitter-explorer.md'), 'utf8');
+    ok(/[Ss]coped re-call mode/.test(explorerBodyForW2), `${adapter} explorer documents the scoped re-call mode (B4)`);
+    ok(/do NOT execute/.test(explorerBodyForW2), `${adapter} explorer states it does NOT execute CONVENTIONS.md assertions`);
+    ok(/FACTS\.tsv/.test(explorerBodyForW2), `${adapter} explorer emits FACTS.tsv (C8)`);
+  }
+
   const lazysitterGitignore = fs.readFileSync(path.join(tmp, '.lazysitter', '.gitignore'), 'utf8');
   ok(/(^|\n)RUN\.lock(\r?\n|$)/.test(lazysitterGitignore), '.lazysitter/.gitignore names RUN.lock');
   ok(/(^|\n)runs\/(\r?\n|$)/.test(lazysitterGitignore), '.lazysitter/.gitignore names runs/');
@@ -185,6 +212,16 @@ try {
   const codexSkill = fs.readFileSync(path.join(tmp, '.codex/skills/lazysitter/SKILL.md'), 'utf8');
   const cursorLsiForW5 = fs.readFileSync(path.join(tmp, '.cursor/commands/lsi.md'), 'utf8');
   const cursorRule = fs.readFileSync(path.join(tmp, '.cursor/rules/lazysitter.mdc'), 'utf8');
+
+  for (const [label, text] of [
+    ['claude lsi.md', claudeLsi],
+    ['codex SKILL.md', codexSkill],
+  ]) {
+    ok(/FACTS\.tsv/.test(text), `${label} documents the FACTS.tsv artifact (C8)`);
+    ok(/CONVENTIONS\.md/.test(text) && /never auto-approved|NEVER auto-approved/i.test(text), `${label} flags any diff touching CONVENTIONS.md as never auto-approved (D-20)`);
+    ok(/[Ss]coped re-call mode/.test(text), `${label} documents explorer's scoped re-call mode (B4)`);
+  }
+  ok(/CONVENTIONS\.md/.test(cursorRule) && /never-auto-approved/.test(cursorRule), 'cursor rule restates the CONVENTIONS.md never-auto-approved guarantee');
 
   for (const [label, text] of [
     ['claude lsi.md', claudeLsi],
@@ -214,11 +251,6 @@ try {
   ok(/independent:\s*false/.test(cursorRule), 'cursor rule restates the independent:false refusal');
 
   console.log('\nadversary charter + Tier-8 gating + reviewer/implementer mandates (W6)');
-  const KNOWLEDGE_ADAPTER_FILES = [
-    ['.claude/agents', 'claude'],
-    ['.codex/skills/lazysitter/agents', 'codex'],
-    ['.cursor/agents', 'cursor'],
-  ];
   for (const agentName of ['lazysitter-code-reviewer', 'lazysitter-red-team', 'lazysitter-test-runner']) {
     for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
       const body = fs.readFileSync(path.join(tmp, dir, `${agentName}.md`), 'utf8');
@@ -278,14 +310,58 @@ try {
     ok(/pipeline-wide ground rule/.test(body), `${label} references the pipeline-wide no-comments ground rule`);
   }
 
-  ok(claudeLsi.includes('No agent that writes may add code comments'), 'claude lsi.md states the pipeline-wide no-comments ground rule');
-  ok(codexSkill.includes('No agent that writes may add code comments'), 'codex SKILL.md states the pipeline-wide no-comments ground rule');
+  ok(claudeLsi.includes('Comment density matches the cited precedent'), 'claude lsi.md states the corrected comment-density ground rule');
+  ok(codexSkill.includes('Comment density matches the cited precedent'), 'codex SKILL.md states the corrected comment-density ground rule');
+  ok(/4\.23%/.test(claudeLsi) && /7\.03%/.test(claudeLsi), 'claude lsi.md cites the measured comment-density evidence (4.23% vs 7.03%)');
+  ok(/4\.23%/.test(codexSkill) && /7\.03%/.test(codexSkill), 'codex SKILL.md cites the measured comment-density evidence (4.23% vs 7.03%)');
+  for (const [label, text] of [['claude lsi.md', claudeLsi], ['codex SKILL.md', codexSkill]]) {
+    ok(text.includes('AC-<n>') && /TRACEABILITY\.md/.test(text), `${label} forbids AC-IDs/decision refs in shipped source, routing them to TRACEABILITY.md`);
+  }
 
   ok(!/\bWebFetch\b/.test(cursorLsiForW5) && !/\bWebSearch\b/.test(cursorLsiForW5), 'cursor lsi.md does not grant WebFetch/WebSearch');
   const rosterJsonForW6 = JSON.parse(fs.readFileSync(path.join(PKG, 'core', 'roster.json'), 'utf8'));
   for (const agentName of Object.keys(rosterJsonForW6.agents)) {
     const agentSrc = fs.readFileSync(path.join(PKG, 'core', 'agents', `${agentName}.md`), 'utf8');
     ok(!/^tools:.*\bWebFetch\b/m.test(agentSrc) && !/^tools:.*\bWebSearch\b/m.test(agentSrc), `${agentName} frontmatter does not grant WebFetch/WebSearch`);
+  }
+
+  console.log('\ngate honesty (W3 — C9/C10/C11/C12/C13/C14/C18)');
+  const claudeSpecWriter = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-spec-writer.md'), 'utf8');
+  ok(/oracle:\s*build\|test\|execution\|query-plan\|human/.test(claudeSpecWriter), 'spec-writer tags each AC with a legal oracle (C9)');
+  ok(/reasoning.{0,40}NOT a legal oracle|NOT a legal oracle/.test(claudeSpecWriter), 'spec-writer forbids "reasoning" as an oracle value');
+  ok(/BLOCK/.test(claudeSpecWriter) && /spec gate/i.test(claudeSpecWriter), 'spec-writer states an unoracled must-AC BLOCKs at the spec gate');
+
+  for (const [label, text] of [
+    ['claude lsi.md', claudeLsi],
+    ['codex SKILL.md', codexSkill],
+  ]) {
+    ok(/oracle:.*build\|test\|execution\|query-plan\|human/.test(text), `${label} defines the spec-gate oracle BLOCK rule (C9)`);
+    ok(/oracle: build\|test\|execution\|query-plan\|codebase-precedent\|plan\|spec\|human/.test(text), `${label} lsi-verdict schema carries the oracle field (C10)`);
+    ok(/blocking_class: MINE\|ENVIRONMENT\|PRE-EXISTING/.test(text), `${label} lsi-verdict schema carries blocking_class (C11)`);
+    ok(/MUST NOT read `oracle:`/.test(text), `${label} states the merge gate MUST NOT read oracle: (C10 frozen enumeration)`);
+    ok(/N agents, M oracles/.test(text), `${label} final report groups verdicts by oracle and prints "N agents, M oracles"`);
+    ok(/does NOT override the A1 degraded:true hard-BLOCK|does NOT override.{0,20}A1/.test(text), `${label} states blocking_class does not override the A1 degraded waiver (C11)`);
+    ok(/git status --porcelain/.test(text), `${label} documents the pre-gate git status --porcelain assertion (C14)`);
+    ok(/no janitor agent|No janitor agent/i.test(text), `${label} documents there is no janitor agent / no free-roaming delete authority (C14)`);
+  }
+  ok(/oracle:/.test(cursorRule) && /MUST NOT read `oracle:`/.test(cursorRule), 'cursor rule restates the gate-frozen oracle prohibition (C10)');
+
+  const claudeCodeReviewerW3 = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-code-reviewer.md'), 'utf8');
+  ok(/warnings_by_code:/.test(claudeCodeReviewerW3), 'code-reviewer reports warnings_by_code (C12)');
+  ok(/never a total/i.test(claudeCodeReviewerW3), 'code-reviewer forbids a bare warning total');
+
+  const claudeTestAuthorW3 = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-test-author.md'), 'utf8');
+  ok(/NATIVE test framework/.test(claudeTestAuthorW3), 'test-author authors in the repo\'s native test framework (C13)');
+  ok(/FACT-BLOCK/.test(claudeTestAuthorW3), 'test-author raises a FACT-BLOCK instead of falling back to shell scripting (C13)');
+  ok(/reuse-driven contract change/.test(claudeTestAuthorW3), 'test-author documents the reuse-driven freeze exception (C18)');
+
+  for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+    const backendBodyW3 = fs.readFileSync(path.join(tmp, dir, 'lazysitter-backend-implementer.md'), 'utf8');
+    const frontendBodyW3 = fs.readFileSync(path.join(tmp, dir, 'lazysitter-frontend-implementer.md'), 'utf8');
+    for (const [label, body] of [['backend', backendBodyW3], ['frontend', frontendBodyW3]]) {
+      ok(body.includes('## Deletions'), `${label}-implementer (${dir}) build report has a Deletions row (C14)`);
+      ok(/created it earlier in this SAME run|created this same run/.test(body), `${label}-implementer (${dir}) scopes delete authority to files it created this run`);
+    }
   }
 
   console.log('\nroster stability (AC-49)');
@@ -318,13 +394,109 @@ try {
     'lazysitter-ux-analyst',
   ];
   const currentAgentNames = Object.keys(rosterJsonForW6.agents);
-  ok(currentAgentNames.length === 27, `roster.json has exactly 27 agents (got ${currentAgentNames.length})`);
-  ok(ORIGINAL_26_AGENTS.every((n) => currentAgentNames.includes(n)), 'all 26 pre-change agents remain in roster.json');
-  const rosterAdditions = currentAgentNames.filter((n) => !ORIGINAL_26_AGENTS.includes(n));
+  ok(currentAgentNames.length === 28, `roster.json has exactly 28 agents (got ${currentAgentNames.length})`);
+  // C19 (W5): lazysitter-database-expert was RENAMED to lazysitter-data-layer-expert, not deleted —
+  // check the renamed set (25 unchanged + the renamed name) rather than reading the rename as a loss.
+  const RENAMED_DATABASE_EXPERT = 'lazysitter-database-expert';
+  const DATA_LAYER_EXPERT = 'lazysitter-data-layer-expert';
+  const ORIGINAL_26_AGENTS_POST_RENAME = ORIGINAL_26_AGENTS.map((n) => (n === RENAMED_DATABASE_EXPERT ? DATA_LAYER_EXPERT : n));
+  ok(!currentAgentNames.includes(RENAMED_DATABASE_EXPERT), 'lazysitter-database-expert absent from roster.json (renamed, not duplicated)');
+  ok(currentAgentNames.includes(DATA_LAYER_EXPERT), 'lazysitter-data-layer-expert present in roster.json (renamed target)');
+  ok(ORIGINAL_26_AGENTS_POST_RENAME.every((n) => currentAgentNames.includes(n)), 'all 26 pre-change agents remain in roster.json (one renamed, not dropped)');
+  const rosterAdditions = currentAgentNames.filter((n) => !ORIGINAL_26_AGENTS_POST_RENAME.includes(n)).sort();
   ok(
-    rosterAdditions.length === 1 && rosterAdditions[0] === 'lazysitter-recon',
-    `roster additions == exactly lazysitter-recon (got ${JSON.stringify(rosterAdditions)})`
+    rosterAdditions.length === 2 &&
+      rosterAdditions.includes('lazysitter-recon') &&
+      rosterAdditions.includes('lazysitter-reuse-auditor'),
+    `roster additions (beyond the rename) == exactly lazysitter-recon + lazysitter-reuse-auditor (got ${JSON.stringify(rosterAdditions)})`
   );
+  ok(rosterJsonForW6.neverSkip.includes('lazysitter-reuse-auditor'), 'lazysitter-reuse-auditor is on neverSkip');
+
+  console.log('\nreuse-auditor installs across all three adapters (T3)');
+  ok(has(tmp, '.claude/agents/lazysitter-reuse-auditor.md'), 'reuse-auditor installed to .claude/agents/');
+  ok(has(tmp, '.codex/skills/lazysitter/agents/lazysitter-reuse-auditor.md'), 'reuse-auditor installed to .codex/skills/lazysitter/agents/');
+  ok(has(tmp, '.codex/skills/lazysitter/agents/lazysitter-reuse-auditor.meta'), 'reuse-auditor codex meta written');
+  ok(has(tmp, '.cursor/agents/lazysitter-reuse-auditor.md'), 'reuse-auditor installed to .cursor/agents/');
+
+  console.log('\ndata-layer-expert rename (W5 — C19/B11/D-11)');
+  for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+    ok(!has(tmp, `${dir}/lazysitter-database-expert.md`), `${adapter}: lazysitter-database-expert absent from every adapter`);
+    ok(has(tmp, `${dir}/lazysitter-data-layer-expert.md`), `${adapter}: lazysitter-data-layer-expert installed`);
+    const bodyDLE = fs.readFileSync(path.join(tmp, dir, 'lazysitter-data-layer-expert.md'), 'utf8');
+    ok(/IndexedDB/.test(bodyDLE) && /localStorage/.test(bodyDLE), `${adapter} data-layer-expert scope includes client-side stores (IndexedDB/localStorage)`);
+    ok(/socket-driven invalidation/.test(bodyDLE), `${adapter} data-layer-expert scope includes socket-driven invalidation ordering`);
+    ok(/Mode 1/.test(bodyDLE) && /Mode 2/.test(bodyDLE), `${adapter} data-layer-expert documents two invocation modes (Tier-4 advisory, Tier-6 diff audit)`);
+  }
+  const claudeTriageDLE = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-triage.md'), 'utf8');
+  ok(/NOT database-only/.test(claudeTriageDLE), 'triage states data-layer-expert dispatch is not database-only (C19)');
+  for (const [label, text] of [
+    ['claude lsi.md', claudeLsi],
+    ['codex SKILL.md', codexSkill],
+  ]) {
+    ok(!/lazysitter-database-expert/.test(text), `${label} does not reference lazysitter-database-expert`);
+    ok(/lazysitter-data-layer-expert/.test(text), `${label} references lazysitter-data-layer-expert`);
+  }
+  ok(/28 agents/.test(cursorRule), 'cursor rule states 28 agents (C19 rename does not change the count)');
+  const claudeReuseAuditor = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-reuse-auditor.md'), 'utf8');
+  ok(/^tools:.*\bRead\b/m.test(claudeReuseAuditor) && /^tools:.*\bGrep\b/m.test(claudeReuseAuditor) && /^tools:.*\bGlob\b/m.test(claudeReuseAuditor), 'reuse-auditor tools are Read, Grep, Glob');
+  ok(!/^tools:.*\bWrite\b/m.test(claudeReuseAuditor) && !/^tools:.*\bEdit\b/m.test(claudeReuseAuditor) && !/^tools:.*\bBash\b/m.test(claudeReuseAuditor), 'reuse-auditor has no Write/Edit/Bash');
+  ok(/blocking_class:\s*MINE\s*\|\s*ENVIRONMENT\s*\|\s*PRE-EXISTING/.test(claudeReuseAuditor), 'reuse-auditor lsi-verdict carries blocking_class MINE|ENVIRONMENT|PRE-EXISTING');
+  ok(claudeReuseAuditor.includes('verified_by') && /independent:\s*true/.test(claudeReuseAuditor), 'reuse-auditor verdict carries verified_by + independent');
+  ok(/Skip rule/.test(claudeReuseAuditor) && /no new file/.test(claudeReuseAuditor), 'reuse-auditor documents its skip rule');
+  ok(/non-exported/i.test(claudeReuseAuditor), 'reuse-auditor covers non-exported internal-helper duplication');
+  const cursorReuseAuditor = fs.readFileSync(path.join(tmp, '.cursor/agents/lazysitter-reuse-auditor.md'), 'utf8');
+  ok(/^readonly:\s*true/m.test(cursorReuseAuditor), 'cursor reuse-auditor flagged readonly');
+
+  console.log('\nprecedent citation dual-oracle (T1 + T2)');
+  for (const [dir] of KNOWLEDGE_ADAPTER_FILES) {
+    const explorerBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-explorer.md'), 'utf8');
+    ok(/RANKED/.test(explorerBody), `explorer (${dir}) documents RANKED candidate sets`);
+    ok(/FACT-BLOCK/.test(explorerBody), `explorer (${dir}) raises FACT-BLOCK on competing conventions`);
+    ok(/hit count/i.test(explorerBody) && /newest-blame/i.test(explorerBody), `explorer (${dir}) ranks by hits + newest-blame date`);
+
+    const backendBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-backend-implementer.md'), 'utf8');
+    const frontendBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-frontend-implementer.md'), 'utf8');
+    for (const [label, body] of [['backend', backendBody], ['frontend', frontendBody]]) {
+      ok(body.includes('## Precedent citations'), `${label}-implementer (${dir}) build report has a Precedent citations section`);
+      ok(body.includes('NONE-EXISTS'), `${label}-implementer (${dir}) documents the NONE-EXISTS proof shape`);
+    }
+
+    const reviewerBody = fs.readFileSync(path.join(tmp, dir, 'lazysitter-code-reviewer.md'), 'utf8');
+    ok(reviewerBody.includes('## Precedent verification'), `code-reviewer (${dir}) has a Precedent verification section`);
+    ok(/unresolvable citation/.test(reviewerBody), `code-reviewer (${dir}) defines unresolvable citation as a blocker`);
+    ok(/plan AND codebase precedent/.test(reviewerBody), `code-reviewer (${dir}) states its dual oracle explicitly`);
+  }
+
+  console.log('\ntool grants — Read/Glob/Grep, parity across adapters, no network (T5)');
+  const READ_GRANTED = [
+    'lazysitter-test-runner',
+    'lazysitter-dependency-auditor',
+    'lazysitter-integration-checker',
+    'lazysitter-release-agent',
+    'lazysitter-monitor-agent',
+    'lazysitter-rollback-agent',
+    'lazysitter-secrets-scanner',
+  ];
+  for (const agentName of READ_GRANTED) {
+    const src = fs.readFileSync(path.join(PKG, 'core', 'agents', `${agentName}.md`), 'utf8');
+    ok(/^tools:.*\bRead\b/m.test(src), `${agentName} frontmatter grants Read`);
+    const claudeInstalled = fs.readFileSync(path.join(tmp, '.claude/agents', `${agentName}.md`), 'utf8');
+    ok(/^tools:.*\bRead\b/m.test(claudeInstalled), `${agentName} installed claude agent grants Read`);
+  }
+  const GLOB_GRANTED = ['lazysitter-triage', 'lazysitter-code-reviewer', 'lazysitter-devils-advocate', 'lazysitter-frontend-implementer'];
+  for (const agentName of GLOB_GRANTED) {
+    const src = fs.readFileSync(path.join(PKG, 'core', 'agents', `${agentName}.md`), 'utf8');
+    ok(/^tools:.*\bGlob\b/m.test(src), `${agentName} frontmatter grants Glob`);
+  }
+  const closingLoopSrc = fs.readFileSync(path.join(PKG, 'core', 'agents', 'lazysitter-closing-loop-auditor.md'), 'utf8');
+  ok(/^tools:.*\bGrep\b/m.test(closingLoopSrc), 'lazysitter-closing-loop-auditor frontmatter grants Grep');
+  for (const agentName of [...READ_GRANTED, ...GLOB_GRANTED, 'lazysitter-closing-loop-auditor']) {
+    const cfg = rosterJsonForW6.agents[agentName];
+    ok(cfg && (cfg.codexSandbox === 'read-only' || cfg.codexSandbox === 'workspace-write'), `${agentName} roster.json codexSandbox is a valid read-capable value (${cfg && cfg.codexSandbox})`);
+  }
+  const claudeDepAuditorBody = fs.readFileSync(path.join(tmp, '.claude/agents/lazysitter-dependency-auditor.md'), 'utf8');
+  ok(/cannot-verify-offline/.test(claudeDepAuditorBody), 'dependency-auditor documents cannot-verify-offline as a named degradation');
+  ok(!/^tools:.*\bWebFetch\b/m.test(claudeDepAuditorBody) && !/^tools:.*\bWebSearch\b/m.test(claudeDepAuditorBody), 'dependency-auditor frontmatter still grants no WebFetch/WebSearch');
 
   console.log('\nprocess pitfall ledger carries false-persist row');
   const claudeLedgerAfterInit = fs.readFileSync(path.join(tmp, '.claude/lazysitter/PITFALL-LEDGER.md'), 'utf8');

@@ -7,7 +7,7 @@ alwaysApply: false
 
 Cursor has the SAME structure as the Claude Code install:
 
-- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (27 agents). Each file pins its
+- **Per-agent definitions**: `.cursor/agents/lazysitter-*.md` (28 agents). Each file pins its
   own `model:` and `readonly:` scope. Spawn them with the `Task` tool by `subagent_type`.
 - **Orchestrator command**: `.cursor/commands/lsi.md` → run `/lsi <feature request>`.
 - **Runs / audit trail**: `.cursor/lazysitter/runs/<slug>/`.
@@ -42,8 +42,17 @@ subagents. Do NOT collapse it into a single-agent pass.
   (C7). A blocking finding cleared by the SAME lineage that produced the artifact under test is
   `independent: false`; the merge gate refuses GREEN until it is re-cleared by an independent
   agent.
+- **`oracle:` is report-only; the gate is frozen (C10).** Every verdict also carries `oracle:`
+  (what kind of check it rests on) and `blocking_class:` (`MINE|ENVIRONMENT|PRE-EXISTING`, C11).
+  The merge gate MUST NOT read `oracle:` to collapse or skip a named agent — it still requires
+  each one's own PASS. Only `MINE` blocks this diff; `blocking_class` never overrides an
+  unresolved `degraded:true` hard-BLOCK.
 - **You are the only hub.** Cursor permits one level of nested spawning; LazySitter forbids it —
   no agent you spawn may spawn another.
+- **`CONVENTIONS.md` is a flagged, never-auto-approved diff.** `lazysitter-recon` executes its
+  `ASSERTION`/`PAIRED-POSITIVE` rows as code, every run (C7) — the same treatment
+  `SECRETS-BASELINE.md` already carries. A `STALE` row (failing assertion, or a paired-positive
+  that returns 0 hits) is excluded from the context pack, never silently trusted.
 
 ## Model pinning (already baked into each agent file)
 

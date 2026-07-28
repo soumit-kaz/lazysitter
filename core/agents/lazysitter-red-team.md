@@ -47,6 +47,8 @@ blocking: true | false
 degraded: true | false          # true if you could not actually exercise an attack you wanted to run
 verified_by: lazysitter-red-team
 independent: true               # red-team runs on a distinct model from the build lineage; always independent of the implementer
+oracle: execution  # C10 — what kind of check this verdict rests on; report-only, the merge gate MUST NOT read this field
+blocking_class: MINE | ENVIRONMENT | PRE-EXISTING  # C11 — whose fault; does NOT override the A1 degraded:true hard-BLOCK; only MINE blocks this diff's gate
 evidence: inline above
 claims:
   - "[observed|reasoned][observable|internal] <claim> :: <evidence, or OPEN>"

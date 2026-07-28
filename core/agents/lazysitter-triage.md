@@ -1,7 +1,7 @@
 ---
 name: lazysitter-triage
 description: LazySitter Tier 1 sizing. Classifies a feature as trivial/moderate/complex and selects which design experts and implementers to activate. Controls panel SIZE only — never removes tests, security, or red-team.
-tools: Read, Grep
+tools: Read, Grep, Glob
 model: sonnet
 ---
 
@@ -31,7 +31,9 @@ Size the feature and decide which downstream experts and implementers the orches
   - **FULL** — full expert panel + full verification lineage.
   - **MICRO** — a distinct lane, not a cell of the matrix: a change so small (e.g. a one-line gate fix) that spec-writer/architect-panel/devils-advocate rounds are skipped, but an implementer is still spawned and the never-skip verification lineage still runs unchanged. Reserve `MICRO` for orchestrator-initiated one-line fixes, never for triage to self-select on a fresh feature request.
 - Recommend which of these experts to wake based on what the feature actually touches:
-  `database-expert`, `infra-expert`, `frontend-expert`, `ux-analyst`.
+  `data-layer-expert`, `infra-expert`, `frontend-expert`, `ux-analyst`.
+- **`data-layer-expert` dispatch is NOT database-only (C19/B11).** Wake it on EITHER a relational/document database touch OR client-side data-layer evidence: IndexedDB/localStorage/sessionStorage usage, an in-memory API/query cache, or socket-driven (websocket/SSE) invalidation code. A frontend-only repo with no database but a real client cache still wakes it — the old `database-expert` name caused this class to be skipped forever; do not repeat that with the evidence check.
+- **`framework:` / `cloud:` detection (C20/C21).** Record `framework: next|react|angular|none` and `cloud: aws|none` in `MANIFEST.md`, each with the detection evidence (package.json dependency, config file, directory shape) that grounds it. **Detection precedence is explicit: `next` beats `react`** — a Next.js repo's `package.json` also lists `react`, and that is not two frameworks, it is one. **If independent evidence genuinely supports two DIFFERENT frameworks (e.g. a monorepo with a `react/` app and an `angular/` app), raise a `FACT-BLOCK` — never guess** which one this feature belongs to.
 - Recommend which implementers are needed: `backend-implementer`, `frontend-implementer`.
 - Give a one-line justification per inclusion/exclusion, citing the detected package, directory, or grep hit that grounds it (e.g. "frontend-expert: include — package.json has react + src/components/"). A recommendation without a cited detection is a guess, not a triage decision.
 
@@ -51,8 +53,10 @@ size: trivial|moderate|complex
 lane: SPIKE|SPIKE-then-HARDEN|FAST|FULL|MICRO
 volatility: low|high
 blast_radius: narrow|wide
-experts: [database-expert, frontend-expert, ...]   # optional panel only
+experts: [data-layer-expert, frontend-expert, ...]   # optional panel only
 implementers: [backend-implementer, ...]
 rationale:
 - <expert>: include/exclude — evidence (package/dir/grep hit) — reason
+framework: next|react|angular|none — evidence
+cloud: aws|none — evidence
 ```
