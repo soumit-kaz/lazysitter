@@ -70,6 +70,31 @@ subagents. Do NOT collapse it into a single-agent pass.
   failing assertion, or a paired-positive that returns 0 hits) already carries. This file inherits
   `SECRETS-BASELINE.md`'s never-auto-approve treatment regardless of the flag's current setting.
 
+## Loop engineering (same rounds.jsonl contract as Claude Code / Codex)
+
+- **`rounds.jsonl`** — every loop (Tier-4 consensus, the merge-gate auto-fix loop, and any
+  agent-run discovery loop: red-team's attack enumeration, reuse-auditor's duplicate search,
+  explorer's precedent search) appends one JSON record per round to `.cursor/lazysitter/runs/<slug>/rounds.jsonl`:
+  `{"loop":..., "round":..., "yield_new":..., "yield_repeat":..., "failure_signature":...,
+  "pre_round_head":..., "tree_digest":..., "cost_tokens":..., "terminated_by":...}`. Evaluate
+  loop health by READING this file, never by recalling how many rounds ran.
+- **Failure-signature termination, not retry-budget-by-class.** Normalize each failure (strip
+  absolute paths, line numbers, timestamps, temp-dir names, hex digests) and hash it into
+  `failure_signature`. The same signature recurring across two rounds terminates that loop
+  immediately (`terminated_by: signature-repeat`) and escalates — `blocking_class` stays
+  attribution-only (C11) and is never keyed to a retry budget.
+- **Loop-until-dry discovery, K=2 default.** Unknown-size discovery stops after two consecutive
+  rounds with `yield_new: 0`, deduped against everything seen this run, never confirmed-only.
+  `terminated_by: converged-dry` is disclosed and distinct from `terminated_by: cap` — neither
+  means exhaustive coverage.
+- **FACT-BLOCK anti-laziness guard.** Two consecutive rounds with no evidence-base change may
+  raise `FACT-BLOCK` only if the round attempted a new probe not previously run this loop,
+  recorded in the round record — otherwise the loop continues.
+- **Contamination is detected, not prevented.** Each round records `pre_round_head` and a
+  working-tree digest; an unexpected change between rounds is a partially-applied fix leaking
+  into the next diagnosis — BLOCK rather than re-diagnose against a moved target.
+- **No loop escalates to Fable at any tier (C22/R-D).**
+
 ## Model pinning (already baked into each agent file)
 
 Each agent's model is set in its `.cursor/agents/*.md` frontmatter, resolved from
@@ -94,9 +119,13 @@ hand-edit individual agent files (update overwrites them).
 
 - **Spawn only what triage selects** (plus the never-skip verifiers) — no "nice to have" agents.
 - **Cache verification**: run build/typecheck/tests once per commit and reuse the output.
-- **Retry cap**: at most **3 auto-fix retries** total.
+- **Retry cap**: at most **3 auto-fix retries** total, OR an earlier `signature-repeat`
+  termination (see Loop engineering above) — whichever fires first.
 - **Mechanical retries only** may drop to the `low` model; never downgrade an adversary or a
   verification judgment.
+- **Per-loop cost ceiling**: each `rounds.jsonl` record carries `cost_tokens`; a loop that would
+  exceed its per-loop ceiling terminates the same as `terminated_by: budget`, checked at tier
+  entry against the Tier-0 forecast, not only at the overall cap.
 
 ## Usage contract
 

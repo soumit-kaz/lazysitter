@@ -1187,6 +1187,77 @@ try {
     fs.rmSync(tmpGate, { recursive: true, force: true });
   }
 
+  console.log('\nloop engineering — rounds.jsonl schema + termination contracts (all three adapters)');
+  const tmpLoop = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-smoke-loop-'));
+  try {
+    run(['init', tmpLoop], tmpLoop);
+    const claudeLsiLoop = fs.readFileSync(path.join(tmpLoop, '.claude/commands/lsi.md'), 'utf8');
+    const codexSkillLoop = fs.readFileSync(path.join(tmpLoop, '.codex/skills/lazysitter/SKILL.md'), 'utf8');
+    const cursorRuleLoop = fs.readFileSync(path.join(tmpLoop, '.cursor/rules/lazysitter.mdc'), 'utf8');
+
+    for (const [label, text] of [
+      ['claude lsi.md', claudeLsiLoop],
+      ['codex SKILL.md', codexSkillLoop],
+      ['cursor rule', cursorRuleLoop],
+    ]) {
+      ok(text.includes('rounds.jsonl'), `${label} documents the rounds.jsonl artifact`);
+      ok(text.includes('yield_new') && text.includes('yield_repeat'), `${label} rounds.jsonl schema carries yield_new + yield_repeat`);
+      ok(text.includes('failure_signature'), `${label} rounds.jsonl schema carries failure_signature`);
+      ok(text.includes('pre_round_head') && text.includes('tree_digest'), `${label} rounds.jsonl schema carries pre_round_head + tree_digest`);
+      ok(text.includes('terminated_by'), `${label} rounds.jsonl schema carries terminated_by`);
+      ok(/signature recurring (across two rounds|twice)/i.test(text), `${label} states the failure-signature repeat-terminates rule`);
+      ok(/signature-repeat/.test(text), `${label} names the signature-repeat terminator`);
+      ok(/K=2/.test(text), `${label} states the K=2 dry-round default`);
+      ok(/converged-dry/.test(text), `${label} names the converged-dry terminator`);
+      ok(/consecutive rounds/.test(text) && /yield_new: 0/.test(text), `${label} defines a dry round as yield_new: 0`);
+      ok(/attempted a new probe not previously run/.test(text), `${label} states the FACT-BLOCK anti-laziness guard (new probe required)`);
+      ok(/detect(?:s|ed) contamination|contamination is detected/i.test(text) && /not prevent/i.test(text), `${label} states contamination is detected, not prevented`);
+      ok(/dedup(?:ed)? against everything seen/i.test(text), `${label} states dedup is against everything seen this run, never confirmed-only`);
+    }
+
+    ok(/blocking_class.{0,200}self-attested/is.test(claudeLsiLoop) || /self-attested/.test(claudeLsiLoop), 'claude lsi.md ties failure-signature termination to blocking_class staying self-attested, not budget authority');
+    ok(/self-attested/.test(codexSkillLoop), 'codex SKILL.md ties failure-signature termination to blocking_class staying self-attested, not budget authority');
+    ok(/termination contract/i.test(claudeLsiLoop) && /termination contract/i.test(codexSkillLoop), 'both playbooks declare an explicit termination contract on Tier 4 and the merge-gate auto-fix loop');
+    ok(/loop:"consensus"/.test(claudeLsiLoop) && /loop:"consensus"/.test(codexSkillLoop), 'both playbooks tag the Tier-4 consensus loop round records loop:"consensus"');
+    ok(/loop:"autofix"/.test(claudeLsiLoop) && /loop:"autofix"/.test(codexSkillLoop), 'both playbooks tag the merge-gate auto-fix loop round records loop:"autofix"');
+    ok(/never Fable/i.test(claudeLsiLoop) && /Fable model at any tier/i.test(claudeLsiLoop), 'claude lsi.md restates the never-Fable guard in the loop-engineering section');
+    ok(/never Fable/i.test(codexSkillLoop) && /Fable model at any tier/i.test(codexSkillLoop), 'codex SKILL.md restates the never-Fable guard in the loop-engineering section');
+
+    for (const [dir, adapter] of KNOWLEDGE_ADAPTER_FILES) {
+      const explorerBodyLoop = fs.readFileSync(path.join(tmpLoop, dir, 'lazysitter-explorer.md'), 'utf8');
+      const redTeamBodyLoop = fs.readFileSync(path.join(tmpLoop, dir, 'lazysitter-red-team.md'), 'utf8');
+      const reuseAuditorBodyLoop = fs.readFileSync(path.join(tmpLoop, dir, 'lazysitter-reuse-auditor.md'), 'utf8');
+      const backendBodyLoop = fs.readFileSync(path.join(tmpLoop, dir, 'lazysitter-backend-implementer.md'), 'utf8');
+      const frontendBodyLoop = fs.readFileSync(path.join(tmpLoop, dir, 'lazysitter-frontend-implementer.md'), 'utf8');
+      for (const [label, body] of [
+        ['explorer', explorerBodyLoop],
+        ['red-team', redTeamBodyLoop],
+        ['reuse-auditor', reuseAuditorBodyLoop],
+      ]) {
+        ok(/Loop-until-dry \(K=2\)/.test(body), `${adapter} ${label} documents the K=2 loop-until-dry discovery rule`);
+        ok(body.includes('rounds.jsonl'), `${adapter} ${label} appends rounds.jsonl round records`);
+        ok(/yield_new: 0/.test(body), `${adapter} ${label} defines a dry round as yield_new: 0`);
+        ok(/converged-dry/.test(body), `${adapter} ${label} names the converged-dry terminator`);
+      }
+      for (const [label, body] of [
+        ['backend-implementer', backendBodyLoop],
+        ['frontend-implementer', frontendBodyLoop],
+      ]) {
+        ok(body.includes('failure_signature'), `${adapter} ${label} names failure_signature on an auto-fix retry`);
+        ok(body.includes('rounds.jsonl'), `${adapter} ${label} references rounds.jsonl for retry comparison`);
+      }
+    }
+
+    const ledgerLoop = fs.readFileSync(path.join(tmpLoop, '.claude/lazysitter/PITFALL-LEDGER.md'), 'utf8');
+    ok(ledgerLoop.includes('[proc][unbounded-loop]'), 'seeded PITFALL-LEDGER.md carries the [proc][unbounded-loop] row');
+
+    const claudeReadmeLoop = fs.readFileSync(path.join(tmpLoop, '.claude/lazysitter/README.md'), 'utf8');
+    ok(claudeReadmeLoop.includes('rounds.jsonl'), 'installed .claude/lazysitter/README.md documents the rounds.jsonl artifact');
+    ok(/signature/.test(claudeReadmeLoop), 'installed .claude/lazysitter/README.md mentions failure-signature termination');
+  } finally {
+    fs.rmSync(tmpLoop, { recursive: true, force: true });
+  }
+
   console.log(`\n${failures === 0 ? 'PASS' : 'FAIL'} — ${failures} failure(s)`);
   process.exit(failures === 0 ? 0 : 1);
 } finally {

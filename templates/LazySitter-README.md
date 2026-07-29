@@ -39,6 +39,7 @@ Every run writes to `.claude/lazysitter/runs/<feature-slug>/`:
 - `MANIFEST.md` — verified facts (commit SHAs, contracts, toolchain/deploy facts, frozen-test hashes) that agents read directly instead of the orchestrator re-narrating them.
 - `REQUIREMENT.md`, `TRIAGE.md`, `CONTEXT-PACK.md`, `ACCEPTANCE-CRITERIA.md`, `PLAN.md`, `DECISIONS.md` — each **self-persisted by its producing agent**, not hand-transcribed.
 - `gate-state.jsonl` — one structured `lsi-verdict` per verifier; the merge gate is evaluated from this, deterministically.
+- `rounds.jsonl` — one record per round of every loop (Tier-4 consensus, the merge-gate auto-fix loop, and each discovery loop such as the explorer's precedent search): `yield_new`/`yield_repeat`, `failure_signature`, `terminated_by`. The gate reads this file to judge loop health rather than recalling how many rounds happened; `terminated_by: converged-dry` is a **disclosed** terminator — it means the loop went dry, not that coverage was exhaustive.
 - `TRACEABILITY.md` (must-AC → test → verdict), `LIMITATIONS.md` (user-facing limitations, tracked from discovery).
 - One report file per verification agent.
 
@@ -68,8 +69,8 @@ Most features wake 6–10 of them; `triage` and the never-skip list decide which
 - **Teeth check:** the frozen suite is run against the pre-implementation baseline first; ≥1 must-test must FAIL there or the criterion is toothless and blocks.
 - **Observable claims are observed, not argued:** a concern about rendered/returned output can't be closed by reasoning while a harness that could observe it exists — it routes to the render/behavioral gate or to you as accepted-risk. (Raiser ≠ dismisser.)
 - **Adversaries run un-anchored:** red-team / security-auditor / closing-loop-auditor get facts, never the orchestrator's bug-theory.
-- **Failure handling:** capped at 3 auto-fix retries (mechanical ones at a cheaper tier), then left on the branch with a failure summary.
-- **Consensus:** max 2 rounds; `devils-advocate` challenges every round; architect rules and logs overrides after round 2. Never escalates design conflict to you.
+- **Failure handling:** capped at 3 auto-fix retries, **or a `failure_signature` repeating across two consecutive retries — whichever fires first.** The signature is the normalized failure (absolute paths, line numbers, timestamps, temp-dir names, hex digests stripped) hashed, so a stuck loop terminates at round 2 instead of burning the whole cap. Mechanical retries still run at a cheaper tier; on termination the work is left on the branch with a failure summary.
+- **Consensus:** round cap 2, **or a repeating `failure_signature` across two rounds' open items, or K=2 dry convergence — whichever fires first.** `devils-advocate` challenges every round; the architect rules and logs overrides after round 2, **and may never rule on a fact dispute.** Never escalates design conflict to you.
 - **Verification independence:** design-time `security-expert` (reviews the plan) and post-build `security-auditor` (reviews the diff) are separate invocations; one never substitutes for the other. `red-team` uses a distinct Opus config from the implementers to avoid shared blind spots.
 - **Connection policy:** the orchestrator is the only hub. No subagent has the `Task` tool, so none can spawn another — flat, always debuggable. Producers get run-dir-scoped `Write` to self-persist their own artifact (that is file I/O, not spawn authority).
 
