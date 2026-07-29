@@ -1,0 +1,15 @@
+{
+  "$comment": "Agent role files, skills and orchestrator commands are LLM prompts with YAML frontmatter, not rendered documents. The rules disabled below fire on that shape rather than on anything wrong; the prose rules stay on.",
+  "default": true,
+  "MD041": false,
+  "MD013": false,
+  "MD024": false,
+  "MD033": false,
+  "MD036": false,
+  "MD040": false,
+  "MD046": false,
+  "MD060": false,
+  "MD022": false,
+  "MD031": false,
+  "MD032": false
+}

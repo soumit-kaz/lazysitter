@@ -78,18 +78,43 @@ function installFrontend(ctx, data, skills) {
   );
 }
 
-function printFrontendNextSteps(agentCount, skillCount) {
+// Building the index is the one thing that would otherwise be a manual chore
+// before the first run, so the installer just does it. Failure is never fatal:
+// the orchestrator rebuilds the index at preflight on every run anyway.
+function buildIndexQuietly(targetRoot) {
+  const { buildIndex } = require('./fe-index/build');
+  return buildIndex(targetRoot, { force: true })
+    .then((res) => ({ ok: true, meta: res.meta }))
+    .catch((err) => ({ ok: false, error: err.message }));
+}
+
+function printFrontendNextSteps(agentCount, skillCount, index) {
   log.info('');
   log.ok(`${c.bold('Frontend team installed')} — ${agentCount} agents, ${skillCount} skills.`);
+
+  if (index && index.ok) {
+    const m = index.meta;
+    const fw = m.stack.primary;
+    if (m.stack.supported) {
+      log.ok(
+        `${c.bold('Index built')} — ${fw.name}@${fw.version}, ${m.counts.components} components, ${m.counts.hooks} hooks, ${m.counts.utils} utils, ${m.counts.findings} findings.`
+      );
+    } else {
+      log.warn(`This repo is ${fw ? fw.name : 'not React/Next'} — the frontend team will refuse to run here.`);
+      log.info(`  ${c.dim('Use the general team instead: /lsi')}`);
+    }
+  } else if (index) {
+    log.warn(`Index not built yet (${index.error}) — the first /lsife run builds it automatically.`);
+  }
+
   log.info('');
-  log.info(`  ${c.bold('1.')} Build the index first — every agent queries it instead of grepping:`);
-  log.info(`     ${c.dim('npx lazysitter fe-index build')}`);
-  log.info(`  ${c.bold('2.')} Run the team in Claude Code:`);
-  log.info(`     ${c.bold('/lsife <UI feature request>')}   ${c.dim('e.g. /lsife Add a CSV export button to the analytics dashboard --dry-run')}`);
+  log.info(`  ${c.bold('You are done. In Claude Code, run:')}`);
+  log.info(`     ${c.bold('/lsife <what you want>')}`);
+  log.info(`     ${c.dim('e.g. /lsife Add a CSV export button to the analytics dashboard')}`);
   log.info('');
-  log.info(`  ${c.dim('React and Next.js only — the run halts on any other framework by design.')}`);
-  log.info(`  ${c.dim('For backend or full-stack work use the general team: /lsi')}`);
+  log.info(`  ${c.dim('Nothing else to configure. The team keeps its own index and run state up to date.')}`);
+  log.info(`  ${c.dim('React/Next only — for backend or full-stack work use the general team: /lsi')}`);
   log.info('');
 }
 
-module.exports = { installFrontend, printFrontendNextSteps, FE_CONFIG };
+module.exports = { installFrontend, printFrontendNextSteps, buildIndexQuietly, FE_CONFIG };

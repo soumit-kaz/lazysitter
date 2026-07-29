@@ -2,15 +2,16 @@
 
 A React/Next-only autonomous engineering team: **41 specialist agents**, **31 skills**, and a real structural index of your codebase.
 
-Run it with `/lsife <your UI feature request>` in Claude Code.
+## How to use it
 
-## Before your first run
-
-```bash
-npx lazysitter fe-index build
+```text
+/lsife <what you want>
 ```
 
-Every agent queries this index instead of grepping. Build it once; it updates incrementally after that (a 12-file change re-parses 12 files).
+That is the whole workflow. The index was built during install and the team keeps it current on
+every run — there is nothing to configure and nothing to run by hand.
+
+Re-running the install command later just updates in place, preserving your config edits.
 
 ## What makes this team different from a general one
 
@@ -24,23 +25,19 @@ Every agent queries this index instead of grepping. Build it once; it updates in
 
 **Accessibility is a never-skip gate**, not a polish pass. So are the reuse audit, the security review, the red team and the intent audit.
 
-## The commands
+## Optional: the same tools, by hand
+
+The agents drive these for you. They are here only if you ever want to ask the codebase
+something directly — you never need to run them.
 
 ```bash
-lazysitter fe-index build                        # build/refresh the index
-lazysitter fe-index precedent "confirm modal"    # ranked precedent set — reuse-vs-create
+lazysitter fe-index impact src/ui/Button.tsx     # blast radius before touching something shared
 lazysitter fe-index props Button                 # declared vs actually-passed props
-lazysitter fe-index who Button                   # every call site + props passed
-lazysitter fe-index impact src/ui/Button.tsx     # blast radius + routes affected
-lazysitter fe-index dup                          # near-duplicate clusters
-lazysitter fe-index drill                        # prop-drilling chains
-lazysitter fe-index dead-props                   # components whose API drifted from usage
-lazysitter fe-index orphans                      # exported and never used
-lazysitter fe-index signals --severity high      # mechanical findings with path:line
-lazysitter fe-index stack                        # detected framework and tooling
+lazysitter fe-index dup                          # what you are already duplicating
+lazysitter fe-index signals --severity high      # mechanical defects with path:line
 ```
 
-Add `--json` to any of them. `lazysitter fe-index --help` lists everything.
+`lazysitter fe-index --help` lists the rest. Add `--json` to any of them.
 
 ## Flags for `/lsife`
 

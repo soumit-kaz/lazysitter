@@ -1,13 +1,8 @@
 'use strict';
 
-// Structural masking pass. Everything downstream (imports, exports, JSX, props)
-// runs against `masked` — a same-length copy of the source where comment bodies,
-// string bodies, template bodies and regex bodies are replaced by spaces.
-//
-// This is the single reason the index beats grep: `grep "<Button"` matches a
-// `<Button` written inside a doc comment, a Storybook code sample, a `describe()`
-// title or a `dangerouslySetInnerHTML` blob. Masked scanning cannot, because by
-// the time a pattern runs, those regions are literally blank.
+// Produces `masked`: a same-length copy of the source with comment, string,
+// template and regex bodies blanked, so downstream patterns only ever match
+// real code.
 
 const CODE = 0;
 const LINE_COMMENT = 1;
@@ -61,8 +56,8 @@ function regexAllowedAt(src, i) {
   return regexEndsOnLine(src, i);
 }
 
-// Template literals nest: `a ${ `b ${c}` } d`. Track the `${` depth stack so the
-// closing backtick of an inner template does not terminate the outer one.
+// Template literals nest, so `${` depth is a stack: the closing backtick of an
+// inner template must not terminate the outer one.
 function mask(src) {
   const n = src.length;
   const out = new Array(n);
@@ -274,8 +269,6 @@ function mask(src) {
   return { masked: out.join(''), strings, comments, templates };
 }
 
-// Line starts, computed once per file and reused by every extractor that needs
-// to turn an offset into a 1-based line number.
 function lineIndex(src) {
   const starts = [0];
   for (let i = 0; i < src.length; i++) if (src[i] === '\n') starts.push(i + 1);
@@ -293,9 +286,6 @@ function lineAt(starts, offset) {
   return lo + 1;
 }
 
-// Forward-scan a balanced pair starting at `open` (which must sit on the opening
-// char). Returns the index of the matching close, or -1. Runs on masked text, so
-// braces inside strings/comments are already gone.
 function matchPair(masked, open, openCh, closeCh) {
   if (masked[open] !== openCh) return -1;
   let depth = 0;
@@ -310,9 +300,7 @@ function matchPair(masked, open, openCh, closeCh) {
   return -1;
 }
 
-// Comment density, measured the way the pipeline's precedent rules require:
-// comment lines / non-blank lines. Uses the mask so a URL containing `//`
-// inside a string is not counted as a comment.
+// Masked, so a `//` inside a string or URL is not counted as a comment.
 function commentDensity(src) {
   const { comments } = mask(src);
   const starts = lineIndex(src);

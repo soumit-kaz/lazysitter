@@ -48,7 +48,6 @@ function analyze(file, raw, parsed, ctx = {}) {
   const tokens = ctx.designTokens || null;
   const at = (offset) => lineAt(starts, offset);
 
-  // --- accessibility ------------------------------------------------------
   const headings = [];
   for (const el of parsed.jsx) {
     const tag = el.tag;
@@ -95,7 +94,6 @@ function analyze(file, raw, parsed, ctx = {}) {
       push(findings, 'A11Y-SVG-NO-NAME', 'medium', file, line, 'svg role="img" without an accessible name');
     }
 
-    // --- security ---------------------------------------------------------
     if (hasAttr(el, 'dangerouslySetInnerHTML')) {
       const v = attrValue(el.raw, 'dangerouslySetInnerHTML') || '';
       const sanitized = /sanitiz|DOMPurify|purify|clean\(/i.test(v);
@@ -114,7 +112,6 @@ function analyze(file, raw, parsed, ctx = {}) {
       }
     }
 
-    // --- performance / render identity ------------------------------------
     if (!el.host) {
       for (const attr of el.attrs) {
         const v = attrValue(el.raw, attr);
@@ -147,7 +144,6 @@ function analyze(file, raw, parsed, ctx = {}) {
     }
   }
 
-  // --- module-level scans -------------------------------------------------
   PUBLIC_ENV.lastIndex = 0;
   let m;
   while ((m = PUBLIC_ENV.exec(masked))) {
@@ -179,7 +175,6 @@ function analyze(file, raw, parsed, ctx = {}) {
     }
   }
 
-  // --- React correctness --------------------------------------------------
   for (const decl of parsed.decls) {
     if (decl.kind !== 'component' && decl.kind !== 'hook') continue;
     const body = masked.slice(decl.bodyStart, decl.bodyEnd);
@@ -315,7 +310,6 @@ function analyze(file, raw, parsed, ctx = {}) {
     }
   }
 
-  // --- Next.js client boundary -------------------------------------------
   if (isNext) {
     const isClient = parsed.directives.includes('use client');
     const usesClientOnly = /\b(useState|useReducer|useEffect|useLayoutEffect|useRef|useContext|createContext)\s*\(/.test(masked) ||
@@ -330,7 +324,6 @@ function analyze(file, raw, parsed, ctx = {}) {
     }
   }
 
-  // --- styling / design tokens -------------------------------------------
   const hexRe = /#[0-9a-fA-F]{3,8}\b/g;
   const hexSeen = new Set();
   while ((m = hexRe.exec(raw))) {

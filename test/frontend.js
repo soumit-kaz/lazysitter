@@ -493,6 +493,48 @@ export function ExportButton({ onExport }: { onExport: () => void }) {
   const manifest = JSON.parse(fs.readFileSync(path.join(tmp, '.lazysitter/manifest.json'), 'utf8'));
   ok(manifest.teams && manifest.teams.frontend === true && manifest.teams.general === false, 'the manifest records frontend-only');
 
+  console.log('\none-command setup');
+  {
+    const otmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lazysitter-one-'));
+    try {
+      buildFixture(otmp);
+      execFileSync('git', ['init', '-q', '.'], { cwd: otmp });
+      const outp = run(['init', otmp, '--frontend'], otmp);
+      ok(/Index built/.test(outp), 'install builds the index automatically — no manual step');
+      ok(/You are done/.test(outp), 'install says the setup is complete');
+      ok(!/fe-index build/.test(outp), 'install does not ask the user to run anything');
+      ok(fs.existsSync(path.join(otmp, '.lazysitter/index/meta.json')), 'the index exists straight after install');
+
+      // Nothing generated may reach git, and the ignore file itself must be
+      // tracked so a teammate cloning the repo inherits it.
+      execFileSync('git', ['add', '-A'], { cwd: otmp });
+      const staged = execFileSync('git', ['diff', '--cached', '--name-only'], { cwd: otmp, encoding: 'utf8' })
+        .split('\n').filter(Boolean);
+      const generated = staged.filter((f) => f.startsWith('.lazysitter/index/') && !f.endsWith('.gitignore'));
+      ok(generated.length === 0, `no generated index file reaches git (${generated.length} leaked)`);
+      ok(staged.includes('.lazysitter/index/.gitignore'), 'the index ignore file is itself tracked');
+      ok(fs.existsSync(path.join(otmp, '.claude/lazysitter/.gitignore')), 'run artifacts are git-ignored too');
+
+      // `clear` must not strip the ignore file, or a rebuild dumps JSON into git.
+      run(['fe-index', 'clear', `--dir=${otmp}`], otmp);
+      ok(fs.existsSync(path.join(otmp, '.lazysitter/index/.gitignore')), 'fe-index clear preserves the ignore file');
+      run(['fe-index', 'build', `--dir=${otmp}`], otmp);
+      const after = execFileSync('git', ['status', '--porcelain'], { cwd: otmp, encoding: 'utf8' });
+      ok(!/\.lazysitter\/index\/(meta|cache|components)/.test(after), 'a rebuild after clear is still ignored');
+
+      // Re-running the install command must update, not duplicate or reset.
+      write(otmp, '.claude/lazysitter/lazysitter.fe.config.json', '{"myEdit":42}');
+      const again = run(['init', otmp, '--frontend'], otmp);
+      ok(/Existing install found/.test(again), 're-running install updates in place');
+      ok(/preserved/.test(again), 'and says config is preserved');
+      ok(JSON.parse(fs.readFileSync(path.join(otmp, '.claude/lazysitter/lazysitter.fe.config.json'), 'utf8')).myEdit === 42,
+        'a user config edit survives the update');
+      ok(fs.readdirSync(path.join(otmp, '.claude/agents')).length === 41, 'agent count is unchanged after the update');
+    } finally {
+      fs.rmSync(otmp, { recursive: true, force: true });
+    }
+  }
+
   console.log('\nteam separation');
   run(['init', tmp, '--frontend', '--general'], tmp);
   const both = fs.readdirSync(path.join(tmp, '.claude/agents')).filter((f) => f.endsWith('.md'));
@@ -517,6 +559,53 @@ export function ExportButton({ onExport }: { onExport: () => void }) {
   ok(/index-exhaustive/.test(orchestrator), 'the orchestrator documents the index-exhaustive loop terminator');
   ok(/INTENT-CONTRACT/.test(orchestrator), 'the orchestrator documents the intent-contract supervision mechanism');
   ok(/rounds\.jsonl/.test(orchestrator), 'the orchestrator carries the structured round record');
+
+  console.log('\ncomment density vs the repo baseline');
+  {
+    const { commentDensity } = require(path.join(PKG, 'src', 'fe-index', 'lex'));
+    const measure = (files) => {
+      let c = 0;
+      let n = 0;
+      for (const f of files) {
+        const d = commentDensity(fs.readFileSync(path.join(PKG, f), 'utf8'));
+        c += d.commentLines;
+        n += d.nonBlankLines;
+      }
+      return n ? c / n : 0;
+    };
+    const baselineFiles = fs
+      .readdirSync(path.join(PKG, 'src'))
+      .filter((f) => f.endsWith('.js') && !/^fe-session/.test(f) && f !== 'install-fe.js')
+      .map((f) => `src/${f}`);
+    const newFiles = [
+      ...fs.readdirSync(path.join(PKG, 'src', 'fe-index')).map((f) => `src/fe-index/${f}`),
+      'src/fe-session.js', 'src/fe-session-cli.js', 'src/install-fe.js',
+    ];
+    const base = measure(baselineFiles);
+    const added = measure(newFiles);
+    // The pipeline's own rule is "match the cited precedent's density, don't pad
+    // beyond it". There is no lexer/parser precedent in this repo, so the bound
+    // is stated explicitly rather than argued: new code may carry more comments
+    // than an installer, but not unboundedly more.
+    const CAP = 4.5;
+    ok(base > 0, `baseline src/ density measured (${(base * 100).toFixed(2)}%)`);
+    ok(
+      added * 100 <= CAP,
+      `new code density ${(added * 100).toFixed(2)}% is within the stated ${CAP}% cap (baseline ${(base * 100).toFixed(2)}%)`
+    );
+    ok(added > 0, 'new code is not stripped to a blanket zero either');
+    // The absolute rule, independent of density. gate.js is exempt because it is
+    // the DETECTOR for these references and must contain the pattern it scans
+    // for — so it is checked for the reference outside its own regex instead.
+    const forbidden = /\bAC-\d+\b|\bD-\d+\b|ACCEPTANCE-CRITERIA|TRACEABILITY\.md/;
+    const leaks = newFiles
+      .filter((f) => f !== 'src/fe-index/gate.js')
+      .filter((f) => forbidden.test(fs.readFileSync(path.join(PKG, f), 'utf8')));
+    ok(leaks.length === 0, `no pipeline/criterion references leaked into shipped source${leaks.length ? ': ' + leaks.join(', ') : ''}`);
+    const gateSrc = fs.readFileSync(path.join(PKG, 'src/fe-index/gate.js'), 'utf8');
+    const gateHits = gateSrc.split('\n').filter((l) => forbidden.test(l) && !/FORBIDDEN_REFS\s*=/.test(l));
+    ok(gateHits.length === 0, 'the detector file carries the pattern only in its own regex definition');
+  }
 
   console.log('\nuninstall');
   run(['uninstall', tmp, '--purge'], tmp);

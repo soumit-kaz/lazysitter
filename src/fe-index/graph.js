@@ -1,9 +1,5 @@
 'use strict';
 
-// Turns per-file parse records into the answers agents actually ask:
-// who renders this, which props are really passed, where is this prop drilled
-// through, what is exported and never used, which imports form a cycle.
-
 const IGNORED_ATTRS = new Set(['key', 'ref', 'children']);
 const MAX_REEXPORT_HOPS = 6;
 
@@ -28,9 +24,8 @@ function buildExportTable(parsedByFile, entitiesByFile) {
   return table;
 }
 
-// A named export can arrive through any number of barrel files. Follow the
-// `export … from` chain rather than giving up — otherwise every repo with an
-// `index.ts` per folder reports near-zero usage for everything.
+// Barrels chain, so follow `export … from`; otherwise a repo with an index.ts
+// per folder reports near-zero usage for everything.
 function resolveExport(file, name, exportTable, parsedByFile, resolver, hops = 0) {
   if (hops > MAX_REEXPORT_HOPS) return null;
   const direct = exportTable.get(file);
@@ -120,9 +115,7 @@ function build(parsedByFile, entitiesByFile, resolver, opts = {}) {
       if (target.callSites.length < cap) {
         target.callSites.push({ file, line: el.line, owner: owner ? owner.id : null, attrs, spreads: el.spreads.length });
       } else {
-        // usageCount stays exact; only the recorded sample is capped. Saying so
-        // is the difference between "41 call sites, 60 listed" and a reader
-        // assuming the list is the whole set.
+        // usageCount stays exact; only the recorded sample is capped.
         target.callSitesTruncated = (target.callSitesTruncated || 0) + 1;
       }
       target.spreadCallSites = (target.spreadCallSites || 0) + (el.spreads.length ? 1 : 0);
@@ -168,11 +161,7 @@ function reconcileProps(entities) {
     ent.propStats = {
       declared: declared.size,
       passedSomewhere: [...declared].filter((p) => used.has(p)).length,
-      // A declared prop nobody passes is dead API surface — the single most
-      // reliable "this component has drifted" signal in a mature codebase.
       neverPassed: [...declared].filter((p) => !used.has(p)),
-      // Something callers pass that the component does not declare means it is
-      // absorbed by `...rest`, spread into the DOM, or silently dropped.
       undeclared: [...used].filter((p) => !declared.has(p)),
       requiredCount: ent.props.filter((p) => p.required).length,
       spreadCallSites: ent.spreadCallSites || 0,

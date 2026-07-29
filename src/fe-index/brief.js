@@ -6,16 +6,8 @@ const q = require('./query');
 const conventions = require('./conventions');
 const store = require('./store');
 
-// The deterministic context pack.
-//
-// Everything here was previously derived by five explorer agents reading source
-// and reasoning in prose — roughly 130k tokens per run. All of it is a counting,
-// ranking or graph-walking problem, so it is computed here for zero tokens and
-// with no possibility of hallucination, omission, or a miscounted call site.
-//
-// What a program CANNOT decide is separated out into `90-open-questions.md`.
-// That separation is the quality guarantee: agents still do every judgement
-// call, they just stop paying to re-derive the facts underneath them.
+// The deterministic context pack. What a program cannot decide is separated
+// into `90-open-questions.md` — agents still make every judgement call.
 
 const STOPWORDS = new Set([
   'a', 'an', 'the', 'and', 'or', 'but', 'to', 'for', 'of', 'in', 'on', 'at', 'by', 'with',
@@ -27,10 +19,8 @@ const STOPWORDS = new Set([
   'do', 'does', 'not', 'no', 'if', 'then', 'than', 'into', 'out', 'up', 'down', 'all', 'any',
 ]);
 
-// Functional categories a frontend feature is normally assembled from. Matching
-// the request against this vocabulary is what turns free text into precedent
-// searches, and it is deliberately conservative: a category is only searched
-// when the request actually names it or a close synonym.
+// Deliberately conservative: a category is searched only when the request names
+// it or a close synonym.
 const CATEGORY_VOCAB = [
   ['confirm dialog', ['confirm', 'confirmation', 'are you sure', 'delete', 'remove', 'destructive']],
   ['modal dialog', ['modal', 'dialog', 'popup', 'overlay']],
@@ -110,7 +100,6 @@ function buildBrief(root, featureText, opts = {}) {
   const hood = neighbourhood(idx, featureText, opts.limit);
   const caps = [];
 
-  // ---- aggregate the per-file convention counters recorded at build time ----
   const totals = {};
   let countedFiles = 0;
   return store
@@ -127,7 +116,6 @@ function buildBrief(root, featureText, opts = {}) {
       const conv = conventions.summarize(totals);
       const shards = {};
 
-      // ------------------------------------------------------------ digest
       const fw = meta.stack.primary;
       const competing = Object.entries(conv)
         .filter(([k, v]) => k !== 'raw' && v && v.verdict === 'COMPETING')
@@ -312,9 +300,6 @@ function buildBrief(root, featureText, opts = {}) {
           : ['- none']),
       ].join('\n');
 
-      // --------------------------------------------------- open questions
-      // Everything a program cannot decide. Naming these explicitly is what
-      // keeps the brief from reading as though it answered them.
       shards['90-open-questions.md'] = [
         `# Open questions — a program cannot answer these`,
         ``,
@@ -373,8 +358,6 @@ const SHARD_PURPOSE = {
   '90-open-questions.md': 'everyone — this is what you are being paid to decide',
 };
 
-// Which shards each role reads. This table is the mechanism that replaced
-// broadcasting the whole pack to eleven experts.
 const ROLE_ROUTING = {
   'fe-architect': ['00', '10', '30', '40', '70', '90'],
   'fe-react-expert': ['00', '70', '90'],

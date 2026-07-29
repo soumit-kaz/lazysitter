@@ -3,12 +3,19 @@
 A **React/Next-only** engineering team: 41 specialist agents, 31 skills, and a real structural index of your components, hooks, utils and props.
 
 ```bash
-npx github:soumit-kaz/lazysitter init . --frontend   # frontend team only
+npx github:soumit-kaz/lazysitter init . --frontend             # frontend team only
 npx github:soumit-kaz/lazysitter init . --frontend --general   # both teams
-npx lazysitter fe-index build                        # build the index
 ```
 
-Then, in Claude Code: `/lsife Add a CSV export button to the analytics dashboard`
+That is the entire setup. The installer builds the index for you and git-ignores everything it
+generates. Then, in Claude Code:
+
+```text
+/lsife Add a CSV export button to the analytics dashboard
+```
+
+Re-running the install command updates an existing install in place, preserving your config edits.
+**Nothing below this line is something you have to run** — the agents drive the tooling themselves.
 
 ## Why a separate team
 

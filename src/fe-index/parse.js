@@ -2,12 +2,8 @@
 
 const { mask, lineIndex, lineAt, matchPair } = require('./lex');
 
-// Per-file structural extraction for React / Next sources.
-//
-// Every pattern below runs against the masked copy from lex.js, so a match is
-// guaranteed to be real code. Values that need the original text (import
-// sources, default values, type bodies) are read back out of the raw source at
-// offsets the masked scan located.
+// Patterns run against the masked copy from lex.js; values needing original
+// text are read back from `raw` at the offsets the masked scan located.
 
 const RE_DIRECTIVE = /^\s*(?:['"])use (client|server|strict)(?:['"])\s*;?/;
 const RE_IMPORT = /\bimport\s+(type\s+)?([\s\S]*?)\s+from\s*(['"])/g;
@@ -46,12 +42,8 @@ function isHookName(name) {
   return !!name && /^use[A-Z]/.test(name);
 }
 
-// ---------------------------------------------------------------------------
-// Type members — the backbone of prop analysis.
-// ---------------------------------------------------------------------------
-
-// Splits a type-literal body on top-level separators only, so
-// `onChange: (e: E, extra: { a: string; b: number }) => void` stays one member.
+// Splits on top-level separators only, so a member whose type contains `;`
+// inside nested braces stays one member.
 function splitMembers(body) {
   const parts = [];
   let depth = 0;
@@ -180,9 +172,6 @@ function resolveTypeMembers(typeName, types, seen = new Set()) {
   return { members: [...byName.values()], unresolved };
 }
 
-// ---------------------------------------------------------------------------
-// Destructured parameters.
-// ---------------------------------------------------------------------------
 
 function parseDestructured(paramsRaw, paramsMasked) {
   const open = paramsMasked.indexOf('{');
@@ -230,12 +219,9 @@ function genericTypeRef(annotation) {
   return m ? m[1] : null;
 }
 
-// ---------------------------------------------------------------------------
-// JSX.
-// ---------------------------------------------------------------------------
 
-// Reads attribute NAMES from a JSX opening tag, brace-aware so that
-// `style={{ a: 1 }}` and `onClick={() => x > y}` do not end the tag early.
+// Brace-aware, so `style={{ a: 1 }}` and `onClick={() => x > y}` do not end the
+// tag early.
 function readJsxAttributes(masked, tagNameEnd) {
   const attrs = [];
   const spreads = [];
@@ -322,9 +308,6 @@ function hasJsxIn(masked, from, to) {
   return /\bjsxs?\s*\(|\bcreateElement\s*\(/.test(slice);
 }
 
-// ---------------------------------------------------------------------------
-// Declaration spans.
-// ---------------------------------------------------------------------------
 
 function bodySpan(masked, from) {
   const brace = masked.indexOf('{', from);

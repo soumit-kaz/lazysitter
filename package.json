@@ -1,6 +1,6 @@
 {
   "name": "lazysitter",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Autonomous Engineering Team — a 28-agent autonomous feature pipeline installable into any project, for Cursor, Claude Code and Codex. Plus a dedicated 41-agent React/Next frontend team with a structural component index.",
   "bin": {
     "lazysitter": "bin/lazysitter.js"

@@ -6,19 +6,8 @@ const { execFileSync } = require('child_process');
 const q = require('./query');
 const { mask } = require('./lex');
 
-// Mechanical pre-verification.
-//
-// Six of the eight Tier-6 verifiers were each re-deriving the same set of
-// mechanical facts from the diff — which files changed, which exports are new,
-// which precedent citations resolve, which duplicates appeared, which secrets
-// patterns are present, which new rule findings the diff introduced. That is a
-// program's job, and doing it here has two effects: it removes the derivation
-// cost, and it makes the result *stronger*, because a deterministic scan cannot
-// forget a file or mis-read a line number.
-//
-// The agents still adjudicate. This computes WHAT changed and WHAT fired; it
-// never decides whether a finding is acceptable — that judgement stays with the
-// verifier, and every finding here routes to a named one.
+// Mechanical pre-verification. This computes WHAT changed and WHAT fired; it
+// never decides whether a finding is acceptable — that stays with the verifier.
 
 const SECRET_PATTERNS = [
   ['SEC-PRIVATE-KEY', /-----BEGIN (?:RSA |EC |OPENSSH |PGP )?PRIVATE KEY-----/, 'critical'],
@@ -33,8 +22,7 @@ const SECRET_PATTERNS = [
 
 const PUBLIC_PREFIX = /\b(NEXT_PUBLIC_|VITE_|REACT_APP_|PUBLIC_|EXPO_PUBLIC_|GATSBY_)([A-Z0-9_]+)/g;
 const SECRET_WORD = /(secret|token|password|passwd|private[_-]?key|api[_-]?key|apikey|credential|client[_-]?secret)/i;
-// Keys that are designed to be public. Flagging these would train the reader to
-// ignore the scanner, which is worse than not scanning.
+// Designed-public keys. Flagging these trains the reader to ignore the scanner.
 const PUBLISHABLE = /(publishable|anon|public[_-]?key|measurement[_-]?id|sentry[_-]?dsn|posthog|ga[_-]?id|analytics[_-]?id|map[_-]?id)/i;
 
 function git(args, cwd) {
@@ -70,13 +58,10 @@ function diffText(root, base) {
   return base ? git(['diff', '-U0', `${base}...HEAD`], root) : git(['diff', '-U0', 'HEAD'], root);
 }
 
-// Added lines only — a secret that was already committed is a standing
-// disclosure, not this diff's fault, and conflating the two makes every run
-// look dirty until someone cleans history.
-//
-// Untracked files are included explicitly. `git diff` cannot see them, so
-// without this a brand-new file containing a hardcoded credential would scan as
-// zero added lines and pass — the single worst way for this gate to be wrong.
+// Added lines only; an already-committed secret is a standing disclosure, not
+// this diff's fault. Untracked files are included explicitly — `git diff`
+// cannot see them, so without this a new file's hardcoded credential would scan
+// as zero added lines and pass.
 function addedLines(root, base) {
   const text = diffText(root, base);
   const out = [];
@@ -113,8 +98,7 @@ function addedLines(root, base) {
       } catch {
         continue;
       }
-      // Every byte of a new file is "added". Bound the read so a stray binary
-      // or a huge fixture cannot blow up the gate, and disclose the skip.
+      // Bounded so a stray binary cannot blow up the gate; the skip is disclosed.
       if (!stat.isFile() || stat.size > 2 * 1024 * 1024) {
         out.push({ file: rel, line: 0, text: '', skipped: `untracked file not scanned (${stat.isFile() ? stat.size + ' bytes, over the 2MB cap' : 'not a regular file'})` });
         continue;
@@ -177,9 +161,6 @@ function readIndexSignals(root) {
   }
 }
 
-// Precedent citations are checked by opening the cited line, exactly as the
-// code-reviewer would — but mechanically, so a fabricated citation is caught
-// every time rather than when someone remembers to look.
 function verifyCitations(root, citations) {
   const results = [];
   for (const c of citations || []) {

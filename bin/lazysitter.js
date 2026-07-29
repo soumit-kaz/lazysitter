@@ -44,11 +44,12 @@ function main() {
 
   // Commands where knowing you're on a stale npx-cached copy matters.
   let notifyStale = false;
+  let pending = null;
 
   switch (cmd) {
     case 'init':
     case 'install':
-      require('../src/install').install(PKG_ROOT, opts);
+      pending = require('../src/install').install(PKG_ROOT, opts).pending;
       notifyStale = true;
       break;
     case 'update': {
@@ -65,7 +66,7 @@ function main() {
         opts.frontend = opts.frontend || !!teams.frontend;
         opts.general = opts.general || teams.general !== false;
       }
-      require('../src/install').install(PKG_ROOT, opts);
+      pending = require('../src/install').install(PKG_ROOT, opts).pending;
       notifyStale = true;
       break;
     }
@@ -122,7 +123,9 @@ function main() {
   // Fire-and-forget freshness check (offline-safe, ~2.5s cap). Keeps the event loop
   // alive only until the probe resolves, then the process exits with its set code.
   if (notifyStale) {
-    require('../src/version').printUpdateNoticeIfStale(PKG_ROOT, log, c);
+    const notice = () => require('../src/version').printUpdateNoticeIfStale(PKG_ROOT, log, c);
+    if (pending) pending.then(notice, notice);
+    else notice();
   }
 }
 

@@ -3,11 +3,6 @@
 const crypto = require('crypto');
 const { mask } = require('./lex');
 
-// Near-duplicate detection. This is what turns "cite a sibling" into a real
-// ranked precedent set: the explorer does not have to guess which of six
-// confirm-modals is the canonical one, because every equivalent implementation
-// is already grouped into one cluster with usage counts attached.
-
 const STOP_TOKENS = new Set([
   'component', 'container', 'wrapper', 'view', 'page', 'screen', 'item', 'list',
   'new', 'base', 'common', 'shared', 'ui', 'index', 'default',
@@ -37,10 +32,8 @@ function jaccard(a, b) {
   return inter / (a.size + b.size - inter);
 }
 
-// Alpha-normalised token stream: identifiers collapse to `#`, so two functions
-// that differ only in variable naming produce the same shingles. Keywords,
-// punctuation and literal *kinds* are preserved, so genuinely different logic
-// still diverges.
+// Identifiers collapse to `#` so renamed copy-paste still matches; keywords,
+// punctuation and literal kinds are preserved so different logic diverges.
 function normalizedTokens(src) {
   const { masked } = mask(src);
   const out = [];
@@ -82,10 +75,8 @@ function componentSimilarity(a, b) {
   // Prop surface dominates: two components with the same prop contract are
   // interchangeable to a caller regardless of what they render internally.
   const weighted = 0.5 * props + 0.2 * hosts + 0.12 * name + 0.1 * renders + 0.08 * hooks;
-  // Name similarity is deliberately the smallest term, and this override exists
-  // because the duplicates that matter are the ones nobody named alike:
-  // `ConfirmDialog` and `AreYouSureModal` share a prop contract and are
-  // substitutable, which no name-based search would ever surface.
+  // Name is the smallest term on purpose: the duplicates worth finding are the
+  // ones nobody named alike, so a shared prop contract alone must cluster them.
   if (props >= 0.75 && a.props.size >= 3 && b.props.size >= 3) return Math.max(weighted, 0.8);
   return weighted;
 }
@@ -108,9 +99,7 @@ class UnionFind {
   }
 }
 
-// Blocking: only compare entities that share at least one name token or one
-// prop name. Without it this is O(n²) over every component in the repo; with it
-// a 4000-component monorepo still clusters in well under a second.
+// Blocking keeps this out of O(n²) over every component in the repo.
 function buildBlocks(entities, sigs) {
   const blocks = new Map();
   entities.forEach((e, i) => {
@@ -211,9 +200,7 @@ function finalize(entities, uf, pairs) {
   let n = 0;
   for (const members of groups.values()) {
     if (members.length < 2) continue;
-    // Rank inside the cluster the way the precedent contract requires:
-    // dominance (usage) first, recency second, and a deprecated member can
-    // never take rank 1.
+    // Dominance first, recency second; a deprecated member never takes rank 1.
     const ranked = members.slice().sort((x, y) => {
       if (!!x.deprecated !== !!y.deprecated) return x.deprecated ? 1 : -1;
       if ((y.usageCount || 0) !== (x.usageCount || 0)) return (y.usageCount || 0) - (x.usageCount || 0);

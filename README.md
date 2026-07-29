@@ -25,12 +25,7 @@ npx github:soumit-kaz/lazysitter init . --frontend --general # both, side by sid
 
 The frontend team is a genuine specialist, not a preset: it ships a **structural index** of your components, hooks, utils and props that replaces grep, five explorers that run in parallel, eleven design specialists, live supervision of running agents, and accessibility as a never-skip gate. It **refuses to run on a non-React/Next repo** rather than give shallow cross-framework advice. See **[docs/FRONTEND.md](docs/FRONTEND.md)**.
 
-```bash
-npx lazysitter fe-index build                     # build the index first
-npx lazysitter fe-index precedent "confirm modal" # ranked reuse candidates
-npx lazysitter fe-index props Button              # declared vs actually-passed props
-npx lazysitter fe-index impact src/ui/Button.tsx  # blast radius + routes affected
-```
+**One command installs it and nothing else is required** — the installer builds the index, git-ignores what it generates, and re-running it later updates in place. After that you only ever type `/lsife <what you want>`; the agents drive the index, the budget forecast and the session state themselves.
 
 ## Why LazySitter
 

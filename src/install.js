@@ -6,7 +6,7 @@ const { InstallCtx } = require('./context');
 const { loadRoster, loadSkills } = require('./roster');
 const { resolveTargetRoot, resolveTools } = require('./detect');
 const { installClaude } = require('./install-claude');
-const { installFrontend, printFrontendNextSteps } = require('./install-fe');
+const { installFrontend, printFrontendNextSteps, buildIndexQuietly } = require('./install-fe');
 const { installCodex } = require('./install-codex');
 const { installCursor } = require('./install-cursor');
 const { installKnowledge } = require('./install-knowledge');
@@ -32,16 +32,6 @@ function install(pkgRoot, opts) {
     log.warn('Codex and Cursor adapters receive the general team only; the frontend team is Claude Code for now.');
   }
 
-  log.info('');
-  log.info(`${c.bold('Autonomous Engineering Team')} ${c.dim('v' + version)}`);
-  log.info(`  ${mode === 'update' ? 'Updating' : 'Installing'} into ${c.bold(targetRoot)}`);
-  log.info(`  Adapters: ${c.cyan(tools.join(' + '))}`);
-  log.info(`  Teams:    ${c.cyan([wantGeneral && 'general', wantFrontend && 'frontend'].filter(Boolean).join(' + '))}`);
-  log.info('');
-
-  const data = wantGeneral ? loadRoster(path.join(pkgRoot, 'core')) : { agents: [] };
-  const feData = wantFrontend ? loadRoster(path.join(pkgRoot, 'core'), 'frontend') : { agents: [] };
-  const feSkills = wantFrontend ? loadSkills(path.join(pkgRoot, 'core'), 'frontend') : [];
   const manifestPath = path.join(targetRoot, '.lazysitter', 'manifest.json');
   let priorManifest = null;
   if (exists(manifestPath)) {
@@ -54,6 +44,24 @@ function install(pkgRoot, opts) {
       return { targetRoot, tools, mode };
     }
   }
+
+  log.info('');
+  log.info(`${c.bold('Autonomous Engineering Team')} ${c.dim('v' + version)}`);
+  if (mode === 'update') {
+    const from = priorManifest && priorManifest.aetVersion;
+    log.info(
+      `  ${c.bold('Existing install found')} — updating it in place${from && from !== version ? ` (v${from} → v${version})` : ''}.`
+    );
+    log.info(`  ${c.dim('Your config edits and committed knowledge are preserved.')}`);
+  }
+  log.info(`  Target:   ${c.bold(targetRoot)}`);
+  log.info(`  Adapters: ${c.cyan(tools.join(' + '))}`);
+  log.info(`  Teams:    ${c.cyan([wantGeneral && 'general', wantFrontend && 'frontend'].filter(Boolean).join(' + '))}`);
+  log.info('');
+
+  const data = wantGeneral ? loadRoster(path.join(pkgRoot, 'core')) : { agents: [] };
+  const feData = wantFrontend ? loadRoster(path.join(pkgRoot, 'core'), 'frontend') : { agents: [] };
+  const feSkills = wantFrontend ? loadSkills(path.join(pkgRoot, 'core'), 'frontend') : [];
   const ctx = new InstallCtx(targetRoot, pkgRoot, opts, priorManifest);
 
   try {
@@ -103,8 +111,18 @@ function install(pkgRoot, opts) {
     log.warn(`  gitignore check failed: ${err.message}`);
   }
   if (wantGeneral) printNextSteps(tools, data.agents.length);
-  if (wantFrontend) printFrontendNextSteps(feData.agents.length, feSkills.length);
-  return { targetRoot, tools, mode, teams: { general: wantGeneral, frontend: wantFrontend } };
+
+  const result = { targetRoot, tools, mode, teams: { general: wantGeneral, frontend: wantFrontend } };
+  if (!wantFrontend) return result;
+
+  // Index building is async, so the frontend summary is deferred until it
+  // finishes — the whole point is that `npx … init --frontend` leaves nothing
+  // for the user to run afterwards.
+  result.pending = buildIndexQuietly(targetRoot).then((index) => {
+    printFrontendNextSteps(feData.agents.length, feSkills.length, index);
+    return index;
+  });
+  return result;
 }
 
 function printNextSteps(tools, agentCount) {
