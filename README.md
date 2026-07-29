@@ -10,6 +10,28 @@ npx github:soumit-kaz/lazysitter init
 
 ---
 
+## Two teams
+
+| team | command | for |
+| ---- | ------- | --- |
+| **General** — 28 agents | `/lsi` | any stack, backend and full-stack work |
+| **Frontend** — 41 agents + 31 skills | `/lsife` | React and Next.js only, in depth |
+
+```bash
+npx github:soumit-kaz/lazysitter init                        # general team
+npx github:soumit-kaz/lazysitter init . --frontend           # frontend team
+npx github:soumit-kaz/lazysitter init . --frontend --general # both, side by side
+```
+
+The frontend team is a genuine specialist, not a preset: it ships a **structural index** of your components, hooks, utils and props that replaces grep, five explorers that run in parallel, eleven design specialists, live supervision of running agents, and accessibility as a never-skip gate. It **refuses to run on a non-React/Next repo** rather than give shallow cross-framework advice. See **[docs/FRONTEND.md](docs/FRONTEND.md)**.
+
+```bash
+npx lazysitter fe-index build                     # build the index first
+npx lazysitter fe-index precedent "confirm modal" # ranked reuse candidates
+npx lazysitter fe-index props Button              # declared vs actually-passed props
+npx lazysitter fe-index impact src/ui/Button.tsx  # blast radius + routes affected
+```
+
 ## Why LazySitter
 
 - **Autonomous, end-to-end.** Describe a feature in one sentence; LazySitter runs the full engineering pipeline and hands you reviewed, tested, merge-ready code.
@@ -102,12 +124,15 @@ LazySitter merges only when tests **pass**, security is **clean**, review is **c
 ```bash
 npx github:soumit-kaz/lazysitter doctor              # verify install, tooling, and model config
 npx github:soumit-kaz/lazysitter list                # print the agent roster
+npx github:soumit-kaz/lazysitter list --frontend     # print the frontend roster + skills
+npx github:soumit-kaz/lazysitter fe-index --help     # the frontend component index
 npx -y "github:soumit-kaz/lazysitter#semver:*" update # refresh agents to the latest release, keep your config edits
 npx github:soumit-kaz/lazysitter uninstall           # remove LazySitter
 ```
 
 ## Documentation
 
+- [docs/FRONTEND.md](docs/FRONTEND.md) — the React/Next frontend team and its component index
 - [docs/CURSOR.md](docs/CURSOR.md) — using LazySitter with Cursor
 - [docs/CLAUDE.md](docs/CLAUDE.md) — using LazySitter with Claude Code
 - [docs/CODEX.md](docs/CODEX.md) — using LazySitter with OpenAI Codex

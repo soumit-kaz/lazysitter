@@ -28,6 +28,74 @@ function extractModel(text) {
   return m ? m[1] : null;
 }
 
+const FE_HIGH_TIER_AGENTS = [
+  'lazysitter-fe-architect',
+  'lazysitter-fe-security-expert',
+  'lazysitter-fe-closing-loop-auditor',
+  'lazysitter-fe-devils-advocate',
+];
+
+function checkFrontend(targetRoot) {
+  log.info(`${c.bold('Frontend team')}`);
+
+  const indexMeta = path.join(targetRoot, '.lazysitter', 'index', 'meta.json');
+  if (!exists(indexMeta)) {
+    log.warn('  No frontend index built yet — every FE agent depends on it.');
+    log.info(`    ${c.dim('Run `lazysitter fe-index build` before your first `/lsife` run.')}`);
+  } else {
+    try {
+      const meta = JSON.parse(readFileCapped(indexMeta));
+      const fw = meta.stack && meta.stack.primary;
+      if (!meta.stack || !meta.stack.supported) {
+        log.err(`  Index reports an unsupported framework (${fw ? fw.name : 'none detected'}).`);
+        log.info(`    ${c.dim('The frontend team refuses to run here by design — use the general team (/lsi).')}`);
+      } else {
+        log.ok(
+          `  Index built ${meta.generatedAt} — ${fw.name}@${fw.version}, ${meta.counts.components} components, ${meta.counts.hooks} hooks, ${meta.counts.utils} utils.`
+        );
+      }
+      const gaps = [];
+      if (meta.coverage) {
+        if (meta.coverage.skipped && meta.coverage.skipped.length) gaps.push(`${meta.coverage.skipped.length} skipped path(s)`);
+        if (meta.coverage.parseErrors && meta.coverage.parseErrors.length) gaps.push(`${meta.coverage.parseErrors.length} parse error(s)`);
+      }
+      if (gaps.length) log.warn(`  Index coverage gaps: ${gaps.join(', ')} — see .lazysitter/index/meta.json`);
+    } catch (err) {
+      log.warn(`  Could not read the frontend index meta: ${err.message}`);
+    }
+  }
+
+  // The FE red-team and supervisor both want a model distinct from the design
+  // lineage. Claude Code has no per-tier config, so this can only be reported.
+  for (const name of ['lazysitter-fe-red-team', 'lazysitter-fe-supervisor']) {
+    const p = path.join(targetRoot, '.claude/agents', `${name}.md`);
+    if (!exists(p)) continue;
+    const model = extractModel(readFile(p));
+    const shared = FE_HIGH_TIER_AGENTS.filter((other) => {
+      const op = path.join(targetRoot, '.claude/agents', `${other}.md`);
+      return exists(op) && extractModel(readFile(op)) === model;
+    });
+    if (shared.length) {
+      log.warn(
+        `  ${name} model (${model}) equals the design lineage's model (${shared.join(', ')}) — it shares their blind spots (weaker independence).`
+      );
+    }
+  }
+
+  const cfg = path.join(targetRoot, '.claude/lazysitter/lazysitter.fe.config.json');
+  if (exists(cfg)) {
+    try {
+      const parsed = JSON.parse(readFileCapped(cfg));
+      if (parsed.supervisor && parsed.supervisor.enabled === false) {
+        log.warn('  Live supervision is disabled in lazysitter.fe.config.json — mid-flight agent drift will not be caught.');
+      }
+    } catch (err) {
+      log.warn(`  .claude/lazysitter/lazysitter.fe.config.json is not valid JSON: ${err.message}`);
+    }
+  }
+  log.info('');
+}
+
 function doctor(pkgRoot, opts) {
   const targetRoot = path.resolve(opts.dir || process.cwd());
   const manifestPath = path.join(targetRoot, '.lazysitter', 'manifest.json');
@@ -70,6 +138,12 @@ function doctor(pkgRoot, opts) {
   if (!missing && !drifted) log.ok(`  ${manifest.managed.length} managed files present and unmodified.`);
   else log.info(`  ${c.dim(`${missing} missing, ${drifted} locally modified (re-run \`lazysitter update\` to restore)`)}`);
   log.info('');
+
+  const teams = manifest.teams || { general: true, frontend: false };
+  log.info(`  Teams: ${c.cyan([teams.general !== false && 'general', teams.frontend && 'frontend'].filter(Boolean).join(' + ') || 'none')}`);
+  log.info('');
+
+  if (teams.frontend) checkFrontend(targetRoot);
 
   if (manifest.tools.includes('claude')) checkBinary('claude', 'Claude Code CLI');
   if (manifest.tools.includes('codex')) checkBinary('codex', 'Codex CLI');

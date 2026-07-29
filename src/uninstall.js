@@ -175,6 +175,18 @@ function uninstall(pkgRoot, opts) {
       log.ok(`  removed ${rel} (purged config)`);
       dirs.add(path.dirname(abs));
     }
+    // The frontend index is derived, machine-local and regenerable in seconds,
+    // so --purge removes it outright rather than leaving a stale cache behind.
+    // Committed knowledge next door is a different thing entirely and stays.
+    const indexDir = path.join(targetRoot, '.lazysitter', 'index');
+    if (exists(indexDir)) {
+      try {
+        fs.rmSync(indexDir, { recursive: true, force: true });
+        log.ok('  removed .lazysitter/index/ (generated frontend index — rebuild with `lazysitter fe-index build`)');
+      } catch (err) {
+        log.warn(`  could not remove .lazysitter/index/: ${err.message}`);
+      }
+    }
     if (retainedKnowledge.length) {
       log.info(`  ${c.dim('kept committed knowledge: ' + retainedKnowledge.join(', '))}`);
       log.info(`  ${c.dim('use --purge --purge-knowledge to remove it too')}`);

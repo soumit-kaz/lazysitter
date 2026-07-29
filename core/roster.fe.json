@@ -1,0 +1,171 @@
+{
+  "$schema": "./roster.schema.json",
+  "version": "1.0.0",
+  "kind": "frontend",
+  "command": "lsife",
+  "description": "LazySitter Frontend Team roster. A React/Next-only engineering team — every agent is a frontend specialist and the pipeline REFUSES to run on a non-React/Next repo rather than give shallow cross-framework advice. Backend work is out of scope by construction: no agent here has authority over server code, and the general 28-agent roster (roster.json) is the one that handles it. Single source of truth for the Claude Code, Codex and Cursor adapters. Do not hand-edit installed copies; edit here and re-run `lazysitter update`.",
+  "supportedFrameworks": ["react", "next"],
+  "refuseFrameworks": ["angular", "vue", "svelte", "solid", "remix", "astro", "qwik"],
+  "tiers": {
+    "high": "Most capable model. Design mediation, adversarial reasoning, intent judgement, live supervision.",
+    "high_alt": "A DISTINCT high-capability model from `high`, used for red-team and the supervisor so neither shares the build lineage's blind spots. Falls back to `high` if unset.",
+    "mid": "Balanced model. Most exploration, build and verification work.",
+    "low": "Fast, cheap model. Mechanical index queries, scans and narrow classification."
+  },
+  "modelTierByLogical": { "opus": "high", "sonnet": "mid", "haiku": "low" },
+  "neverSkip": [
+    "lazysitter-fe-spec-writer",
+    "lazysitter-fe-test-author",
+    "lazysitter-fe-test-runner",
+    "lazysitter-fe-code-reviewer",
+    "lazysitter-fe-reuse-auditor",
+    "lazysitter-fe-a11y-expert",
+    "lazysitter-fe-a11y-auditor",
+    "lazysitter-fe-security-expert",
+    "lazysitter-fe-red-team",
+    "lazysitter-fe-devils-advocate",
+    "lazysitter-fe-secrets-scanner",
+    "lazysitter-fe-closing-loop-auditor",
+    "lazysitter-fe-supervisor"
+  ],
+  "neverSkipModes": [
+    { "agent": "lazysitter-fe-red-team", "mode": "plan-attack" },
+    { "agent": "lazysitter-fe-test-runner", "mode": "teeth-check" },
+    { "agent": "lazysitter-fe-supervisor", "mode": "watch" }
+  ],
+  "waves": {
+    "w0-preflight": ["lazysitter-fe-recon"],
+    "w1-intake": ["lazysitter-fe-analyst", "lazysitter-fe-triage"],
+    "w2-explore": [
+      "lazysitter-fe-component-explorer",
+      "lazysitter-fe-utils-explorer",
+      "lazysitter-fe-design-system-explorer",
+      "lazysitter-fe-state-explorer",
+      "lazysitter-fe-route-explorer"
+    ],
+    "w2b-synthesize": ["lazysitter-fe-context-synthesizer"],
+    "w3-spec": ["lazysitter-fe-spec-writer"],
+    "w4-design": [
+      "lazysitter-fe-architect",
+      "lazysitter-fe-react-expert",
+      "lazysitter-fe-rsc-expert",
+      "lazysitter-fe-state-expert",
+      "lazysitter-fe-styling-expert",
+      "lazysitter-fe-a11y-expert",
+      "lazysitter-fe-perf-expert",
+      "lazysitter-fe-api-contract-expert",
+      "lazysitter-fe-ux-analyst",
+      "lazysitter-fe-security-expert",
+      "lazysitter-fe-devils-advocate"
+    ],
+    "w5-build": [
+      "lazysitter-fe-component-implementer",
+      "lazysitter-fe-state-implementer",
+      "lazysitter-fe-style-implementer",
+      "lazysitter-fe-test-author",
+      "lazysitter-fe-dependency-auditor"
+    ],
+    "w6-verify": [
+      "lazysitter-fe-test-runner",
+      "lazysitter-fe-code-reviewer",
+      "lazysitter-fe-reuse-auditor",
+      "lazysitter-fe-a11y-auditor",
+      "lazysitter-fe-perf-auditor",
+      "lazysitter-fe-visual-auditor",
+      "lazysitter-fe-red-team",
+      "lazysitter-fe-secrets-scanner"
+    ],
+    "w7-integrate": ["lazysitter-fe-integration-checker", "lazysitter-fe-closing-loop-auditor"],
+    "w8-release": [
+      "lazysitter-fe-release-agent",
+      "lazysitter-fe-monitor-agent",
+      "lazysitter-fe-rollback-agent",
+      "lazysitter-fe-docs-agent"
+    ],
+    "cross-cutting": ["lazysitter-fe-supervisor"]
+  },
+  "agents": {
+    "lazysitter-fe-recon": { "tier": "low", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w0-preflight", "note": "Builds/refreshes the FE index and detects the stack. HOLDS the only refusal authority: a non-React/Next repo halts the run here. CAPABILITIES.md is a drift-diff record, never gate authority." },
+    "lazysitter-fe-analyst": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w1-intake", "note": "The ONLY agent permitted to raise a clarifying question to the user, and only for UI scope/intent ambiguity." },
+    "lazysitter-fe-triage": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w1-intake", "note": "Sizes the change and picks the wave roster. Controls panel SIZE only — never removes a neverSkip agent." },
+
+    "lazysitter-fe-component-explorer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2-explore", "note": "Index-first. Answers reuse-vs-create from `fe-index precedent`, not from grep. Writes COMPONENTS.md." },
+    "lazysitter-fe-utils-explorer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2-explore", "note": "Hooks, utils, helpers, formatters, validators. Clone clusters come from the index's normalized-token shingles, which catch renamed copy-paste that grep cannot." },
+    "lazysitter-fe-design-system-explorer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2-explore", "note": "Tokens, theme, variants, primitives. May query a connected shadcn/registry MCP server and Figma MCP as additional precedent sources — never as a replacement for the repo index." },
+    "lazysitter-fe-state-explorer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2-explore", "note": "State topology: stores, contexts, server-state caches, invalidation edges, prop-drill chains from the index." },
+    "lazysitter-fe-route-explorer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2-explore", "note": "Routing, layouts, RSC/client boundary map, loading/error boundaries, route-level data flow." },
+    "lazysitter-fe-context-synthesizer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w2b-synthesize", "note": "Merges the five explorer artifacts into ONE CONTEXT-PACK.md and resolves contradictions between them into FACT-BLOCKs. Keeps the orchestrator out of the content path." },
+
+    "lazysitter-fe-spec-writer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w3-spec", "note": "Acceptance criteria BEFORE any plan or code. Every UI criterion carries an observable oracle; the UI state matrix is mandatory." },
+
+    "lazysitter-fe-architect": { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w4-design", "note": "Owns PLAN.md and the file-ownership map that makes parallel implementers safe. Rules only on `preference` disputes." },
+    "lazysitter-fe-react-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Hook rules, render identity, reconciliation, refs, concurrent-render safety." },
+    "lazysitter-fe-rsc-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Next App Router only. Not spawned when the repo is plain React (recorded as 'not spawned, per its stack rule')." },
+    "lazysitter-fe-state-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design" },
+    "lazysitter-fe-styling-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design" },
+    "lazysitter-fe-a11y-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Never skipped by triage. Accessibility is a correctness property here, not a polish pass." },
+    "lazysitter-fe-perf-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design" },
+    "lazysitter-fe-api-contract-expert": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Owns the component's public prop contract — the surface every other team will depend on and the hardest thing to change later." },
+    "lazysitter-fe-ux-analyst": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design" },
+    "lazysitter-fe-security-expert": { "tier": "high", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Client-side threat model at design time. Distinct from the post-build secrets-scanner and red-team." },
+    "lazysitter-fe-devils-advocate": { "tier": "high", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w4-design", "note": "Runs in EVERY consensus round; rotates its target; may return a named NO-CHALLENGE." },
+
+    "lazysitter-fe-component-implementer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w5-build", "note": "Owns component/JSX files listed in the plan's ownership map. May not touch store or style-system files." },
+    "lazysitter-fe-state-implementer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w5-build", "note": "Owns stores, hooks, query keys, cache invalidation. May not edit JSX owned by the component implementer." },
+    "lazysitter-fe-style-implementer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w5-build", "note": "Owns stylesheets, tokens, variant maps, theme files. Not spawned when the change is style-free." },
+    "lazysitter-fe-test-author": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w5-build", "note": "Spawned in parallel with the implementers so it is structurally blind to implementation. Writes tests only, from the frozen spec." },
+    "lazysitter-fe-dependency-auditor": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w5-build", "note": "License + vulnerability + BUNDLE WEIGHT. Offline-only; reports cannot-verify-offline as a named degradation rather than a false-clean approve." },
+
+    "lazysitter-fe-test-runner": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "note": "Runs the frozen suite. Cannot edit tests or source." },
+    "lazysitter-fe-code-reviewer": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "note": "Diff vs plan + typecheck/lint/build, plus mechanical precedent-citation and file-ownership checks against the index." },
+    "lazysitter-fe-reuse-auditor": { "tier": "mid", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w6-verify", "note": "Independent head on reuse-vs-create, outside the build lineage. Re-runs the index against the post-diff tree so a duplicate created by this run is caught." },
+    "lazysitter-fe-a11y-auditor": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "note": "Audits the real diff. Prefers an executable oracle (axe/jest-axe/Playwright) and reports `degraded` when none exists rather than arguing accessibility from source." },
+    "lazysitter-fe-perf-auditor": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "note": "Bundle delta, render cost, Web Vitals. Measures where a harness exists; reports `degraded` where none does." },
+    "lazysitter-fe-visual-auditor": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "note": "The arbiter of every `observable` criterion when a render harness is declared. Not spawned when the project declares none — recorded as a degraded coverage gap, never as a pass." },
+    "lazysitter-fe-red-team": { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w6-verify", "distinctModel": true, "note": "Uses the `high_alt` slot. Attacks the built UI: XSS sinks, hydration divergence, race conditions in async UI, unbounded lists, focus traps, adversarial input." },
+    "lazysitter-fe-secrets-scanner": { "tier": "low", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w6-verify", "note": "Diff scan plus the client-bundle-specific class the general scanner misses: anything behind NEXT_PUBLIC_/VITE_/REACT_APP_ is shipped to the browser." },
+
+    "lazysitter-fe-integration-checker": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w7-integrate", "note": "Full suite against current devBase plus concurrent branches; also re-runs the index to catch cross-feature component collisions." },
+    "lazysitter-fe-closing-loop-auditor": { "tier": "high", "codexSandbox": "read-only", "codexApproval": "never", "wave": "w7-integrate", "note": "Re-reads the ORIGINAL user request against the final diff. Catches 'built the plan correctly, but the plan drifted from the ask'." },
+
+    "lazysitter-fe-release-agent": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "on-request", "wave": "w8-release", "note": "Mutates git at the merge gate. Requires approval unless autoApproveGit is set." },
+    "lazysitter-fe-monitor-agent": { "tier": "low", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w8-release", "note": "Watches client-side error signals and Web Vitals after merge. Only spawned when a named, reachable signal source exists." },
+    "lazysitter-fe-rollback-agent": { "tier": "mid", "codexSandbox": "workspace-write", "codexApproval": "on-request", "wave": "w8-release", "note": "Standing revert authority in the monitoring window, void unless reversibility was established at design time." },
+    "lazysitter-fe-docs-agent": { "tier": "low", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "w8-release", "note": "Storybook stories, prop tables, changelog. Derives the prop table from the index rather than re-reading source." },
+
+    "lazysitter-fe-supervisor": { "tier": "high", "codexSandbox": "workspace-write", "codexApproval": "never", "wave": "cross-cutting", "distinctModel": true, "note": "Live drift watchdog. Reads every in-flight agent's declared INTENT-CONTRACT against its observable behaviour and issues REDIRECT / ABORT / QUARANTINE. Uses the `high_alt` slot so it does not share the lineage's blind spots. Never writes source; its only writes are to the run directory's supervision inbox." }
+  },
+  "skills": [
+    "fe-index-query",
+    "prop-analyzer",
+    "component-precedent",
+    "utils-precedent",
+    "component-api-design",
+    "hook-rules-audit",
+    "render-performance",
+    "state-topology",
+    "data-fetching-cache",
+    "rsc-boundary",
+    "hydration-safety",
+    "a11y-audit",
+    "focus-management",
+    "keyboard-interaction",
+    "forms-validation",
+    "ui-state-matrix",
+    "design-tokens",
+    "responsive-layout",
+    "bundle-budget",
+    "core-web-vitals",
+    "virtualization",
+    "image-media",
+    "i18n-rtl",
+    "client-security",
+    "error-boundaries",
+    "memory-leaks",
+    "test-selectors",
+    "visual-regression",
+    "animation-motion",
+    "loop-engineering",
+    "agent-supervision"
+  ]
+}

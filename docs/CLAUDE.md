@@ -3,6 +3,10 @@
 The Claude Code adapter is a near-verbatim copy of `core/` — the canonical agent files are
 already native Claude Code format.
 
+> **Working on a React or Next.js frontend?** There is a dedicated 41-agent frontend team with a
+> structural component index, installed with `lazysitter init . --frontend` and run with `/lsife`.
+> It can sit alongside the general team. See [FRONTEND.md](FRONTEND.md).
+
 ## What runs where
 
 - **Orchestrator** = the `/lsi` slash command (`.claude/commands/lsi.md`), running in your

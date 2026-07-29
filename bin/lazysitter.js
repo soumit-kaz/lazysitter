@@ -34,6 +34,8 @@ function main() {
     claude: !!flags.claude,
     codex: !!flags.codex,
     cursor: !!flags.cursor,
+    frontend: !!flags.frontend || !!flags.fe,
+    general: !!flags.general,
     force: !!flags.force,
     purge: !!flags.purge,
     purgeKnowledge: !!flags['purge-knowledge'],
@@ -56,6 +58,12 @@ function main() {
         opts.claude = mf.tools.includes('claude');
         opts.codex = mf.tools.includes('codex');
         opts.cursor = mf.tools.includes('cursor');
+        // Teams recorded at install time are reused, so `update` never silently
+        // adds or drops a team the user did not ask for. A manifest predating
+        // the field is a general-only install.
+        const teams = mf.teams || { general: true, frontend: false };
+        opts.frontend = opts.frontend || !!teams.frontend;
+        opts.general = opts.general || teams.general !== false;
       }
       require('../src/install').install(PKG_ROOT, opts);
       notifyStale = true;
@@ -72,8 +80,39 @@ function main() {
       break;
     case 'list':
     case 'roster':
-      listRoster();
+      listRoster(flags);
       break;
+    case 'fe-index': {
+      const sub = positionals[1];
+      if (!sub || flags.help) return require('../src/fe-index/cli').help();
+      const root = path.resolve(flags.dir || process.cwd());
+      const feFlags = Object.assign({ _rest: positionals.slice(2).join(' ') || null }, flags);
+      require('../src/fe-index/cli')
+        .run(root, sub, feFlags)
+        .catch((err) => {
+          log.err(err.message);
+          process.exitCode = 1;
+        });
+      return;
+    }
+    case 'fe-session': {
+      const sub = positionals[1];
+      if (!sub || flags.help) return require('../src/fe-session-cli').help();
+      const cwd = path.resolve(flags.dir || process.cwd());
+      // The run directory is anchored to the repo root, never to cwd — the same
+      // rule the orchestrator follows, so a session started from a subdirectory
+      // still finds its own run.
+      const { findGitRoot } = require('../src/util');
+      const root = findGitRoot(cwd) || cwd;
+      const sFlags = Object.assign({ _rest: positionals.slice(2).join(' ') || null }, flags);
+      try {
+        require('../src/fe-session-cli').run(root, cwd, sub, sFlags);
+      } catch (err) {
+        log.err(err.message);
+        process.exitCode = 1;
+      }
+      return;
+    }
     default:
       log.err(`Unknown command: ${cmd}`);
       help();
@@ -92,19 +131,32 @@ function manifestFor(dir) {
   return exists(p) ? JSON.parse(readFile(p)) : null;
 }
 
-function listRoster() {
-  const { loadRoster } = require('../src/roster');
-  const { agents } = loadRoster(path.join(PKG_ROOT, 'core'));
+function listRoster(flags) {
+  const { loadRoster, loadSkills } = require('../src/roster');
+  const kind = flags && (flags.frontend || flags.fe) ? 'frontend' : 'general';
+  const { agents, roster } = loadRoster(path.join(PKG_ROOT, 'core'), kind);
+  const width = Math.max(26, ...agents.map((a) => a.name.length));
   log.info('');
-  log.info(`${c.bold('LazySitter roster')} — ${agents.length} agents`);
+  log.info(
+    `${c.bold(kind === 'frontend' ? 'LazySitter frontend roster' : 'LazySitter roster')} — ${agents.length} agents` +
+      (kind === 'frontend' ? c.dim('  (React/Next only)') : '')
+  );
   log.info('');
-  log.info(`  ${'agent'.padEnd(26)} ${'tier'.padEnd(6)} ${'codex sandbox'.padEnd(16)} approval`);
-  log.info(`  ${'-'.repeat(26)} ${'-'.repeat(6)} ${'-'.repeat(16)} ${'-'.repeat(10)}`);
+  log.info(`  ${'agent'.padEnd(width)} ${'tier'.padEnd(6)} ${'wave'.padEnd(14)} ${'codex sandbox'.padEnd(16)} approval`);
+  log.info(`  ${'-'.repeat(width)} ${'-'.repeat(6)} ${'-'.repeat(14)} ${'-'.repeat(16)} ${'-'.repeat(10)}`);
   for (const a of agents) {
+    const cfg = roster.agents[a.name] || {};
     const flag = a.distinctModel ? c.yellow(' ⚑ distinct-model') : '';
     log.info(
-      `  ${a.name.padEnd(26)} ${a.tier.padEnd(6)} ${a.codexSandbox.padEnd(16)} ${a.codexApproval}${flag}`
+      `  ${a.name.padEnd(width)} ${a.tier.padEnd(6)} ${(cfg.wave || '-').padEnd(14)} ${a.codexSandbox.padEnd(16)} ${a.codexApproval}${flag}`
     );
+  }
+  if (kind === 'frontend') {
+    const skills = loadSkills(path.join(PKG_ROOT, 'core'), 'frontend');
+    log.info('');
+    log.info(`${c.bold('Skills')} — ${skills.length}`);
+    log.info('');
+    for (const s of skills) log.info(`  ${s.name.padEnd(width)} ${c.dim(s.description.slice(0, 84))}`);
   }
   log.info('');
 }
@@ -121,8 +173,16 @@ ${c.bold('Commands')}
   update [dir]      Refresh managed files; keeps your models.env / config edits.
   uninstall [dir]   Remove LazySitter. Add --purge to also delete your config.
   doctor [dir]      Verify the install, tool availability, and model tiering.
-  list              Print the agent roster with tiers and sandboxes.
+  list              Print the agent roster with tiers and sandboxes. Add --frontend for the FE team.
+  fe-index <sub>    The frontend component/hook/util index. Run ${c.dim('fe-index --help')} for its commands.
+  fe-session <sub>  Resume a run in a new session; run several sessions safely. ${c.dim('fe-session --help')}
   help · version
+
+${c.bold('Teams')}
+  --frontend        Install the frontend team (41 React/Next specialists + 31 skills, /lsife).
+                    Alone, it installs ONLY the frontend team. Claude Code adapter.
+  --general         Keep the general 28-agent team too. Combine with --frontend for both.
+                    (Default when --frontend is absent.)
 
 ${c.bold('Flags')}
   --claude          Install only the Claude Code adapter.
@@ -137,9 +197,12 @@ ${c.bold('Flags')}
   --force           Overwrite without prompting.
 
 ${c.bold('Examples')}
-  npx lazysitter init                 ${c.dim('# both adapters, into the current repo')}
-  npx lazysitter init . --codex       ${c.dim('# Codex only')}
-  npx lazysitter init . --cursor      ${c.dim('# Cursor only')}
+  npx lazysitter init                        ${c.dim('# general team, all detected adapters')}
+  npx lazysitter init . --frontend           ${c.dim('# frontend team only (React/Next)')}
+  npx lazysitter init . --frontend --general ${c.dim('# both teams, side by side')}
+  npx lazysitter init . --codex              ${c.dim('# Codex only')}
+  npx lazysitter list --frontend             ${c.dim('# the FE roster + skills')}
+  npx lazysitter fe-index build              ${c.dim('# build the frontend index')}
   npx lazysitter doctor
   npx lazysitter uninstall --purge
 

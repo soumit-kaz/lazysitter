@@ -19,12 +19,32 @@ function toolOfPath(rel) {
   return null;
 }
 
-function pruneOrphans(targetRoot, priorManaged, freshManagedPaths, tools) {
+// Both teams live under `.claude/`, so tool prefix alone is not enough to decide
+// what this run is entitled to prune. Installing only the frontend team must
+// never silently delete the general team's agents, and vice versa.
+function teamOfPath(rel) {
+  if (
+    rel.startsWith('.claude/agents/lazysitter-fe-') ||
+    rel.startsWith('.claude/skills/') ||
+    rel === '.claude/commands/lsife.md' ||
+    rel === '.claude/lazysitter/roster.fe.json' ||
+    rel === '.claude/lazysitter/FRONTEND-README.md' ||
+    rel === '.claude/lazysitter/lazysitter.fe.config.json' ||
+    rel.startsWith('.lazysitter/index/')
+  ) {
+    return 'frontend';
+  }
+  return 'general';
+}
+
+function pruneOrphans(targetRoot, priorManaged, freshManagedPaths, tools, teams) {
+  const installed = Object.assign({ general: true, frontend: true }, teams || {});
   const fresh = new Set(freshManagedPaths);
   const renderedTools = new Set(tools);
   const candidates = (priorManaged || []).filter((entry) => {
     if (!entry || typeof entry.path !== 'string') return false;
     if (fresh.has(entry.path)) return false;
+    if (!installed[teamOfPath(entry.path)]) return false;
     const tool = toolOfPath(entry.path);
     return tool !== null && renderedTools.has(tool);
   });
@@ -101,4 +121,4 @@ function pruneOrphans(targetRoot, priorManaged, freshManagedPaths, tools) {
   return { pruned, kept };
 }
 
-module.exports = { pruneOrphans };
+module.exports = { pruneOrphans, teamOfPath };

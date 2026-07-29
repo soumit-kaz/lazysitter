@@ -99,12 +99,13 @@ class InstallCtx {
     log.ok(`  ${rel} ${existedBefore ? '(LazySitter block merged)' : '(created)'}`);
   }
 
-  writeManifest(version, tools) {
+  writeManifest(version, tools, teams) {
     const manifestRel = '.lazysitter/manifest.json';
     const data = {
       aetVersion: version,
       installedAt: this.opts.now || new Date().toISOString(),
       tools,
+      teams: teams || { general: true, frontend: false },
       managed: this.manifest.managed,
       preserve: this.manifest.preserve,
       agentsMd: this.manifest.agentsMd,
